@@ -1,0 +1,24 @@
+{
+	"name": "ppp/wikidata",
+	"description": "Wikidata module for the PPP",
+	"keywords": [
+		"ppp"
+	],
+	"homepage": "https://github.com/ProjetPP/PPP-Wikidata",
+	"license": "GPLv2+",
+	"authors": [
+		{
+			"name": "Projet Pensées Profondes",
+			"homepage": "https://github.com/ProjetPP"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0",
+		"ppp/data-model": "*"
+	},
+	"autoload": {
+		"psr-4": {
+			"PPP\\Wikidata\\": "src/"
+		}
+	}
+}
