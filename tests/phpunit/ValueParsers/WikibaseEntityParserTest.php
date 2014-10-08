@@ -46,7 +46,7 @@ class WikibaseEntityParserTest extends ValueParserTestBase {
 	 * @see ValueParserTestBase::getParserClass
 	 */
 	protected function getParserClass() {
-		return 'PPP\Wikidata\ValueParsers\WikibaseEntityValueParser';
+		return 'PPP\Wikidata\ValueParsers\WikibaseEntityParser';
 	}
 
 
