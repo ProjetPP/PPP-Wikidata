@@ -10,7 +10,7 @@ use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use Wikibase\DataModel\Entity\ItemId;
 
 /**
- * @covers PPP\Wikidata\ValueParsers\WikibaseEntityValueParser
+ * @covers PPP\Wikidata\ValueParsers\WikibaseEntityParser
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
