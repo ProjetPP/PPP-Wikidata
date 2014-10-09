@@ -2,14 +2,10 @@
 
 namespace PPP\Wikidata;
 
-use DataValues\DataValue;
-use DataValues\StringValue;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\ResourceNode;
 use PPP\DataModel\TripleNode;
-use RuntimeException;
-use ValueParsers\ValueParser;
-use Wikibase\DataModel\Entity\EntityIdValue;
+use PPP\Wikidata\ValueParsers\WikibaseValueParser;
 
 /**
  * Annotates intermediate representation with Wikibase.
@@ -22,14 +18,9 @@ use Wikibase\DataModel\Entity\EntityIdValue;
 class WikibaseNodeAnnotator {
 
 	/**
-	 * @var ValueParser
+	 * @var WikibaseValueParser
 	 */
-	private $itemParser;
-
-	/**
-	 * @var ValueParser
-	 */
-	private $propertyParser;
+	private $valueParser;
 
 	/**
 	 * @var WikibasePropertyTypeProvider
@@ -37,13 +28,11 @@ class WikibaseNodeAnnotator {
 	private $propertyTypeProvider;
 
 	/**
-	 * @param ValueParser $itemParser
-	 * @param ValueParser $propertyParser
+	 * @param WikibaseValueParser $valueParser
 	 * @param WikibasePropertyTypeProvider $propertyTypeProvider
 	 */
-	public function __construct(ValueParser $itemParser, ValueParser $propertyParser, WikibasePropertyTypeProvider $propertyTypeProvider) {
-		$this->itemParser = $itemParser;
-		$this->propertyParser = $propertyParser;
+	public function __construct(WikibaseValueParser $valueParser, WikibasePropertyTypeProvider $propertyTypeProvider) {
+		$this->valueParser = $valueParser;
 		$this->propertyTypeProvider = $propertyTypeProvider;
 	}
 
@@ -73,24 +62,8 @@ class WikibaseNodeAnnotator {
 
 		return new WikibaseResourceNode(
 			$node->getValue(),
-			$this->parseStringAsDataValue($node->getValue(), $type)
+			$this->valueParser->parse($node->getValue(), $type)
 		);
-	}
-
-	/**
-	 * @return DataValue
-	 */
-	private function parseStringAsDataValue($string, $type) {
-		switch($type) {
-			case 'wikibase-item':
-				return new EntityIdValue($this->itemParser->parse($string));
-			case 'wikibase-property':
-				return new EntityIdValue($this->propertyParser->parse($string));
-			case 'string':
-				return new StringValue($string);
-			default:
-				throw new RuntimeException('Unknown value type: ' . $type);
-		}
 	}
 
 	private function annotateTripleNode(TripleNode $node) {

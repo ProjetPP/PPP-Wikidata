@@ -7,6 +7,7 @@ use ValueParsers\Test\ValueParserTestBase;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Deserializers\EntityIdDeserializer;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
+use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 
 /**
@@ -26,7 +27,7 @@ class WikibaseEntityParserTest extends ValueParserTestBase {
 		return array(
 			array(
 				'Douglas Adams',
-				new ItemId('Q42')
+				new EntityIdValue(new ItemId('Q42'))
 			)
 		);
 	}

@@ -8,6 +8,7 @@ use ValueParsers\ParserOptions;
 use ValueParsers\StringValueParser;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Deserializers\EntityIdDeserializer;
+use Wikibase\DataModel\Entity\EntityIdValue;
 
 /**
  * Try to find a Wikibase entity id from a given string. Only returns the first id found.
@@ -56,7 +57,7 @@ class WikibaseEntityParser extends StringValueParser {
 		$result = $this->api->getAction('wbsearchentities', $params);
 
 		foreach($result['search'] as $entry) {
-			return $this->entityIdDeserializer->deserialize($entry['id']);
+			return new EntityIdValue($this->entityIdDeserializer->deserialize($entry['id']));
 		}
 
 		throw new ParseException('No entity returned.', $value, self::FORMAT_NAME);
