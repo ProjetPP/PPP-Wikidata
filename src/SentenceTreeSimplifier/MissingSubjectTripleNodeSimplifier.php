@@ -11,7 +11,11 @@ use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\PropertyId;
 use WikidataQueryApi\DataModel\AbstractQuery;
+use WikidataQueryApi\DataModel\AroundQuery;
+use WikidataQueryApi\DataModel\BetweenQuery;
 use WikidataQueryApi\DataModel\ClaimQuery;
+use WikidataQueryApi\DataModel\QuantityQuery;
+use WikidataQueryApi\DataModel\StringQuery;
 use WikidataQueryApi\Services\SimpleQueryService;
 
 /**
@@ -76,6 +80,14 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	 */
 	private function buildQueryForValue(PropertyId $propertyId, DataValue $value) {
 		switch($value->getType()) {
+			case 'globecoordinate':
+				return new AroundQuery($propertyId, $value->getLatLong(), $value->getPrecision() * 100);
+			case 'quantity':
+				return new QuantityQuery($propertyId, $value->getAmount());
+			case 'string':
+				return new StringQuery($propertyId, $value);
+			case 'time':
+				return new BetweenQuery($propertyId, $value, $value);
 			case 'wikibase-entityid':
 				return new ClaimQuery($propertyId, $value->getEntityId());
 			default:
