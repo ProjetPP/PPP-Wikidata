@@ -6,7 +6,7 @@ use DataValues\BooleanValue;
 use ValueParsers\BoolParser;
 
 /**
- * @covers PPP\Wikidata\ValueParser\WikibaseValueParser
+ * @covers PPP\Wikidata\ValueParsers\WikibaseValueParser
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon

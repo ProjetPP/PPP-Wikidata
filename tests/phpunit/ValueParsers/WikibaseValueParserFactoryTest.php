@@ -11,7 +11,7 @@ use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
 
 /**
- * @covers PPP\Wikidata\ValueParser\WikibaseValueParserFactory
+ * @covers PPP\Wikidata\ValueParsers\WikibaseValueParserFactory
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
