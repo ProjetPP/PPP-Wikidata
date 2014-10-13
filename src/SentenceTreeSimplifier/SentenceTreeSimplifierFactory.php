@@ -3,6 +3,7 @@
 namespace PPP\Wikidata\SentenceTreeSimplifier;
 
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\WikibaseEntityProvider;
 use Wikibase\Api\WikibaseFactory;
 use WikidataQueryApi\WikidataQueryApi;
 use WikidataQueryApi\WikidataQueryFactory;
@@ -46,12 +47,16 @@ class SentenceTreeSimplifierFactory {
 	}
 
 	private function newMissingObjectTripleNodeSimplifier() {
-		$wikibaseFactory = new WikibaseFactory($this->mediawikiApi);
-		return new MissingObjectTripleNodeSimplifier($wikibaseFactory->newRevisionGetter());
+		return new MissingObjectTripleNodeSimplifier($this->newEntityProvider());
 	}
 
 	private function newMissingSubjectTripleNodeSimplifier() {
 		$wikidataQueryFactory = new WikidataQueryFactory($this->wikidataQueryApi);
 		return new MissingSubjectTripleNodeSimplifier($wikidataQueryFactory->newSimpleQueryService());
+	}
+
+	private function newEntityProvider() {
+		$wikibaseFactory = new WikibaseFactory($this->mediawikiApi);
+		return new WikibaseEntityProvider($wikibaseFactory->newRevisionGetter());
 	}
 }
