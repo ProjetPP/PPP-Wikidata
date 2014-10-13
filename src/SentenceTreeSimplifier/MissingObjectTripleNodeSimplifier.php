@@ -6,8 +6,8 @@ use InvalidArgumentException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\TripleNode;
+use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
-use Wikibase\Api\Service\RevisionGetter;
 use Wikibase\DataModel\Claim\Claims;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -25,15 +25,15 @@ use Wikibase\DataModel\Snak\Snak;
 class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 
 	/**
-	 * @var RevisionGetter
+	 * @var WikibaseEntityProvider
 	 */
-	private $revisionGetter;
+	private $entityProvider;
 
 	/**
-	 * @param RevisionGetter $revisionGetter
+	 * @param WikibaseEntityProvider $entityProvider
 	 */
-	public function __construct(RevisionGetter $revisionGetter) {
-		$this->revisionGetter = $revisionGetter;
+	public function __construct(WikibaseEntityProvider $entityProvider) {
+		$this->entityProvider = $entityProvider;
 	}
 
 	/**
@@ -60,13 +60,7 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 		/** @var PropertyId $propertyId */
 		$propertyId = $node->getPredicate()->getDataValue()->getEntityId();
 
-		$itemRevision = $this->revisionGetter->getFromId($itemId);
-		if($itemRevision === false) {
-			throw new SimplifierException('The item ' . $itemId->getSerialization() . ' does not exists');
-		}
-
-		/** @var Item $item */
-		$item = $itemRevision->getContent()->getNativeData();
+		$item = $this->entityProvider->getItem($itemId);
 		return $this->snakToNode($this->getSnakForProperty($item, $propertyId));
 	}
 

@@ -2,9 +2,6 @@
 
 namespace PPP\Wikidata;
 
-use OutOfRangeException;
-use Wikibase\Api\Service\RevisionGetter;
-use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
 
 /**
@@ -16,9 +13,9 @@ use Wikibase\DataModel\Entity\PropertyId;
 class WikibasePropertyTypeProvider {
 
 	/**
-	 * @var RevisionGetter
+	 * @var WikibaseEntityProvider
 	 */
-	private $revisionGetter;
+	private $entityProvider;
 
 	/**
 	 * @var string[]
@@ -26,10 +23,10 @@ class WikibasePropertyTypeProvider {
 	private $propertyTypeCache = array();
 
 	/**
-	 * @param RevisionGetter $revisionGetter
+	 * @param WikibaseEntityProvider $entityProvider
 	 */
-	public function __construct(RevisionGetter $revisionGetter) {
-		$this->revisionGetter = $revisionGetter;
+	public function __construct(WikibaseEntityProvider $entityProvider) {
+		$this->entityProvider = $entityProvider;
 	}
 
 	/**
@@ -45,13 +42,6 @@ class WikibasePropertyTypeProvider {
 	}
 
 	private function retrievePropertyType(PropertyId $propertyId) {
-		$propertyRevision = $this->revisionGetter->getFromId($propertyId);
-		if($propertyRevision === false) {
-			throw new OutOfRangeException('The property ' . $propertyId->getPrefixedId() . ' does not exists');
-		}
-
-		/** @var Property $property */
-		$property = $propertyRevision->getContent()->getNativeData();
-		return $property->getDataTypeId();
+		return $this->entityProvider->getProperty($propertyId)->getDataTypeId();
 	}
 }

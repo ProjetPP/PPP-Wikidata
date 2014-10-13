@@ -3,7 +3,6 @@
 namespace PPP\Wikidata\SentenceTreeSimplifier;
 
 use DataValues\StringValue;
-use Mediawiki\DataModel\Revision;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\TripleNode;
@@ -13,7 +12,6 @@ use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\DataModel\ItemContent;
 use Wikibase\DataModel\Snak\PropertyNoValueSnak;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
@@ -30,10 +28,10 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 	 * @see NodeSimplifierBaseTest::NodeSimplifierBaseTest
 	 */
 	public function buildDummySimplifier() {
-		$revisionGetterMock = $this->getMockBuilder( 'Wikibase\Api\Service\RevisionGetter' )
+		$entityProvider = $this->getMockBuilder( 'PPP\Wikidata\WikibaseEntityProvider' )
 			->disableOriginalConstructor()
 			->getMock();
-		return new MissingObjectTripleNodeSimplifier($revisionGetterMock);
+		return new MissingObjectTripleNodeSimplifier($entityProvider);
 	}
 
 	/**
@@ -80,15 +78,15 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 	 * @dataProvider simplifiedTripleProvider
 	 */
 	public function testSimplify(TripleNode $queryNode, AbstractNode $responseNode, Item $item) {
-		$revisionGetterMock = $this->getMockBuilder( 'Wikibase\Api\Service\RevisionGetter' )
+		$entityProvider = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
 			->disableOriginalConstructor()
 			->getMock();
-		$revisionGetterMock->expects($this->any())
-			->method('getFromId')
+		$entityProvider->expects($this->any())
+			->method('getItem')
 			->with($this->equalTo(new ItemId('Q42')))
-			->will($this->returnValue(new Revision(new ItemContent($item))));
+			->will($this->returnValue($item));
 
-		$simplifier = new MissingObjectTripleNodeSimplifier($revisionGetterMock);
+		$simplifier = new MissingObjectTripleNodeSimplifier($entityProvider);
 		$this->assertEquals(
 			$responseNode,
 			$simplifier->simplify($queryNode)
@@ -139,16 +137,16 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 	/**
 	 * @dataProvider notSimplifiedTripleProvider
 	 */
-	public function testSimplifyWithException(TripleNode $queryNode, $revision) {
-		$revisionGetterMock = $this->getMockBuilder( 'Wikibase\Api\Service\RevisionGetter' )
+	public function testSimplifyWithException(TripleNode $queryNode, Item $item) {
+		$entityProvider = $this->getMockBuilder( 'PPP\Wikidata\WikibaseEntityProvider' )
 			->disableOriginalConstructor()
 			->getMock();
-		$revisionGetterMock->expects($this->any())
-			->method('getFromId')
+		$entityProvider->expects($this->any())
+			->method('getItem')
 			->with($this->equalTo(new ItemId('Q42')))
-			->will($this->returnValue($revision));
+			->will($this->returnValue($item));
 
-		$simplifier = new MissingObjectTripleNodeSimplifier($revisionGetterMock);
+		$simplifier = new MissingObjectTripleNodeSimplifier($entityProvider);
 
 		$this->setExpectedException('PPP\Wikidata\SentenceTreeSimplifier\SimplifierException');
 		$simplifier->simplify($queryNode);
@@ -169,7 +167,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))),
 				new MissingNode()
 			),
-			new Revision(new ItemContent($douglasAdamItem))
+			$douglasAdamItem
 		);
 
 		//no Snak
@@ -181,19 +179,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))),
 				new MissingNode()
 			),
-			new Revision(new ItemContent($douglasAdamItem))
-		);
-
-		//no Item
-		$douglasAdamItem = Item::newEmpty();
-		$douglasAdamItem->setId(new ItemId('Q42'));
-		$list[] = array(
-			new TripleNode(
-				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
-				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))),
-				new MissingNode()
-			),
-			false
+			$douglasAdamItem
 		);
 
 		return $list;

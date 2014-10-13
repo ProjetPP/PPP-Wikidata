@@ -2,8 +2,7 @@
 
 namespace PPP\Wikidata;
 
-use Mediawiki\Api\MediawikiApi;
-use Wikibase\Api\WikibaseFactory;
+use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
 
 /**
@@ -15,17 +14,16 @@ use Wikibase\DataModel\Entity\PropertyId;
 class WikibasePropertyTypeProviderTest extends \PHPUnit_Framework_TestCase {
 
 	public function testGetTypeForProperty() {
-		$wikibaseFactory = new WikibaseFactory(new MediawikiApi('http://www.wikidata.org/w/api.php'));
-		$provider = new WikibasePropertyTypeProvider($wikibaseFactory->newRevisionGetter());
+		$entityProviderMock = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
+		->disableOriginalConstructor()
+		->getMock();
+		$entityProviderMock->expects($this->any())
+			->method('getProperty')
+			->with($this->equalTo(new PropertyId('P42')))
+			->will($this->returnValue(Property::newFromType('time')));
 
-		$this->assertEquals('time', $provider->getTypeForProperty(new PropertyID('P569')));
-	}
+		$provider = new WikibasePropertyTypeProvider($entityProviderMock);
 
-	public function testGetTypeForPropertyWithException() {
-		$wikibaseFactory = new WikibaseFactory(new MediawikiApi('http://www.wikidata.org/w/api.php'));
-		$provider = new WikibasePropertyTypeProvider($wikibaseFactory->newRevisionGetter());
-
-		$this->setExpectedException('\OutOfRangeException');
-		$provider->getTypeForProperty(new PropertyId('P42424242'));
+		$this->assertEquals('time', $provider->getTypeForProperty(new PropertyId('P42')));
 	}
 }
