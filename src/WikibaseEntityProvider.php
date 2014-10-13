@@ -52,7 +52,7 @@ class WikibaseEntityProvider {
 		$revision = $this->revisionGetter->getFromId($entityId);
 
 		if($revision === false) {
-			throw new OutOfRangeException('The item ' . $entityId->getSerialization(). ' does not exists');
+			throw new OutOfRangeException('The entity ' . $entityId->getSerialization(). ' does not exists');
 		}
 
 		return $revision->getContent()->getNativeData();
