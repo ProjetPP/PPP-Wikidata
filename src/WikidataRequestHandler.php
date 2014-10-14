@@ -12,6 +12,19 @@ use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
 use Wikibase\Api\WikibaseFactory;
 use WikidataQueryApi\WikidataQueryApi;
 
+//Evil, evil, evil, evil
+//TODO: handle this evil
+$GLOBALS['evilDataValueMap'] = array(
+	'number' => 'DataValues\NumberValue',
+	'string' => 'DataValues\StringValue',
+	'globecoordinate' => 'DataValues\GlobeCoordinateValue',
+	'monolingualtext' => 'DataValues\MonolingualTextValue',
+	'multilingualtext' => 'DataValues\MultilingualTextValue',
+	'quantity' => 'DataValues\QuantityValue',
+	'time' => 'DataValues\TimeValue',
+	'wikibase-entityid' => 'Wikibase\DataModel\Entity\EntityIdValue'
+);
+
 /**
  * Module entry point.
  *

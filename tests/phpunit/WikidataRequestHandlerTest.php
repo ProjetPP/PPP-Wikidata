@@ -76,6 +76,46 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					0.5
 				)
 			),
+			array(
+				new ModuleRequest(
+					'en',
+					new TripleNode(
+						new TripleNode(
+							new MissingNode(),
+							new ResourceNode('VIAF'),
+							new ResourceNode('113230702')
+						),
+						new ResourceNode('Birth place'),
+						new MissingNode()
+					),
+					'a'
+				),
+				new ModuleResponse(
+					'en',
+					new WikibaseResourceNode('Cambridge', new EntityIdValue(new ItemId('Q350'))),
+					0.5
+				)
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new TripleNode(
+						new MissingNode(),
+						new ResourceNode('son'),
+						new TripleNode(
+							new MissingNode(),
+							new ResourceNode('VIAF identifier'),
+							new ResourceNode('45777651')
+						)
+					),
+					'a'
+				),
+				new ModuleResponse(
+					'en',
+					new WikibaseResourceNode('Setnakhte', new EntityIdValue(new ItemId('Q312402'))),
+					0.5
+				)
+			),
 		);
 	}
 }

@@ -39,7 +39,7 @@ class WikibaseValueFormatter extends ValueFormatterBase {
 		}
 
 		if(!array_key_exists($value->getType(), $this->formatters)) {
-			throw new FormattingException('Unknown value type', $value, $value->getType());
+			throw new FormattingException('Unknown value type: ' . $value->getType());
 		}
 
 		return $this->formatters[$value->getType()]->format($value);
