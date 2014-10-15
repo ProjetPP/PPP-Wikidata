@@ -21,6 +21,9 @@
 		"ppp/wikidataquery-api": "*",
 		"ppp/libmodule": "*"
 	},
+	"require-dev": {
+		"whatthejeff/nyancat-phpunit-resultprinter": "~1.2"
+	},
 	"autoload": {
 		"psr-4": {
 			"PPP\\Wikidata\\": "src/"
