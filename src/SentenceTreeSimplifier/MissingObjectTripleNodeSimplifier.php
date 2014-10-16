@@ -15,6 +15,7 @@ use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Snak\Snak;
+use Wikibase\DataModel\Statement\Statement;
 
 /**
  * Simplifies a triple node when the object is missing.
@@ -69,10 +70,12 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	 * @return Snak
 	 */
 	private function getSnakForProperty(Item $item, PropertyId $propertyId) {
-		$claims = new Claims($item->getClaims());
 
-		foreach($claims->getClaimsForProperty($propertyId)->getBestClaims() as $claim) {
-			return $claim->getMainSnak();
+		/** @var Statement $statement */
+		foreach($item->getStatements()->getBestStatementPerProperty() as $statement) {
+			if($statement->getMainSnak()->getPropertyId()->equals($propertyId)) {
+				return $statement->getMainSnak();
+			}
 		}
 
 		throw new SimplifierException(

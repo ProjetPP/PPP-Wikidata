@@ -7,7 +7,8 @@ use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\TripleNode;
 use PPP\Wikidata\WikibaseResourceNode;
-use Wikibase\DataModel\Claim\Statement;
+use Wikibase\DataModel\Claim\Claim;
+use Wikibase\DataModel\Statement\Statement;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -99,11 +100,11 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		//Value
 		$douglasAdamItem = Item::newEmpty();
 		$douglasAdamItem->setId(new ItemId('Q42'));
-		$birthPlaceStatement = new Statement(
+		$birthPlaceStatement = new Statement(new Claim(
 			new PropertyValueSnak(new PropertyId('P214'), new StringValue('113230702'))
-		);
+		));
 		$birthPlaceStatement->setGuid('42');
-		$douglasAdamItem->addClaim($birthPlaceStatement);
+		$douglasAdamItem->getStatements()->addStatement($birthPlaceStatement);
 		$list[] = array(
 			new TripleNode(
 				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
@@ -117,9 +118,9 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		//SomeValue
 		$douglasAdamItem = Item::newEmpty();
 		$douglasAdamItem->setId(new ItemId('Q42'));
-		$birthPlaceStatement = new Statement(new PropertySomeValueSnak(new PropertyId('P19')));
+		$birthPlaceStatement = new Statement(new Claim(new PropertySomeValueSnak(new PropertyId('P19'))));
 		$birthPlaceStatement->setGuid('42');
-		$douglasAdamItem->addClaim($birthPlaceStatement);
+		$douglasAdamItem->getStatements()->addStatement($birthPlaceStatement);
 		$list[] = array(
 			new TripleNode(
 				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
@@ -158,9 +159,9 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		//NoValue
 		$douglasAdamItem = Item::newEmpty();
 		$douglasAdamItem->setId(new ItemId('Q42'));
-		$birthPlaceStatement = new Statement(new PropertyNoValueSnak(new PropertyId('P19')));
+		$birthPlaceStatement = new Statement(new Claim(new PropertyNoValueSnak(new PropertyId('P19'))));
 		$birthPlaceStatement->setGuid('42');
-		$douglasAdamItem->addClaim($birthPlaceStatement);
+		$douglasAdamItem->getStatements()->addStatement($birthPlaceStatement);
 		$list[] = array(
 			new TripleNode(
 				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),

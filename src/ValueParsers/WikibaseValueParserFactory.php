@@ -2,8 +2,8 @@
 
 namespace PPP\Wikidata\ValueParsers;
 
+use DataValues\Geo\Parsers\GlobeCoordinateParser;
 use Mediawiki\Api\MediawikiApi;
-use ValueParsers\GlobeCoordinateParser;
 use ValueParsers\ParserOptions;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Deserializers\EntityIdDeserializer;
