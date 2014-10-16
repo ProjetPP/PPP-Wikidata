@@ -2,10 +2,10 @@
 
 namespace PPP\Wikidata\ValueFormatters;
 
+use DataValues\Geo\Formatters\GlobeCoordinateFormatter;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\DecimalFormatter;
-use ValueFormatters\GlobeCoordinateFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\QuantityFormatter;
 use ValueFormatters\StringFormatter;
