@@ -22,7 +22,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider requestAndResponseProvider
 	 */
-	public function testBuildResponse(ModuleRequest $request, ModuleResponse $response) {
+	public function testBuildResponse(ModuleRequest $request, array $response) {
 		$requestHandler = new WikidataRequestHandler(
 			'https://www.wikidata.org/w/api.php',
 			'https://wdq.wmflabs.org/api'
@@ -38,11 +38,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					new MissingNode(),
 					'a'
 				),
-				new ModuleResponse(
+				array(new ModuleResponse(
 					'en',
 					new MissingNode(),
 					0.5
-				)
+				))
 			),
 			array(
 				new ModuleRequest(
@@ -54,11 +54,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					),
 					'a'
 				),
-				new ModuleResponse(
+				array(new ModuleResponse(
 					'en',
 					new WikibaseResourceNode('113230702', new StringValue('113230702')),
 					0.5
-				)
+				))
 			),
 			array(
 				new ModuleRequest(
@@ -70,11 +70,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					),
 					'a'
 				),
-				new ModuleResponse(
+				array(new ModuleResponse(
 					'ru',
 					new WikibaseResourceNode('Дуглас Адамс', new EntityIdValue(new ItemId('Q42'))),
 					0.5
-				)
+				))
 			),
 			array(
 				new ModuleRequest(
@@ -90,11 +90,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					),
 					'a'
 				),
-				new ModuleResponse(
+				array(new ModuleResponse(
 					'en',
 					new WikibaseResourceNode('Cambridge', new EntityIdValue(new ItemId('Q350'))),
 					0.5
-				)
+				))
 			),
 			array(
 				new ModuleRequest(
@@ -110,11 +110,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					),
 					'a'
 				),
-				new ModuleResponse(
+				array(new ModuleResponse(
 					'en',
 					new WikibaseResourceNode('Setnakhte', new EntityIdValue(new ItemId('Q312402'))),
 					0.5
-				)
+				))
 			),
 		);
 	}

@@ -42,11 +42,11 @@ class WikidataRequestHandler implements RequestHandler {
 		$tree = $this->buildTreeSimplifier()->simplify($tree);
 		$tree = $this->buildNodeFormatter($request->getLanguageCode())->formatNode($tree);
 
-		return new ModuleResponse(
+		return array(new ModuleResponse(
 			$request->getLanguageCode(),
 			$tree,
 			0.5
-		);
+		));
 	}
 
 	private function buildNodeAnnotator($languageCode) {
