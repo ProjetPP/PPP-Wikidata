@@ -37,12 +37,14 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				new ModuleRequest(
 					'en',
 					new MissingNode(),
-					'a'
+					'a',
+					array('nlp')
 				),
 				array(new ModuleResponse(
 					'en',
 					new MissingNode(),
-					0.5
+					0.5,
+					array('nlp', 'wikidata')
 				))
 			),
 			array(
@@ -54,7 +56,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new WikibaseResourceNode('Douglas Adam', new UnknownValue('Douglas Adam')),
-					0.5
+					0.5,
+					array('wikidata')
 				))
 			),
 			array(
@@ -70,7 +73,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new WikibaseResourceNode('113230702', new StringValue('113230702')),
-					0.5
+					0.5,
+					array('wikidata')
 				))
 			),
 			array(
@@ -86,7 +90,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'ru',
 					new WikibaseResourceNode('Дуглас Адамс', new EntityIdValue(new ItemId('Q42'))),
-					0.5
+					0.5,
+					array('wikidata')
 				))
 			),
 			array(
@@ -106,7 +111,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new WikibaseResourceNode('Cambridge', new EntityIdValue(new ItemId('Q350'))),
-					0.5
+					0.5,
+					array('wikidata')
 				))
 			),
 			array(
@@ -126,7 +132,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new WikibaseResourceNode('Setnakhte', new EntityIdValue(new ItemId('Q312402'))),
-					0.5
+					0.5,
+					array('wikidata')
 				))
 			),
 		);
