@@ -2,6 +2,7 @@
 
 namespace PPP\Wikidata;
 
+use DataValues\UnknownValue;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
@@ -44,7 +45,7 @@ class WikibaseNodeAnnotatorTest extends \PHPUnit_Framework_TestCase {
 		return array(
 			array(
 				new ResourceNode('Douglas Adams'),
-				new ResourceNode('Douglas Adams')
+				new WikibaseResourceNode('Douglas Adams', new UnknownValue('Douglas Adams'))
 			),
 			array(
 				new TripleNode(

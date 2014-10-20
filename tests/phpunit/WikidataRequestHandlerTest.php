@@ -3,6 +3,7 @@
 namespace PPP\Wikidata;
 
 use DataValues\StringValue;
+use DataValues\UnknownValue;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceNode;
 use PPP\DataModel\TripleNode;
@@ -41,6 +42,18 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new MissingNode(),
+					0.5
+				))
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new ResourceNode('Douglas Adam'),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new WikibaseResourceNode('Douglas Adam', new UnknownValue('Douglas Adam')),
 					0.5
 				))
 			),

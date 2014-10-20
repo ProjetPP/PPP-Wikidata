@@ -2,6 +2,7 @@
 
 namespace PPP\Wikidata;
 
+use DataValues\UnknownValue;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\ResourceNode;
 use PPP\DataModel\TripleNode;
@@ -57,7 +58,10 @@ class WikibaseNodeAnnotator {
 
 	private function annotateResourceNode(ResourceNode $node, $type) {
 		if($type === null) {
-			return $node;
+			return new WikibaseResourceNode(
+				$node->getValue(),
+				new UnknownValue($node->getValue())
+			);
 		}
 
 		return new WikibaseResourceNode(
