@@ -7,8 +7,10 @@ use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
 use PPP\Module\RequestHandler;
 use PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifierFactory;
+use PPP\Wikidata\SentenceTreeSimplifier\SimplifierException;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
+use ValueParsers\ParseException;
 use Wikibase\Api\WikibaseFactory;
 use WikidataQueryApi\WikidataQueryApi;
 
@@ -38,8 +40,18 @@ class WikidataRequestHandler implements RequestHandler {
 	 * @see RequestHandler::buildResponse
 	 */
 	public function buildResponse(ModuleRequest $request) {
-		$tree = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($request->getSentenceTree());
-		$tree = $this->buildTreeSimplifier()->simplify($tree);
+		try {
+			$tree = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($request->getSentenceTree());
+		} catch(ParseException $e) {
+			return array();
+		}
+
+		try {
+			$tree = $this->buildTreeSimplifier()->simplify($tree);
+		} catch(SimplifierException $e) {
+			return array();
+		}
+
 		$tree = $this->buildNodeFormatter($request->getLanguageCode())->formatNode($tree);
 
 		return array(new ModuleResponse(

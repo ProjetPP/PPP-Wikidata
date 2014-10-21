@@ -7,7 +7,7 @@ use ValueParsers\ParseException;
 use ValueParsers\ParserOptions;
 use ValueParsers\StringValueParser;
 use ValueParsers\ValueParser;
-use Wikibase\DataModel\Deserializers\EntityIdDeserializer;
+use Wikibase\DataModel\Entity\EntityIdParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
 
 /**
@@ -31,20 +31,20 @@ class WikibaseEntityParser extends StringValueParser {
 	private $api;
 
 	/**
-	 * @var EntityIdDeserializer
+	 * @var EntityIdParser
 	 */
-	private $entityIdDeserializer;
+	private $entityIdParser;
 
 	/**
 	 * @param MediaWikiApi $api
-	 * @param EntityIdDeserializer $entityIdDeserializer
+	 * @param EntityIdParser $entityIdParser
 	 * @param ParserOptions|null $options
 	 */
-	public function __construct(MediaWikiApi $api, EntityIdDeserializer $entityIdDeserializer, ParserOptions $options = null) {
+	public function __construct(MediaWikiApi $api, EntityIdParser $entityIdParser, ParserOptions $options = null) {
 		$options->requireOption(self::OPT_ENTITY_TYPE);
 
 		$this->api = $api;
-		$this->entityIdDeserializer = $entityIdDeserializer;
+		$this->entityIdParser = $entityIdParser;
 		parent::__construct($options);
 	}
 
@@ -57,7 +57,7 @@ class WikibaseEntityParser extends StringValueParser {
 		$result = $this->api->getAction('wbsearchentities', $params);
 
 		foreach($result['search'] as $entry) {
-			return new EntityIdValue($this->entityIdDeserializer->deserialize($entry['id']));
+			return new EntityIdValue($this->entityIdParser->parse($entry['id']));
 		}
 
 		throw new ParseException('No entity returned.', $value, self::FORMAT_NAME);

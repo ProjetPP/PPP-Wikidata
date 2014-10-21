@@ -6,7 +6,6 @@ use DataValues\Geo\Parsers\GlobeCoordinateParser;
 use Mediawiki\Api\MediawikiApi;
 use ValueParsers\ParserOptions;
 use ValueParsers\ValueParser;
-use Wikibase\DataModel\Deserializers\EntityIdDeserializer;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
 
 /**
@@ -53,6 +52,6 @@ class WikibaseValueParserFactory {
 			ValueParser::OPT_LANG => $this->languageCode,
 			WikibaseEntityParser::OPT_ENTITY_TYPE => $type
 		));
-		return new WikibaseEntityParser($this->api, new EntityIdDeserializer(new BasicEntityIdParser()), $parserOptions);
+		return new WikibaseEntityParser($this->api, new BasicEntityIdParser(), $parserOptions);
 	}
 }
