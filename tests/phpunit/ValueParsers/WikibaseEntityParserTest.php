@@ -5,7 +5,6 @@ namespace PPP\Wikidata\ValueParsers;
 use Mediawiki\Api\MediawikiApi;
 use ValueParsers\Test\ValueParserTestBase;
 use ValueParsers\ValueParser;
-use Wikibase\DataModel\Deserializers\EntityIdDeserializer;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
@@ -58,7 +57,7 @@ class WikibaseEntityParserTest extends ValueParserTestBase {
 		$class = $this->getParserClass();
 		return new $class(
 			new MediawikiApi('http://www.wikidata.org/w/api.php'),
-			new EntityIdDeserializer(new BasicEntityIdParser()),
+			new BasicEntityIdParser(),
 			$this->newParserOptions()
 		);
 	}
