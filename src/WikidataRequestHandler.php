@@ -56,8 +56,7 @@ class WikidataRequestHandler implements RequestHandler {
 
 		return array(new ModuleResponse(
 			$request->getLanguageCode(),
-			$tree,
-			0.5
+			$tree
 		));
 	}
 
