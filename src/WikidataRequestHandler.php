@@ -54,10 +54,13 @@ class WikidataRequestHandler implements RequestHandler {
 
 		$tree = $this->buildNodeFormatter($request->getLanguageCode())->formatNode($tree);
 
+		$trace = $request->getTrace();
+		$trace[] = 'wikidata';
 		return array(new ModuleResponse(
 			$request->getLanguageCode(),
 			$tree,
-			0.5
+			0.5,
+			$trace
 		));
 	}
 
