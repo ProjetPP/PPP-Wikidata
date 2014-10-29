@@ -11,7 +11,7 @@ PPP-Wikidata is a PPP module that use [Wikidata](http://www.wikidata.org) conten
 
 1 - Clone the repository:
 
-    git clone git@github.com:ProjetPP/PPP-Wikidata.git
+    git clone https://github.com/ProjetPP/PPP-Wikidata.git
 
 2 - Install dependances with composer:
 
