@@ -20,7 +20,7 @@ interface NodeSimplifier {
 
 	/**
 	 * @param AbstractNode $node
-	 * @return AbstractNode
+	 * @return AbstractNode[]
 	 */
 	public function simplify(AbstractNode $node);
 }

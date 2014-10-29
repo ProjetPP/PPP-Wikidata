@@ -47,17 +47,20 @@ class WikidataRequestHandler implements RequestHandler {
 		}
 
 		try {
-			$tree = $this->buildTreeSimplifier()->simplify($tree);
+			$trees = $this->buildTreeSimplifier()->simplify($tree);
 		} catch(SimplifierException $e) {
 			return array();
 		}
 
-		$tree = $this->buildNodeFormatter($request->getLanguageCode())->formatNode($tree);
+		$responses = array();
+		foreach($trees as $tree) {
+			$responses[] = new ModuleResponse(
+				$request->getLanguageCode(),
+				$this->buildNodeFormatter($request->getLanguageCode())->formatNode($tree)
+			);
+		}
 
-		return array(new ModuleResponse(
-			$request->getLanguageCode(),
-			$tree
-		));
+		return $responses;
 	}
 
 	private function buildNodeAnnotator($languageCode) {

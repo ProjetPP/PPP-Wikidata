@@ -22,11 +22,11 @@ class SentenceTreeSimplifierTest extends \PHPUnit_Framework_TestCase {
 		$nodeSimplifierMock->expects($this->any())
 			->method('simplify')
 			->with($this->equalTo(new MissingNode()))
-			->will($this->returnValue(new ResourceNode('foo')));
+			->will($this->returnValue(array(new ResourceNode('foo'))));
 
 		$simplifier = new SentenceTreeSimplifier(array($nodeSimplifierMock));
 		$this->assertEquals(
-			new ResourceNode('foo'),
+			array(new ResourceNode('foo')),
 			$simplifier->simplify(new MissingNode())
 		);
 	}
