@@ -10,11 +10,13 @@ PPP-Wikidata is a PPP module that use [Wikidata](http://www.wikidata.org) conten
 ## Installation
 
 1 - Clone the repository:
-  git clone git@github.com:ProjetPP/PPP-Wikidata.git
+
+    git clone git@github.com:ProjetPP/PPP-Wikidata.git
 
 2 - Install dependances with composer:
-  curl -sS https://getcomposer.org/installer | php
-  php composer.phar install
+
+    curl -sS https://getcomposer.org/installer | php
+    php composer.phar install
 
 3 - Make www/index.php executable by a web server, and put an URL to this
   web server in the configuration of your PPP core (and make sure the latter
