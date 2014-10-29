@@ -16,5 +16,7 @@ PPP-Wikidata is a PPP module that use [Wikidata](http://www.wikidata.org) conten
   curl -sS https://getcomposer.org/installer | php
   php composer.phar install
 
-3 - Add path to the www/index.php file to your PPP core configuration (and make sure it is recheable from the web)
+3 - Make www/index.php executable by a web server, and put an URL to this
+  web server in the configuration of your PPP core (and make sure the latter
+  can access it)
 
