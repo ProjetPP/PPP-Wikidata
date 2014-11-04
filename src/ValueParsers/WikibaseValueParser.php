@@ -29,13 +29,19 @@ class WikibaseValueParser {
 	/**
 	 * @param string $value
 	 * @param string $type
-	 * @return DataValue
+	 * @return DataValue[]
 	 */
 	public function parse($value, $type) {
 		if(!array_key_exists($type, $this->parsers)) {
 			throw new ParseException('Unknown value type', $value, $type);
 		}
 
-		return $this->parsers[$type]->parse($value);
+		$result = $this->parsers[$type]->parse($value);
+
+		if(!is_array($result)) {
+			return array($result);
+		}
+
+		return $result;
 	}
 }

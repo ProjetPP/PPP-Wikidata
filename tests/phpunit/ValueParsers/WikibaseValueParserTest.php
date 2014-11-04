@@ -17,7 +17,7 @@ class WikibaseValueParserTest extends \PHPUnit_Framework_TestCase {
 		$parser = new WikibaseValueParser(array(
 			'bool' => new BoolParser()
 		));
-		$this->assertEquals(new BooleanValue(true), $parser->parse('true', 'bool'));
+		$this->assertEquals(array(new BooleanValue(true)), $parser->parse('true', 'bool'));
 	}
 
 	public function testParseWithUnknownType() {

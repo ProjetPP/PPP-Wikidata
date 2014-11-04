@@ -26,7 +26,7 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 		return array(
 			array(
 				'Douglas Adams',
-				new EntityIdValue(new ItemId('Q42'))
+				array(new EntityIdValue(new ItemId('Q42')))
 			)
 		);
 	}
@@ -48,7 +48,6 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	protected function getParserClass() {
 		return 'PPP\Wikidata\ValueParsers\WikibaseEntityIdParser';
 	}
-
 
 	/**
 	 * @see ValueParserTestBase::getInstance
@@ -72,5 +71,12 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 		$parserOptions->setOption(WikibaseEntityIdParser::OPT_ENTITY_TYPE, 'item');
 
 		return $parserOptions;
+	}
+
+	/**
+	 * @return ValueParserTestBase::requireDataValue
+	 */
+	protected function requireDataValue() {
+		return false;
 	}
 }

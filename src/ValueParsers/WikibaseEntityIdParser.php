@@ -56,10 +56,23 @@ class WikibaseEntityIdParser extends StringValueParser {
 		);
 		$result = $this->api->getAction('wbsearchentities', $params);
 
-		foreach($result['search'] as $entry) {
-			return new EntityIdValue($this->entityIdParser->parse($entry['id']));
+
+		$entityIds = $this->parseResult($result);
+
+		if(empty($entityIds)) {
+			throw new ParseException('No entity returned.', $value, self::FORMAT_NAME);
 		}
 
-		throw new ParseException('No entity returned.', $value, self::FORMAT_NAME);
+		return $entityIds;
+	}
+
+	private function parseResult(array $result) {
+		$entityIds = array();
+
+		foreach($result['search'] as $entry) {
+			$entityIds[] = new EntityIdValue($this->entityIdParser->parse($entry['id']));
+		}
+
+		return $entityIds;
 	}
 }

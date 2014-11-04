@@ -39,7 +39,7 @@ class WikibaseNodeAnnotator {
 
 	/**
 	 * @param AbstractNode $node
-	 * @return AbstractNode
+	 * @return AbstractNode[]
 	 */
 	public function annotateNode(AbstractNode $node) {
 		return $this->annotateNodeWithType($node, null);
@@ -52,37 +52,45 @@ class WikibaseNodeAnnotator {
 			case 'triple':
 				return $this->annotateTripleNode($node);
 			default:
-				return $node;
+				return array($node);
 		}
 	}
 
 	private function annotateResourceNode(ResourceNode $node, $type) {
 		if($type === null) {
-			return new WikibaseResourceNode(
+			return array(new WikibaseResourceNode(
 				$node->getValue(),
 				new UnknownValue($node->getValue())
-			);
+			));
 		}
 
-		return new WikibaseResourceNode(
-			$node->getValue(),
-			$this->valueParser->parse($node->getValue(), $type)
-		);
+		$result = array();
+		foreach($this->valueParser->parse($node->getValue(), $type) as $annotation) {
+			$result[] = new WikibaseResourceNode(
+				$node->getValue(),
+				$annotation
+			);
+		}
+		return $result;
 	}
 
 	private function annotateTripleNode(TripleNode $node) {
-		$propertyNode = $this->annotateNodeWithType($node->getPredicate(), 'wikibase-property');
+		$subjectNodes = $this->annotateNodeWithType($node->getSubject(), 'wikibase-item');
+		$propertyNodes = $this->annotateNodeWithType($node->getPredicate(), 'wikibase-property');
+		$objectNodesPerType = array();
 
-		return new TripleNode(
-			$this->annotateNodeWithType(
-				$node->getSubject(),
-				'wikibase-item'
-			),
-			$propertyNode,
-			$this->annotateNodeWithType(
-				$node->getObject(),
-				$this->propertyTypeProvider->getTypeForProperty($propertyNode->getDataValue()->getEntityId())
-			)
-		);
+		$result = array();
+		foreach($subjectNodes as $subjectNode) {
+			foreach($propertyNodes as $propertyNode) {
+				$objectType = $this->propertyTypeProvider->getTypeForProperty($propertyNode->getDataValue()->getEntityId());
+				if(!array_key_exists($objectType, $objectNodesPerType)) {
+					$objectNodesPerType[$objectType] = $this->annotateNodeWithType($node->getObject(), $objectType);
+				}
+				foreach($objectNodesPerType[$objectType] as $objectNode) {
+					$result[] = new TripleNode($subjectNode, $propertyNode, $objectNode);
+				}
+			}
+		}
+		return $result;
 	}
 }

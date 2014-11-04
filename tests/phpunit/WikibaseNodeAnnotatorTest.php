@@ -26,7 +26,7 @@ class WikibaseNodeAnnotatorTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider annotatedNodeProvider
 	 */
-	public function testAnnotateNode(AbstractNode $inputNode, AbstractNode $expectedNode) {
+	public function testAnnotateNode(AbstractNode $inputNode, array $expectedNodes) {
 		$valueParserFactory = new WikibaseValueParserFactory('en', new MediawikiApi('http://www.wikidata.org/w/api.php'));
 
 		$propertyTypeProviderMock = $this->getMockBuilder('PPP\Wikidata\WikibasePropertyTypeProvider')
@@ -38,26 +38,26 @@ class WikibaseNodeAnnotatorTest extends \PHPUnit_Framework_TestCase {
 			->will($this->returnValue('time'));
 
 		$annotator = new WikibaseNodeAnnotator($valueParserFactory->newWikibaseValueParser(), $propertyTypeProviderMock);
-		$this->assertEquals($expectedNode, $annotator->annotateNode($inputNode));
+		$this->assertEquals($expectedNodes, $annotator->annotateNode($inputNode));
 	}
 
 	public function annotatedNodeProvider() {
 		return array(
 			array(
 				new ResourceNode('Douglas Adams'),
-				new WikibaseResourceNode('Douglas Adams', new UnknownValue('Douglas Adams'))
+				array(new WikibaseResourceNode('Douglas Adams', new UnknownValue('Douglas Adams')))
 			),
 			array(
 				new TripleNode(
-					new ResourceNode('Douglas Adams'),
+					new ResourceNode('Ramesses III'),
 					new ResourceNode('Place of birth'),
 					new MissingNode()
 				),
-				new TripleNode(
-					new WikibaseResourceNode('Douglas Adams', new EntityIdValue(new ItemId('Q42'))),
+				array(new TripleNode(
+					new WikibaseResourceNode('Ramesses III', new EntityIdValue(new ItemId('Q1528'))),
 					new WikibaseResourceNode('Place of birth', new EntityIdValue(new PropertyId('P19'))),
 					new MissingNode()
-				)
+				))
 			),
 		);
 	}

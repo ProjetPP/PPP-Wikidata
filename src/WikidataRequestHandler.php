@@ -41,23 +41,25 @@ class WikidataRequestHandler implements RequestHandler {
 	 */
 	public function buildResponse(ModuleRequest $request) {
 		try {
-			$tree = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($request->getSentenceTree());
+			$annotatedTrees = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($request->getSentenceTree());
 		} catch(ParseException $e) {
 			return array();
 		}
 
+		$treeSimplifier = $this->buildTreeSimplifier();
+		$simplifiedTrees = array();
 		try {
-			$trees = $this->buildTreeSimplifier()->simplify($tree);
+			foreach($annotatedTrees as $tree) {
+				$simplifiedTrees += $treeSimplifier->simplify($tree);
+			}
 		} catch(SimplifierException $e) {
 			return array();
 		}
 
+		$nodeFormatter = $this->buildNodeFormatter($request->getLanguageCode());
 		$responses = array();
-		foreach($trees as $tree) {
-			$responses[] = new ModuleResponse(
-				$request->getLanguageCode(),
-				$this->buildNodeFormatter($request->getLanguageCode())->formatNode($tree)
-			);
+		foreach($simplifiedTrees as $tree) {
+			$responses[] = new ModuleResponse($request->getLanguageCode(), $nodeFormatter->formatNode($tree));
 		}
 
 		return $responses;
