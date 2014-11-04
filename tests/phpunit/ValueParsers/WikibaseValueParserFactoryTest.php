@@ -24,28 +24,28 @@ class WikibaseValueParserFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testParserParseString() {
 		$this->assertEquals(
-			new StringValue('foo'),
+			array(new StringValue('foo')),
 			$this->newFactory()->newWikibaseValueParser()->parse('foo', 'string')
 		);
 	}
 
 	public function testParserParseWikibaseItem() {
 		$this->assertEquals(
-			new EntityIdValue(new ItemId('Q42')),
+			array(new EntityIdValue(new ItemId('Q42'))),
 			$this->newFactory()->newWikibaseValueParser()->parse('Douglas Adams', 'wikibase-item')
 		);
 	}
 
 	public function testParserParseWikibaseProperty() {
 		$this->assertEquals(
-			new EntityIdValue(new PropertyId('P569')),
+			array(new EntityIdValue(new PropertyId('P569'))),
 			$this->newFactory()->newWikibaseValueParser()->parse('Date de naissance', 'wikibase-property')
 		);
 	}
 
 	public function testParserParseGlobeCoordinate() {
 		$this->assertEquals(
-			new GlobeCoordinateValue(new LatLongValue(42, 42), 1),
+			array(new GlobeCoordinateValue(new LatLongValue(42, 42), 1)),
 			$this->newFactory()->newWikibaseValueParser()->parse('42°N, 42°E', 'globecoordinate')
 		);
 	}

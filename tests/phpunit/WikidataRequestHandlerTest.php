@@ -118,10 +118,16 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					),
 					'a'
 				),
-				array(new ModuleResponse(
-					'en',
-					new WikibaseResourceNode('Setnakhte', new EntityIdValue(new ItemId('Q312402')))
-				))
+				array(
+					new ModuleResponse(
+						'en',
+						new WikibaseResourceNode('Setnakhte', new EntityIdValue(new ItemId('Q312402')))
+					),
+					new ModuleResponse(
+						'en',
+						new WikibaseResourceNode('Tiy-Merenese', new EntityIdValue(new ItemId('Q1321008')))
+					),
+				)
 			),
 		);
 	}

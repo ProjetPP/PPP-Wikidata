@@ -78,7 +78,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 	/**
 	 * @dataProvider simplifiedTripleProvider
 	 */
-	public function testSimplify(TripleNode $queryNode, AbstractNode $responseNode, Item $item) {
+	public function testSimplify(TripleNode $queryNode, array $responseNodes, Item $item) {
 		$entityProvider = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
 			->disableOriginalConstructor()
 			->getMock();
@@ -89,7 +89,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 
 		$simplifier = new MissingObjectTripleNodeSimplifier($entityProvider);
 		$this->assertEquals(
-			$responseNode,
+			$responseNodes,
 			$simplifier->simplify($queryNode)
 		);
 	}
@@ -111,7 +111,9 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))),
 				new MissingNode()
 			),
-			new WikibaseResourceNode('', new StringValue('113230702')),
+			array(
+				new WikibaseResourceNode('', new StringValue('113230702'))
+			),
 			$douglasAdamItem
 		);
 
@@ -127,7 +129,21 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))),
 				new MissingNode()
 			),
-			new MissingNode(),
+			array(
+				new MissingNode()
+			),
+			$douglasAdamItem
+		);
+
+		$douglasAdamItem = Item::newEmpty();
+		$douglasAdamItem->setId(new ItemId('Q42'));
+		$list[] = array(
+			new TripleNode(
+				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
+				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))),
+				new MissingNode()
+			),
+			array(),
 			$douglasAdamItem
 		);
 
@@ -162,18 +178,6 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		$birthPlaceStatement = new Statement(new Claim(new PropertyNoValueSnak(new PropertyId('P19'))));
 		$birthPlaceStatement->setGuid('42');
 		$douglasAdamItem->getStatements()->addStatement($birthPlaceStatement);
-		$list[] = array(
-			new TripleNode(
-				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
-				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))),
-				new MissingNode()
-			),
-			$douglasAdamItem
-		);
-
-		//no Snak
-		$douglasAdamItem = Item::newEmpty();
-		$douglasAdamItem->setId(new ItemId('Q42'));
 		$list[] = array(
 			new TripleNode(
 				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),

@@ -50,8 +50,8 @@ class WikibaseValueParserFactory {
 	private function newWikibaseEntityParser($type) {
 		$parserOptions = new ParserOptions(array(
 			ValueParser::OPT_LANG => $this->languageCode,
-			WikibaseEntityParser::OPT_ENTITY_TYPE => $type
+			WikibaseEntityIdParser::OPT_ENTITY_TYPE => $type
 		));
-		return new WikibaseEntityParser($this->api, new BasicEntityIdParser(), $parserOptions);
+		return new WikibaseEntityIdParser($this->api, new BasicEntityIdParser(), $parserOptions);
 	}
 }

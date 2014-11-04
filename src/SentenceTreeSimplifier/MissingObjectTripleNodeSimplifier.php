@@ -3,6 +3,7 @@
 namespace PPP\Wikidata\SentenceTreeSimplifier;
 
 use InvalidArgumentException;
+use OutOfBoundsException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\TripleNode;
@@ -15,6 +16,7 @@ use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Snak\Snak;
+use Wikibase\DataModel\Statement\BestStatementsFinder;
 use Wikibase\DataModel\Statement\Statement;
 
 /**
@@ -62,25 +64,40 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 		$propertyId = $node->getPredicate()->getDataValue()->getEntityId();
 
 		$item = $this->entityProvider->getItem($itemId);
-		return $this->snakToNode($this->getSnakForProperty($item, $propertyId));
+		return $this->snaksToNode($this->getSnaksForProperty($item, $propertyId));
 	}
 
 
 	/**
-	 * @return Snak
+	 * @return Snak[]
 	 */
-	private function getSnakForProperty(Item $item, PropertyId $propertyId) {
+	private function getSnaksForProperty(Item $item, PropertyId $propertyId) {
+		$statementFinder = new BestStatementsFinder($item->getStatements());
 
-		/** @var Statement $statement */
-		foreach($item->getStatements()->getBestStatementPerProperty() as $statement) {
-			if($statement->getMainSnak()->getPropertyId()->equals($propertyId)) {
-				return $statement->getMainSnak();
-			}
+		$snaks = array();
+		$statements = array();
+		try {
+			$statements = $statementFinder->getBestStatementsForProperty($propertyId);
+		} catch(OutOfBoundsException $e) {
+			return array();
 		}
 
-		throw new SimplifierException(
-			'No value found for property ' . $propertyId->getSerialization() . ' in item ' . $item->getId()->getSerialization()
-		);
+		/** @var Statement $statement */
+		foreach($statements as $statement) {
+			$snaks[] = $statement->getMainSnak();
+		}
+
+		return $snaks;
+	}
+
+	private function snaksToNode(array $snaks) {
+		$nodes = array();
+
+		foreach($snaks as $snak) {
+			$nodes[] = $this->snakToNode($snak);
+		}
+
+		return $nodes;
 	}
 
 	/**
@@ -88,7 +105,7 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	 */
 	private function snakToNode(Snak $snak) {
 		if($snak instanceof PropertyValueSnak) {
-			return new WikibaseResourceNode('', $snak->getDataValue()); //TODO add serialization?
+			return new WikibaseResourceNode('', $snak->getDataValue());
 		} else if($snak instanceof PropertySomeValueSnak) {
 			return new MissingNode();
 		}

@@ -62,17 +62,9 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 		/** @var DataValue $value */
 		$value = $node->getObject()->getDataValue();
 
-		$subjectIds = $this->simpleQueryService->doQuery(
+		return $this->formatQueryResult($this->simpleQueryService->doQuery(
 			$this->buildQueryForValue($propertyId, $value)
-		);
-
-		foreach($subjectIds as $subjectId) {
-			return new WikibaseResourceNode('', new EntityIdValue($subjectId));
-		}
-
-		throw new SimplifierException(
-			'No item found with ' . $propertyId->getSerialization() . ' and value ' . $value->serialize()
-		);
+		));
 	}
 
 	/**
@@ -93,5 +85,15 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 			default:
 				throw new SimplifierException('The data type ' . $value->getType() . ' is not supported.');
 		}
+	}
+
+	private function formatQueryResult(array $subjectIds) {
+		$nodes = array();
+
+		foreach($subjectIds as $subjectId) {
+			$nodes[] = new WikibaseResourceNode('', new EntityIdValue($subjectId));
+		}
+
+		return $nodes;
 	}
 }
