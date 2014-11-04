@@ -10,14 +10,14 @@ use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 
 /**
- * @covers PPP\Wikidata\ValueParsers\WikibaseEntityParser
+ * @covers PPP\Wikidata\ValueParsers\WikibaseEntityIdParser
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  *
  * @todo mock instead of requests to the real API?
  */
-class WikibaseEntityParserTest extends ValueParserTestBase {
+class WikibaseEntityIdParserTest extends ValueParserTestBase {
 
 	/**
 	 * @see ValueParserTestBase::validInputProvider
@@ -46,7 +46,7 @@ class WikibaseEntityParserTest extends ValueParserTestBase {
 	 * @see ValueParserTestBase::getParserClass
 	 */
 	protected function getParserClass() {
-		return 'PPP\Wikidata\ValueParsers\WikibaseEntityParser';
+		return 'PPP\Wikidata\ValueParsers\WikibaseEntityIdParser';
 	}
 
 
@@ -69,7 +69,7 @@ class WikibaseEntityParserTest extends ValueParserTestBase {
 		$parserOptions = parent::newParserOptions();
 
 		$parserOptions->setOption(ValueParser::OPT_LANG, 'fr');
-		$parserOptions->setOption(WikibaseEntityParser::OPT_ENTITY_TYPE, 'item');
+		$parserOptions->setOption(WikibaseEntityIdParser::OPT_ENTITY_TYPE, 'item');
 
 		return $parserOptions;
 	}

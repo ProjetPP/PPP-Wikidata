@@ -16,7 +16,7 @@ use Wikibase\DataModel\Entity\EntityIdValue;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseEntityParser extends StringValueParser {
+class WikibaseEntityIdParser extends StringValueParser {
 
 	const FORMAT_NAME = 'wikibase-entity';
 
