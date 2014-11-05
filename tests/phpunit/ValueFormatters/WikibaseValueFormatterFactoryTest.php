@@ -5,6 +5,7 @@ namespace PPP\Wikidata\ValueFormatters;
 use DataValues\DecimalValue;
 use DataValues\GlobeCoordinateValue;
 use DataValues\LatLongValue;
+use DataValues\MonolingualTextValue;
 use DataValues\QuantityValue;
 use DataValues\StringValue;
 use DataValues\TimeValue;
@@ -31,6 +32,13 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 			$this->newFactory()->newWikibaseValueFormatter()->format(
 				new GlobeCoordinateValue(new LatLongValue(42, 42), 1)
 			)
+		);
+	}
+
+	public function testFormatterFormatMonolingualText() {
+		$this->assertEquals(
+			'foo',
+			$this->newFactory()->newWikibaseValueFormatter()->format(new MonolingualTextValue('en', 'foo'))
 		);
 	}
 

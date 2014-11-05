@@ -3,7 +3,7 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\DataValue;
-use Guzzle\Common\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\FormattingException;
 use ValueFormatters\ValueFormatter;
