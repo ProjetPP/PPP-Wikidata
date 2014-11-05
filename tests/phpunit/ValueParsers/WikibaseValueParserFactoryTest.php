@@ -15,6 +15,8 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
+ *
+ * @todo mock instead of requests to the real API?
  */
 class WikibaseValueParserFactoryTest extends \PHPUnit_Framework_TestCase {
 

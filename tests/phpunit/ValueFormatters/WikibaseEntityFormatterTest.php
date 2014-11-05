@@ -19,6 +19,8 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
+ *
+ * @todo mock instead of requests to the real API?
  */
 class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
 
@@ -57,6 +59,7 @@ class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
 	protected function getInstance(FormatterOptions $options) {
 		$class = $this->getFormatterClass();
 		$wikibaseFactory = new WikibaseFactory(new MediawikiApi('http://www.wikidata.org/w/api.php'));
+
 		return new $class(
 			new WikibaseEntityProvider(
 				$wikibaseFactory->newRevisionGetter(),
