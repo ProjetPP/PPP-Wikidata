@@ -18,11 +18,6 @@ class WikibasePropertyTypeProvider {
 	private $entityProvider;
 
 	/**
-	 * @var string[]
-	 */
-	private $propertyTypeCache = array();
-
-	/**
 	 * @param WikibaseEntityProvider $entityProvider
 	 */
 	public function __construct(WikibaseEntityProvider $entityProvider) {
@@ -34,14 +29,6 @@ class WikibasePropertyTypeProvider {
 	 * @return string
 	 */
 	public function getTypeForProperty(PropertyId $propertyId) {
-		if(!array_key_exists($propertyId->getNumericId(), $this->propertyTypeCache)) {
-			$this->propertyTypeCache[$propertyId->getNumericId()] = $this->retrievePropertyType($propertyId);
-		}
-
-		return $this->propertyTypeCache[$propertyId->getNumericId()];
-	}
-
-	private function retrievePropertyType(PropertyId $propertyId) {
 		return $this->entityProvider->getProperty($propertyId)->getDataTypeId();
 	}
 }
