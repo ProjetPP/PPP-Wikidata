@@ -2,6 +2,7 @@
 
 namespace PPP\Wikidata;
 
+use Doctrine\Common\Cache\ArrayCache;
 use PPP\Module\ModuleEntryPoint;
 
 require_once(__DIR__ . '/../vendor/autoload.php');
@@ -9,6 +10,7 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 
 $entryPoint = new ModuleEntryPoint(new WikidataRequestHandler(
 	'https://www.wikidata.org/w/api.php',
-	'https://wdq.wmflabs.org/api'
+	'https://wdq.wmflabs.org/api',
+	new ArrayCache()
 ));
 $entryPoint->exec();

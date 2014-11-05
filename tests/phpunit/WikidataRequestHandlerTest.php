@@ -4,6 +4,7 @@ namespace PPP\Wikidata;
 
 use DataValues\StringValue;
 use DataValues\UnknownValue;
+use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceNode;
 use PPP\DataModel\TripleNode;
@@ -26,7 +27,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 	public function testBuildResponse(ModuleRequest $request, array $response) {
 		$requestHandler = new WikidataRequestHandler(
 			'https://www.wikidata.org/w/api.php',
-			'https://wdq.wmflabs.org/api'
+			'https://wdq.wmflabs.org/api',
+			new ArrayCache()
 		);
 		$this->assertEquals($response, $requestHandler->buildResponse($request));
 	}

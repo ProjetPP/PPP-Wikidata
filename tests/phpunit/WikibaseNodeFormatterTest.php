@@ -3,6 +3,7 @@
 namespace PPP\Wikidata;
 
 use DataValues\StringValue;
+use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
@@ -23,7 +24,11 @@ class WikibaseNodeFormatterTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider formattedNodeProvider
 	 */
 	public function testAnnotateNode(AbstractNode $inputNode, AbstractNode $expectedNode) {
-		$valueParserFactory = new WikibaseValueFormatterFactory('en', new MediawikiApi('http://www.wikidata.org/w/api.php'));
+		$valueParserFactory = new WikibaseValueFormatterFactory(
+			'en',
+			new MediawikiApi('http://www.wikidata.org/w/api.php'),
+			new ArrayCache()
+		);
 
 		$formatter = new WikibaseNodeFormatter($valueParserFactory->newWikibaseValueFormatter());
 		$this->assertEquals($expectedNode, $formatter->formatNode($inputNode));

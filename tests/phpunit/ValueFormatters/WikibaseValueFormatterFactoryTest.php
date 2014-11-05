@@ -8,6 +8,7 @@ use DataValues\LatLongValue;
 use DataValues\QuantityValue;
 use DataValues\StringValue;
 use DataValues\TimeValue;
+use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
@@ -22,7 +23,7 @@ use Wikibase\DataModel\Entity\PropertyId;
 class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	private function newFactory() {
-		return new WikibaseValueFormatterFactory('fr', new MediawikiApi('http://www.wikidata.org/w/api.php'));
+		return new WikibaseValueFormatterFactory('fr', new MediawikiApi('http://www.wikidata.org/w/api.php'), new ArrayCache());
 	}
 
 	public function testFormatterFormatGlobeCoordinate() {

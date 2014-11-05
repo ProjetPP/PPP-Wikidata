@@ -2,7 +2,9 @@
 
 namespace PPP\Wikidata\ValueFormatters;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
@@ -56,7 +58,10 @@ class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
 		$class = $this->getFormatterClass();
 		$wikibaseFactory = new WikibaseFactory(new MediawikiApi('http://www.wikidata.org/w/api.php'));
 		return new $class(
-			new WikibaseEntityProvider($wikibaseFactory->newRevisionGetter()),
+			new WikibaseEntityProvider(
+				$wikibaseFactory->newRevisionGetter(),
+				new WikibaseEntityCache(new ArrayCache())
+			),
 			$options
 		);
 	}

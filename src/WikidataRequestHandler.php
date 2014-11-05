@@ -2,10 +2,12 @@
 
 namespace PPP\Wikidata;
 
+use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
 use PPP\Module\RequestHandler;
+use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifierFactory;
 use PPP\Wikidata\SentenceTreeSimplifier\SimplifierException;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
@@ -32,9 +34,15 @@ class WikidataRequestHandler implements RequestHandler {
 	 */
 	public $wikidataQueryApi;
 
-	public function __construct($mediawikiApiUrl, $wikidataQueryUrl) {
+	/**
+	 * @var Cache
+	 */
+	public $cache;
+
+	public function __construct($mediawikiApiUrl, $wikidataQueryUrl, Cache $cache) {
 		$this->mediawikiApi = new MediawikiApi($mediawikiApiUrl);
 		$this->wikidataQueryApi = new WikidataQueryApi($wikidataQueryUrl);
+		$this->cache = $cache;
 	}
 	/**
 	 * @see RequestHandler::buildResponse
@@ -72,16 +80,19 @@ class WikidataRequestHandler implements RequestHandler {
 
 	private function buildPropertyTypeProvider() {
 		$wikibaseFactory = new WikibaseFactory($this->mediawikiApi);
-		return new WikibasePropertyTypeProvider(new WikibaseEntityProvider($wikibaseFactory->newRevisionGetter()));
+		return new WikibasePropertyTypeProvider(new WikibaseEntityProvider(
+			$wikibaseFactory->newRevisionGetter(),
+			new WikibaseEntityCache($this->cache)
+		));
 	}
 
 	private function buildTreeSimplifier() {
-		$factory = new SentenceTreeSimplifierFactory($this->mediawikiApi, $this->wikidataQueryApi);
+		$factory = new SentenceTreeSimplifierFactory($this->mediawikiApi, $this->wikidataQueryApi, $this->cache);
 		return $factory->newSentenceTreeSimplifier();
 	}
 
 	private function buildNodeFormatter($languageCode) {
-		$formatterFactory = new WikibaseValueFormatterFactory($languageCode, $this->mediawikiApi);
+		$formatterFactory = new WikibaseValueFormatterFactory($languageCode, $this->mediawikiApi, $this->cache);
 		return new WikibaseNodeFormatter($formatterFactory->newWikibaseValueFormatter());
 	}
 }
