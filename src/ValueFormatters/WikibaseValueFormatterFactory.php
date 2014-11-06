@@ -48,6 +48,7 @@ class WikibaseValueFormatterFactory {
 
 		return new WikibaseValueFormatter(array(
 			'globecoordinate' => new GlobeCoordinateFormatter($options),
+			'monolingualtext' => new MonolingualTextFormatter($options),
 			'quantity' => new QuantityFormatter(new DecimalFormatter($options), $options),
 			'string' => new StringFormatter($options),
 			'time' => new TimeFormatter($options),
