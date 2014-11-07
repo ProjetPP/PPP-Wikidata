@@ -3,6 +3,7 @@
 namespace PPP\Wikidata;
 
 use OutOfRangeException;
+use PPP\Wikidata\Cache\WikibaseEntityCache;
 use Wikibase\Api\Service\RevisionGetter;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\Item;
@@ -24,10 +25,17 @@ class WikibaseEntityProvider {
 	private $revisionGetter;
 
 	/**
-	 * @param RevisionGetter $revisionGetter
+	 * @var WikibaseEntityCache
 	 */
-	public function __construct(RevisionGetter $revisionGetter) {
+	private $cache;
+
+	/**
+	 * @param RevisionGetter $revisionGetter
+	 * @param WikibaseEntityCache $cache
+	 */
+	public function __construct(RevisionGetter $revisionGetter, WikibaseEntityCache $cache) {
 		$this->revisionGetter = $revisionGetter;
+		$this->cache = $cache;
 	}
 
 	/**
@@ -49,6 +57,16 @@ class WikibaseEntityProvider {
 	}
 
 	private function getEntity(EntityId $entityId) {
+		if($this->cache->contains($entityId)) {
+			return $this->cache->fetch($entityId);
+		} else {
+			$entity = $this->getEntityFromApi($entityId);
+			$this->cache->save($entity);
+			return $entity;
+		}
+	}
+
+	private function getEntityFromApi(EntityId $entityId) {
 		$revision = $this->revisionGetter->getFromId($entityId);
 
 		if($revision === false) {

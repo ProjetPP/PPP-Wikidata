@@ -9,6 +9,7 @@ use DataValues\MonolingualTextValue;
 use DataValues\QuantityValue;
 use DataValues\StringValue;
 use DataValues\TimeValue;
+use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
@@ -19,11 +20,13 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
+ *
+ * @todo mock instead of requests to the real API?
  */
 class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	private function newFactory() {
-		return new WikibaseValueFormatterFactory('fr', new MediawikiApi('http://www.wikidata.org/w/api.php'));
+		return new WikibaseValueFormatterFactory('fr', new MediawikiApi('http://www.wikidata.org/w/api.php'), new ArrayCache());
 	}
 
 	public function testFormatterFormatGlobeCoordinate() {

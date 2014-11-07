@@ -2,7 +2,9 @@
 
 namespace PPP\Wikidata\SentenceTreeSimplifier;
 
+use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
 use Wikibase\Api\WikibaseFactory;
 use WikidataQueryApi\WikidataQueryApi;
@@ -28,12 +30,18 @@ class SentenceTreeSimplifierFactory {
 	private $wikidataQueryApi;
 
 	/**
+	 * @var Cache
+	 */
+	private $cache;
+
+	/**
 	 * @param MediawikiApi $mediawikiApi
 	 * @param WikidataQueryApi $wikidataQueryApi
 	 */
-	public function __construct(MediawikiApi $mediawikiApi, WikidataQueryApi $wikidataQueryApi) {
+	public function __construct(MediawikiApi $mediawikiApi, WikidataQueryApi $wikidataQueryApi, Cache $cache) {
 		$this->mediawikiApi = $mediawikiApi;
 		$this->wikidataQueryApi = $wikidataQueryApi;
+		$this->cache = $cache;
 	}
 
 	/**
@@ -57,6 +65,9 @@ class SentenceTreeSimplifierFactory {
 
 	private function newEntityProvider() {
 		$wikibaseFactory = new WikibaseFactory($this->mediawikiApi);
-		return new WikibaseEntityProvider($wikibaseFactory->newRevisionGetter());
+		return new WikibaseEntityProvider(
+			$wikibaseFactory->newRevisionGetter(),
+			new WikibaseEntityCache($this->cache)
+		);
 	}
 }

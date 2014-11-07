@@ -2,6 +2,7 @@
 
 namespace PPP\Wikidata\SentenceTreeSimplifier;
 
+use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceNode;
 
@@ -20,7 +21,7 @@ class SentenceTreeSimplifierFactoryTest extends \PHPUnit_Framework_TestCase {
 		$wikidataQueryApiMock = $this->getMockBuilder('WikidataQueryApi\WikidataQueryApi')
 			->disableOriginalConstructor()
 			->getMock();
-		$factory = new SentenceTreeSimplifierFactory($mediawikiApiMock, $wikidataQueryApiMock);
+		$factory = new SentenceTreeSimplifierFactory($mediawikiApiMock, $wikidataQueryApiMock, new ArrayCache());
 
 		$this->assertInstanceOf(
 			'PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifier',

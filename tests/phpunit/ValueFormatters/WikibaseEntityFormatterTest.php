@@ -2,7 +2,9 @@
 
 namespace PPP\Wikidata\ValueFormatters;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
@@ -17,6 +19,8 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
+ *
+ * @todo mock instead of requests to the real API?
  */
 class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
 
@@ -55,8 +59,12 @@ class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
 	protected function getInstance(FormatterOptions $options) {
 		$class = $this->getFormatterClass();
 		$wikibaseFactory = new WikibaseFactory(new MediawikiApi('http://www.wikidata.org/w/api.php'));
+
 		return new $class(
-			new WikibaseEntityProvider($wikibaseFactory->newRevisionGetter()),
+			new WikibaseEntityProvider(
+				$wikibaseFactory->newRevisionGetter(),
+				new WikibaseEntityCache(new ArrayCache())
+			),
 			$options
 		);
 	}
