@@ -78,6 +78,6 @@ class WikibaseEntityCache {
 	}
 
 	private function getCacheIdFromEntityId(EntityId $entityId) {
-		return self::CACHE_ID_PREFIX . $entityId->getSerialization();
+		return self::CACHE_ID_PREFIX . WIKIBASE_DATAMODEL_VERSION . '-' . $entityId->getSerialization();
 	}
 }
