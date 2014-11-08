@@ -4,6 +4,7 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\DataModel\StringResourceNode;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
@@ -31,16 +32,16 @@ class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new EntityIdValue(new ItemId('Q42')),
-				'Douglas Adams'
+				new StringResourceNode('Douglas Adams')
 			),
 			array(
 				new EntityIdValue(new ItemId('Q42')),
-				'Дуглас Адамс',
+				new StringResourceNode('Дуглас Адамс'),
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'ru'))
 			),
 			array(
 				new EntityIdValue(new PropertyId('P214')),
-				'VIAF identifier'
+				new StringResourceNode('VIAF identifier')
 			)
 		);
 	}

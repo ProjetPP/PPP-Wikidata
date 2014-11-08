@@ -56,11 +56,11 @@ class WikibaseValueFormatterFactory {
 		$options = $this->newFormatterOptions();
 
 		return new WikibaseValueFormatter(array(
-			'globecoordinate' => new GlobeCoordinateFormatter($options),
+			'globecoordinate' => new ToStringFormatter(new GlobeCoordinateFormatter($options)),
 			'monolingualtext' => new MonolingualTextFormatter($options),
-			'quantity' => new QuantityFormatter(new DecimalFormatter($options), $options),
-			'string' => new StringFormatter($options),
-			'time' => new TimeFormatter($options),
+			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
+			'string' => new ToStringFormatter(new StringFormatter($options)),
+			'time' => new ToStringFormatter(new TimeFormatter($options)),
 			'wikibase-entityid' => $this->newWikibaseEntityFormatter($options)
 		));
 	}

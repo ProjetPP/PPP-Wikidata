@@ -55,7 +55,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new WikibaseResourceNode('Douglas Adam', new UnknownValue('Douglas Adam'))
+					new StringResourceNode('Douglas Adam')
 				))
 			),
 			array(
@@ -70,7 +70,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new WikibaseResourceNode('113230702', new StringValue('113230702'))
+					new StringResourceNode('113230702')
 				))
 			),
 			array(
@@ -85,7 +85,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'ru',
-					new WikibaseResourceNode('Дуглас Адамс', new EntityIdValue(new ItemId('Q42')))
+					new StringResourceNode('Дуглас Адамс')
 				))
 			),
 			array(
@@ -104,7 +104,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new WikibaseResourceNode('Cambridge', new EntityIdValue(new ItemId('Q350')))
+					new StringResourceNode('Cambridge')
 				))
 			),
 			array(
@@ -124,11 +124,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(
 					new ModuleResponse(
 						'en',
-						new WikibaseResourceNode('Setnakhte', new EntityIdValue(new ItemId('Q312402')))
+						new StringResourceNode('Setnakhte')
 					),
 					new ModuleResponse(
 						'en',
-						new WikibaseResourceNode('Tiy-Merenese', new EntityIdValue(new ItemId('Q1321008')))
+						new StringResourceNode('Tiy-Merenese')
 					),
 				)
 			),

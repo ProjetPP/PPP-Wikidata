@@ -4,6 +4,7 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\MonolingualTextValue;
 use InvalidArgumentException;
+use PPP\DataModel\StringResourceNode;
 use ValueFormatters\ValueFormatterBase;
 
 /**
@@ -20,6 +21,6 @@ class MonolingualTextFormatter extends ValueFormatterBase {
 			throw new InvalidArgumentException('DataValue is not a MonolingualTextValue.');
 		}
 
-		return $value->getText();
+		return new StringResourceNode($value->getText(), $value->getLanguageCode());
 	}
 }
