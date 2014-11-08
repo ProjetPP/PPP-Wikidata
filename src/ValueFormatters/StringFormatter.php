@@ -2,7 +2,7 @@
 
 namespace PPP\Wikidata\ValueFormatters;
 
-use DataValues\MonolingualTextValue;
+use DataValues\StringValue;
 use InvalidArgumentException;
 use PPP\DataModel\StringResourceNode;
 use ValueFormatters\ValueFormatterBase;
@@ -11,16 +11,16 @@ use ValueFormatters\ValueFormatterBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class MonolingualTextFormatter extends ValueFormatterBase {
+class StringFormatter extends ValueFormatterBase {
 
 	/**
 	 * @see ValueFormatter::format
 	 */
 	public function format($value) {
-		if(!($value instanceof MonolingualTextValue)) {
-			throw new InvalidArgumentException('$value is not a MonolingualTextValue.');
+		if(!($value instanceof StringValue)) {
+			throw new InvalidArgumentException('$value is not a StringValue.');
 		}
 
-		return new StringResourceNode($value->getText(), $value->getLanguageCode());
+		return new StringResourceNode($value->getValue());
 	}
 }

@@ -10,7 +10,6 @@ use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\QuantityFormatter;
-use ValueFormatters\StringFormatter;
 use ValueFormatters\ValueFormatter;
 use Wikibase\Api\WikibaseFactory;
 
@@ -58,7 +57,7 @@ class WikibaseValueFormatterFactory {
 			'globecoordinate' => new ToStringFormatter(new GlobeCoordinateFormatter($options)),
 			'monolingualtext' => new MonolingualTextFormatter($options),
 			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
-			'string' => new ToStringFormatter(new StringFormatter($options)),
+			'string' => new StringFormatter($options),
 			'time' => new TimeFormatter($options),
 			'wikibase-entityid' => $this->newWikibaseEntityFormatter($options)
 		));
