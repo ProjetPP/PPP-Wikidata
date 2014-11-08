@@ -22,11 +22,11 @@ class TimeFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, 'http://www.wikidata.org/entity/Q1985786'),
-				new TimeResourceNode('+00000001952-03-11T00:00:00Z', 'julian')
+				new TimeResourceNode('1952-03-11T00:00:00Z', 'julian')
 			),
 			array(
-				new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, ''),
-				new TimeResourceNode('+00000001952-03-11T00:00:00Z', 'gregorian')
+				new TimeValue('-00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, ''),
+				new TimeResourceNode('-1952-03-11T00:00:00Z', 'gregorian')
 			),
 		);
 	}

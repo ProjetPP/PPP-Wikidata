@@ -29,7 +29,11 @@ class TimeFormatter extends ValueFormatterBase {
 			throw new InvalidArgumentException('DataValue is not a TimeValue.');
 		}
 
-		return new TimeResourceNode($value->getTime(), $this->getCalendarName($value->getCalendarModel()));
+		return new TimeResourceNode($this->simplifyIsoTime($value->getTime()), $this->getCalendarName($value->getCalendarModel()));
+	}
+
+	private function simplifyIsoTime($time) {
+		return preg_replace('/^\+0+/', '', preg_replace('/^\-0+/', '-', $time));
 	}
 
 	private function getCalendarName($calendarModel) {
