@@ -7,6 +7,7 @@ use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceNode;
+use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
@@ -49,7 +50,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			array(
 				new ModuleRequest(
 					'en',
-					new ResourceNode('Douglas Adam'),
+					new StringResourceNode('Douglas Adam'),
 					'a'
 				),
 				array(new ModuleResponse(
@@ -61,8 +62,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				new ModuleRequest(
 					'en',
 					new TripleNode(
-						new ResourceNode('Douglas Adam'),
-						new ResourceNode('VIAF'),
+						new StringResourceNode('Douglas Adam'),
+						new StringResourceNode('VIAF'),
 						new MissingNode()
 					),
 					'a'
@@ -77,8 +78,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'ru',
 					new TripleNode(
 						new MissingNode(),
-						new ResourceNode('VIAF'),
-						new ResourceNode('113230702')
+						new StringResourceNode('VIAF'),
+						new StringResourceNode('113230702')
 					),
 					'a'
 				),
@@ -93,10 +94,10 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					new TripleNode(
 						new TripleNode(
 							new MissingNode(),
-							new ResourceNode('VIAF'),
-							new ResourceNode('113230702')
+							new StringResourceNode('VIAF'),
+							new StringResourceNode('113230702')
 						),
-						new ResourceNode('Birth place'),
+						new StringResourceNode('Birth place'),
 						new MissingNode()
 					),
 					'a'
@@ -111,11 +112,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'en',
 					new TripleNode(
 						new MissingNode(),
-						new ResourceNode('son'),
+						new StringResourceNode('son'),
 						new TripleNode(
 							new MissingNode(),
-							new ResourceNode('VIAF identifier'),
-							new ResourceNode('45777651')
+							new StringResourceNode('VIAF identifier'),
+							new StringResourceNode('45777651')
 						)
 					),
 					'a'

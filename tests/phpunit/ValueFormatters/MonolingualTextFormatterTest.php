@@ -4,6 +4,7 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\MonolingualTextValue;
 use Mediawiki\Api\MediawikiApi;
+use PPP\DataModel\StringResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
@@ -28,15 +29,7 @@ class MonolingualTextFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new MonolingualTextValue('en', 'foo'),
-				'foo'
-			),
-			array(
-				new MonolingualTextValue('ru', 'foo'),
-				'foo'
-			),
-			array(
-				new MonolingualTextValue('en', ' '),
-				' '
+				new StringResourceNode('foo', 'en')
 			),
 		);
 	}
