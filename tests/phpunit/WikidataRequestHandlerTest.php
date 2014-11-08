@@ -2,17 +2,12 @@
 
 namespace PPP\Wikidata;
 
-use DataValues\StringValue;
-use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\MissingNode;
-use PPP\DataModel\ResourceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
-use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\ItemId;
 
 /**
  * @covers PPP\Wikidata\WikidataRequestHandler

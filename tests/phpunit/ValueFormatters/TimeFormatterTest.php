@@ -3,7 +3,6 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\TimeValue;
-use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
 use ValueFormatters\Test\ValueFormatterTestBase;
 

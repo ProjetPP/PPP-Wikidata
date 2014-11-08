@@ -6,7 +6,6 @@ use DataValues\UnknownValue;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
-use PPP\DataModel\ResourceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;

@@ -9,7 +9,6 @@ use DataValues\LatLongValue;
 use DataValues\QuantityValue;
 use DataValues\StringValue;
 use DataValues\TimeValue;
-use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\TripleNode;
 use PPP\Wikidata\WikibaseResourceNode;

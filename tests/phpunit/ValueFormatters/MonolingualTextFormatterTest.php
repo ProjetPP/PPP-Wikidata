@@ -3,16 +3,8 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\MonolingualTextValue;
-use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\StringResourceNode;
-use PPP\Wikidata\WikibaseEntityProvider;
-use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
-use ValueFormatters\ValueFormatter;
-use Wikibase\Api\WikibaseFactory;
-use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Entity\PropertyId;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\MonolingualTextFormatter
