@@ -59,6 +59,7 @@ class WikibaseValueFormatterFactory {
 			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
 			'string' => new StringFormatter($options),
 			'time' => new TimeFormatter($options),
+			'unknown' => new UnknownFormatter($options),
 			'wikibase-entityid' => $this->newWikibaseEntityFormatter($options)
 		));
 	}

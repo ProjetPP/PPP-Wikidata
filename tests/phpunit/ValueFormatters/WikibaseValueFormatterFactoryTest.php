@@ -9,6 +9,7 @@ use DataValues\MonolingualTextValue;
 use DataValues\QuantityValue;
 use DataValues\StringValue;
 use DataValues\TimeValue;
+use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\StringResourceNode;
@@ -69,6 +70,13 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 			$this->newFactory()->newWikibaseValueFormatter()->format(
 				new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, '')
 			)
+		);
+	}
+
+	public function testFormatterFormatUnknown() {
+		$this->assertEquals(
+			new StringResourceNode('foo'),
+			$this->newFactory()->newWikibaseValueFormatter()->format(new UnknownValue('foo'))
 		);
 	}
 
