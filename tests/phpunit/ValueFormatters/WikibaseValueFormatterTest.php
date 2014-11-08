@@ -5,7 +5,6 @@ namespace PPP\Wikidata\ValueFormatters;
 use DataValues\StringValue;
 use PPP\DataModel\StringResourceNode;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\StringFormatter;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**

@@ -11,7 +11,6 @@ use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\QuantityFormatter;
 use ValueFormatters\StringFormatter;
-use ValueFormatters\TimeFormatter;
 use ValueFormatters\ValueFormatter;
 use Wikibase\Api\WikibaseFactory;
 
@@ -60,7 +59,7 @@ class WikibaseValueFormatterFactory {
 			'monolingualtext' => new MonolingualTextFormatter($options),
 			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
 			'string' => new ToStringFormatter(new StringFormatter($options)),
-			'time' => new ToStringFormatter(new TimeFormatter($options)),
+			'time' => new TimeFormatter($options),
 			'wikibase-entityid' => $this->newWikibaseEntityFormatter($options)
 		));
 	}
