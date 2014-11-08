@@ -16,14 +16,14 @@ use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityFormatter
+ * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  *
  * @todo mock instead of requests to the real API?
  */
-class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
+class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
@@ -50,7 +50,7 @@ class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
 	 * @see ValueFormatterTestBase::getFormatterClass
 	 */
 	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\WikibaseEntityFormatter';
+		return 'PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatter';
 	}
 
 

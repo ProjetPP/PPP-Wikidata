@@ -76,6 +76,6 @@ class WikibaseValueFormatterFactory {
 			$wikibaseFactory->newRevisionGetter(),
 			new WikibaseEntityCache($this->cache)
 		);
-		return new WikibaseEntityFormatter($entityProvider, $options);
+		return new WikibaseEntityIdFormatter($entityProvider, $options);
 	}
 }

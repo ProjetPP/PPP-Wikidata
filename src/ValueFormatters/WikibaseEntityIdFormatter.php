@@ -23,7 +23,7 @@ use Wikibase\DataModel\Term\Fingerprint;
  *
  * @todo Add description to the serialisation?
  */
-class WikibaseEntityFormatter extends ValueFormatterBase {
+class WikibaseEntityIdFormatter extends ValueFormatterBase {
 
 	/**
 	 * @var WikibaseEntityProvider
