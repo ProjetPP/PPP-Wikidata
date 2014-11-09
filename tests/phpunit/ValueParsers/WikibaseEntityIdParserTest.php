@@ -2,7 +2,9 @@
 
 namespace PPP\Wikidata\ValueParsers;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\WikibaseEntityIdParserCache;
 use ValueParsers\Test\ValueParserTestBase;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
@@ -57,6 +59,7 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 		return new $class(
 			new MediawikiApi('http://www.wikidata.org/w/api.php'),
 			new BasicEntityIdParser(),
+			new WikibaseEntityIdParserCache(new ArrayCache()),
 			$this->newParserOptions()
 		);
 	}

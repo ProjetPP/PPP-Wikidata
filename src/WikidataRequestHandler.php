@@ -74,7 +74,7 @@ class WikidataRequestHandler implements RequestHandler {
 	}
 
 	private function buildNodeAnnotator($languageCode) {
-		$parserFactory = new WikibaseValueParserFactory($languageCode, $this->mediawikiApi);
+		$parserFactory = new WikibaseValueParserFactory($languageCode, $this->mediawikiApi, $this->cache);
 		return new WikibaseNodeAnnotator($parserFactory->newWikibaseValueParser(), $this->buildPropertyTypeProvider());
 	}
 

@@ -65,7 +65,6 @@ class WikibaseEntityCache {
 	 * Save an Entity in the cache.
 	 *
 	 * @param EntityDocument $entity
-	 * @return bool
 	 */
 	public function save(EntityDocument $entity) {
 		if(!$this->cache->save(

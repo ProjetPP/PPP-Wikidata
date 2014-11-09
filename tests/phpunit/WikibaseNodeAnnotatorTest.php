@@ -3,6 +3,7 @@
 namespace PPP\Wikidata;
 
 use DataValues\UnknownValue;
+use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
@@ -27,7 +28,11 @@ class WikibaseNodeAnnotatorTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider annotatedNodeProvider
 	 */
 	public function testAnnotateNode(AbstractNode $inputNode, array $expectedNodes) {
-		$valueParserFactory = new WikibaseValueParserFactory('en', new MediawikiApi('http://www.wikidata.org/w/api.php'));
+		$valueParserFactory = new WikibaseValueParserFactory(
+			'en',
+			new MediawikiApi('http://www.wikidata.org/w/api.php'),
+			new ArrayCache()
+		);
 
 		$propertyTypeProviderMock = $this->getMockBuilder('PPP\Wikidata\WikibasePropertyTypeProvider')
 			->disableOriginalConstructor()
