@@ -5,6 +5,7 @@ namespace PPP\Wikidata\ValueParsers;
 use DataValues\GlobeCoordinateValue;
 use DataValues\LatLongValue;
 use DataValues\StringValue;
+use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
@@ -21,7 +22,11 @@ use Wikibase\DataModel\Entity\PropertyId;
 class WikibaseValueParserFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	private function newFactory() {
-		return new WikibaseValueParserFactory('fr', new MediawikiApi('http://www.wikidata.org/w/api.php'));
+		return new WikibaseValueParserFactory(
+			'fr',
+			new MediawikiApi('http://www.wikidata.org/w/api.php'),
+			new ArrayCache()
+		);
 	}
 
 	public function testParserParseString() {

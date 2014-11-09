@@ -3,7 +3,9 @@
 namespace PPP\Wikidata\ValueParsers;
 
 use DataValues\Geo\Parsers\GlobeCoordinateParser;
+use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\WikibaseEntityIdParserCache;
 use ValueParsers\ParserOptions;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
@@ -27,12 +29,18 @@ class WikibaseValueParserFactory {
 	private $api;
 
 	/**
+	 * @var Cache
+	 */
+	private $cache;
+
+	/**
 	 * @param $languageCode
 	 * @param MediawikiApi $api
 	 */
-	public function __construct($languageCode, MediawikiApi $api) {
+	public function __construct($languageCode, MediawikiApi $api, Cache $cache) {
 		$this->languageCode = $languageCode;
 		$this->api = $api;
+		$this->cache = $cache;
 	}
 
 	/**
@@ -52,6 +60,11 @@ class WikibaseValueParserFactory {
 			ValueParser::OPT_LANG => $this->languageCode,
 			WikibaseEntityIdParser::OPT_ENTITY_TYPE => $type
 		));
-		return new WikibaseEntityIdParser($this->api, new BasicEntityIdParser(), $parserOptions);
+		return new WikibaseEntityIdParser(
+			$this->api,
+			new BasicEntityIdParser(),
+			new WikibaseEntityIdParserCache($this->cache),
+			$parserOptions
+		);
 	}
 }

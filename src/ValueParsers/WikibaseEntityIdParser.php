@@ -3,6 +3,7 @@
 namespace PPP\Wikidata\ValueParsers;
 
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\WikibaseEntityIdParserCache;
 use ValueParsers\ParseException;
 use ValueParsers\ParserOptions;
 use ValueParsers\StringValueParser;
@@ -36,34 +37,53 @@ class WikibaseEntityIdParser extends StringValueParser {
 	private $entityIdParser;
 
 	/**
+	 * @var WikibaseEntityIdParserCache
+	 */
+	private $entityIdParserCache;
+
+	/**
 	 * @param MediaWikiApi $api
 	 * @param EntityIdParser $entityIdParser
 	 * @param ParserOptions|null $options
 	 */
-	public function __construct(MediaWikiApi $api, EntityIdParser $entityIdParser, ParserOptions $options = null) {
+	public function __construct(MediaWikiApi $api, EntityIdParser $entityIdParser, WikibaseEntityIdParserCache $entityIdParserCache, ParserOptions $options = null) {
 		$options->requireOption(self::OPT_ENTITY_TYPE);
 
 		$this->api = $api;
 		$this->entityIdParser = $entityIdParser;
+		$this->entityIdParserCache = $entityIdParserCache;
+
 		parent::__construct($options);
 	}
 
 	protected function stringParse($value) {
+		$languageCode = $this->getOption(ValueParser::OPT_LANG);
+		$entityType = $this->getOption(self::OPT_ENTITY_TYPE);
+
+		if($this->entityIdParserCache->contains($value, $entityType, $languageCode)) {
+			$result = $this->entityIdParserCache->fetch($value, $entityType, $languageCode);
+		} else {
+			$result = $this->doQuery($value, $entityType, $languageCode);
+			$this->entityIdParserCache->save($value, $entityType, $languageCode, $result);
+		}
+
+		if(empty($result)) {
+			throw new ParseException('No entity returned.', $value, self::FORMAT_NAME);
+		}
+
+		return $result;
+	}
+
+	protected function doQuery($search, $entityType, $languageCode) {
 		$params = array(
-			'search' => $value,
-			'language' => $this->getOption(ValueParser::OPT_LANG),
-			'type' => $this->getOption(self::OPT_ENTITY_TYPE)
+			'search' => $search,
+			'language' => $languageCode,
+			'type' => $entityType
 		);
 		$result = $this->api->getAction('wbsearchentities', $params);
 
 
-		$entityIds = $this->parseResult($result);
-
-		if(empty($entityIds)) {
-			throw new ParseException('No entity returned.', $value, self::FORMAT_NAME);
-		}
-
-		return $entityIds;
+		return $this->parseResult($result);
 	}
 
 	private function parseResult(array $result) {
