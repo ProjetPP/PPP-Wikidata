@@ -9,8 +9,11 @@ use DataValues\MonolingualTextValue;
 use DataValues\QuantityValue;
 use DataValues\StringValue;
 use DataValues\TimeValue;
+use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\DataModel\StringResourceNode;
+use PPP\DataModel\TimeResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
@@ -31,7 +34,7 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testFormatterFormatGlobeCoordinate() {
 		$this->assertEquals(
-			'42, 42',
+			new StringResourceNode('42, 42'),
 			$this->newFactory()->newWikibaseValueFormatter()->format(
 				new GlobeCoordinateValue(new LatLongValue(42, 42), 1)
 			)
@@ -40,14 +43,14 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testFormatterFormatMonolingualText() {
 		$this->assertEquals(
-			'foo',
+			new StringResourceNode('foo', 'en'),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new MonolingualTextValue('en', 'foo'))
 		);
 	}
 
 	public function testFormatterFormatQuantity() {
 		$this->assertEquals(
-			'491268±1',
+			new StringResourceNode('491268±1'),
 			$this->newFactory()->newWikibaseValueFormatter()->format(
 				new QuantityValue(new DecimalValue('+491268'), '1', new DecimalValue('+491268'), new DecimalValue('+491267'))
 			)
@@ -56,30 +59,37 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testFormatterFormatString() {
 		$this->assertEquals(
-			'foo',
+			new StringResourceNode('foo'),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new StringValue('foo'))
 		);
 	}
 
 	public function testFormatterFormatTime() {
 		$this->assertEquals(
-			'+00000001952-03-11T00:00:00Z (Gregorian)',
+			new TimeResourceNode('1952-03-11T00:00:00Z'),
 			$this->newFactory()->newWikibaseValueFormatter()->format(
 				new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, '')
 			)
 		);
 	}
 
+	public function testFormatterFormatUnknown() {
+		$this->assertEquals(
+			new StringResourceNode('foo'),
+			$this->newFactory()->newWikibaseValueFormatter()->format(new UnknownValue('foo'))
+		);
+	}
+
 	public function testFormatterFormatWikibaseItem() {
 		$this->assertEquals(
-			'Douglas Adams',
+			new StringResourceNode('Douglas Adams'),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new ItemId('Q42')))
 		);
 	}
 
 	public function testFormatterFormatWikibaseProperty() {
 		$this->assertEquals(
-			'date de naissance',
+			new StringResourceNode('date de naissance'),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new PropertyId('P569')))
 		);
 	}

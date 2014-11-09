@@ -2,16 +2,12 @@
 
 namespace PPP\Wikidata;
 
-use DataValues\StringValue;
-use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\MissingNode;
-use PPP\DataModel\ResourceNode;
+use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
-use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\ItemId;
 
 /**
  * @covers PPP\Wikidata\WikidataRequestHandler
@@ -49,27 +45,27 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			array(
 				new ModuleRequest(
 					'en',
-					new ResourceNode('Douglas Adam'),
+					new StringResourceNode('Douglas Adam'),
 					'a'
 				),
 				array(new ModuleResponse(
 					'en',
-					new WikibaseResourceNode('Douglas Adam', new UnknownValue('Douglas Adam'))
+					new StringResourceNode('Douglas Adam')
 				))
 			),
 			array(
 				new ModuleRequest(
 					'en',
 					new TripleNode(
-						new ResourceNode('Douglas Adam'),
-						new ResourceNode('VIAF'),
+						new StringResourceNode('Douglas Adam'),
+						new StringResourceNode('VIAF'),
 						new MissingNode()
 					),
 					'a'
 				),
 				array(new ModuleResponse(
 					'en',
-					new WikibaseResourceNode('113230702', new StringValue('113230702'))
+					new StringResourceNode('113230702')
 				))
 			),
 			array(
@@ -77,14 +73,14 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'ru',
 					new TripleNode(
 						new MissingNode(),
-						new ResourceNode('VIAF'),
-						new ResourceNode('113230702')
+						new StringResourceNode('VIAF'),
+						new StringResourceNode('113230702')
 					),
 					'a'
 				),
 				array(new ModuleResponse(
 					'ru',
-					new WikibaseResourceNode('Дуглас Адамс', new EntityIdValue(new ItemId('Q42')))
+					new StringResourceNode('Дуглас Адамс')
 				))
 			),
 			array(
@@ -93,17 +89,17 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					new TripleNode(
 						new TripleNode(
 							new MissingNode(),
-							new ResourceNode('VIAF'),
-							new ResourceNode('113230702')
+							new StringResourceNode('VIAF'),
+							new StringResourceNode('113230702')
 						),
-						new ResourceNode('Birth place'),
+						new StringResourceNode('Birth place'),
 						new MissingNode()
 					),
 					'a'
 				),
 				array(new ModuleResponse(
 					'en',
-					new WikibaseResourceNode('Cambridge', new EntityIdValue(new ItemId('Q350')))
+					new StringResourceNode('Cambridge')
 				))
 			),
 			array(
@@ -111,11 +107,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'en',
 					new TripleNode(
 						new MissingNode(),
-						new ResourceNode('son'),
+						new StringResourceNode('son'),
 						new TripleNode(
 							new MissingNode(),
-							new ResourceNode('VIAF identifier'),
-							new ResourceNode('45777651')
+							new StringResourceNode('VIAF identifier'),
+							new StringResourceNode('45777651')
 						)
 					),
 					'a'
@@ -123,11 +119,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(
 					new ModuleResponse(
 						'en',
-						new WikibaseResourceNode('Setnakhte', new EntityIdValue(new ItemId('Q312402')))
+						new StringResourceNode('Setnakhte')
 					),
 					new ModuleResponse(
 						'en',
-						new WikibaseResourceNode('Tiy-Merenese', new EntityIdValue(new ItemId('Q1321008')))
+						new StringResourceNode('Tiy-Merenese')
 					),
 				)
 			),

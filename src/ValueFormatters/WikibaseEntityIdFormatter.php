@@ -4,6 +4,7 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use InvalidArgumentException;
 use OutOfBoundsException;
+use PPP\DataModel\StringResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
@@ -22,7 +23,7 @@ use Wikibase\DataModel\Term\Fingerprint;
  *
  * @todo Add description to the serialisation?
  */
-class WikibaseEntityFormatter extends ValueFormatterBase {
+class WikibaseEntityIdFormatter extends ValueFormatterBase {
 
 	/**
 	 * @var WikibaseEntityProvider
@@ -64,7 +65,7 @@ class WikibaseEntityFormatter extends ValueFormatterBase {
 
 	private function formatFingerprint(Fingerprint $fingerprint) {
 		try {
-			return $fingerprint->getLabel($this->getOption(ValueFormatter::OPT_LANG))->getText();
+			return new StringResourceNode($fingerprint->getLabel($this->getOption(ValueFormatter::OPT_LANG))->getText());
 		} catch(OutOfBoundsException $e) {
 			return '';
 		}

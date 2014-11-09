@@ -7,6 +7,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
+use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
 
@@ -38,7 +39,7 @@ class WikibaseNodeFormatterTest extends \PHPUnit_Framework_TestCase {
 		return array(
 			array(
 				new WikibaseResourceNode('', new StringValue('Douglas Adam')),
-				new WikibaseResourceNode('Douglas Adam', new StringValue('Douglas Adam'))
+				new StringResourceNode('Douglas Adam')
 			),
 			array(
 				new TripleNode(
@@ -47,8 +48,8 @@ class WikibaseNodeFormatterTest extends \PHPUnit_Framework_TestCase {
 					new MissingNode()
 				),
 				new TripleNode(
-					new WikibaseResourceNode('Douglas Adam', new StringValue('Douglas Adam')),
-					new WikibaseResourceNode('Place of birth', new StringValue('Place of birth')),
+					new StringResourceNode('Douglas Adam'),
+					new StringResourceNode('Place of birth'),
 					new MissingNode()
 				)
 			),

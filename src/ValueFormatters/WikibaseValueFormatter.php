@@ -4,6 +4,7 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\DataValue;
 use InvalidArgumentException;
+use PPP\DataModel\ResourceNode;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\FormattingException;
 use ValueFormatters\ValueFormatter;
@@ -32,6 +33,8 @@ class WikibaseValueFormatter extends ValueFormatterBase {
 
 	/**
 	 * @see ValueFormatter::format
+	 * @param DataValue $value
+	 * @return ResourceNode
 	 */
 	public function format($value) {
 		if(!($value instanceof DataValue)) {

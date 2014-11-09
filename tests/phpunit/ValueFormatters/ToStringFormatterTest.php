@@ -5,15 +5,16 @@ namespace PPP\Wikidata\ValueFormatters;
 use DataValues\StringValue;
 use PPP\DataModel\StringResourceNode;
 use ValueFormatters\FormatterOptions;
+use ValueFormatters\StringFormatter;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\WikibaseValueFormatter
+ * @covers PPP\Wikidata\ValueFormatters\ToStringFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseValueFormatterTest extends ValueFormatterTestBase {
+class ToStringFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
@@ -24,9 +25,7 @@ class WikibaseValueFormatterTest extends ValueFormatterTestBase {
 				new StringValue('foo'),
 				new StringResourceNode('foo'),
 				null,
-				new WikibaseValueFormatter(array(
-					'string' => new StringFormatter(new FormatterOptions())
-				))
+				new ToStringFormatter(new StringFormatter(new FormatterOptions()))
 			),
 		);
 	}
@@ -35,6 +34,6 @@ class WikibaseValueFormatterTest extends ValueFormatterTestBase {
 	 * @see ValueFormatterTestBase::getFormatterClass
 	 */
 	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\WikibaseValueFormatter';
+		return 'PPP\Wikidata\ValueFormatters\ToStringFormatter';
 	}
 }

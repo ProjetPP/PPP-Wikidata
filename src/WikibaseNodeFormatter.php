@@ -42,14 +42,7 @@ class WikibaseNodeFormatter {
 	}
 
 	private function formatResourceNode(WikibaseResourceNode $node) {
-		if($node->getValue() !== '') {
-			return $node;
-		}
-
-		return new WikibaseResourceNode(
-			$this->valueFormatter->format($node->getDataValue()),
-			$node->getDataValue()
-		);
+		return $this->valueFormatter->format($node->getDataValue());
 	}
 
 	private function formatTripleNode(TripleNode $node) {

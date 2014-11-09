@@ -3,7 +3,7 @@
 namespace PPP\Wikidata\SentenceTreeSimplifier;
 
 use PPP\DataModel\MissingNode;
-use PPP\DataModel\ResourceNode;
+use PPP\DataModel\StringResourceNode;
 
 /**
  * @covers PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifier
@@ -22,11 +22,11 @@ class SentenceTreeSimplifierTest extends \PHPUnit_Framework_TestCase {
 		$nodeSimplifierMock->expects($this->any())
 			->method('simplify')
 			->with($this->equalTo(new MissingNode()))
-			->will($this->returnValue(array(new ResourceNode('foo'))));
+			->will($this->returnValue(array(new StringResourceNode('foo'))));
 
 		$simplifier = new SentenceTreeSimplifier(array($nodeSimplifierMock));
 		$this->assertEquals(
-			array(new ResourceNode('foo')),
+			array(new StringResourceNode('foo')),
 			$simplifier->simplify(new MissingNode())
 		);
 	}

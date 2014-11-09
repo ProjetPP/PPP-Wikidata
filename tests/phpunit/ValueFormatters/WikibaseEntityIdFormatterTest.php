@@ -4,6 +4,7 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\DataModel\StringResourceNode;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
@@ -15,14 +16,14 @@ use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityFormatter
+ * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  *
  * @todo mock instead of requests to the real API?
  */
-class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
+class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
@@ -31,16 +32,16 @@ class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new EntityIdValue(new ItemId('Q42')),
-				'Douglas Adams'
+				new StringResourceNode('Douglas Adams')
 			),
 			array(
 				new EntityIdValue(new ItemId('Q42')),
-				'Дуглас Адамс',
+				new StringResourceNode('Дуглас Адамс'),
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'ru'))
 			),
 			array(
 				new EntityIdValue(new PropertyId('P214')),
-				'VIAF identifier'
+				new StringResourceNode('VIAF identifier')
 			)
 		);
 	}
@@ -49,7 +50,7 @@ class WikibaseEntityFormatterTest extends ValueFormatterTestBase {
 	 * @see ValueFormatterTestBase::getFormatterClass
 	 */
 	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\WikibaseEntityFormatter';
+		return 'PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatter';
 	}
 
 

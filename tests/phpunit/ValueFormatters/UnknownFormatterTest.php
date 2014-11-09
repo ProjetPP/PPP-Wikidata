@@ -2,18 +2,17 @@
 
 namespace PPP\Wikidata\ValueFormatters;
 
-use DataValues\StringValue;
+use DataValues\UnknownValue;
 use PPP\DataModel\StringResourceNode;
-use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\WikibaseValueFormatter
+ * @covers PPP\Wikidata\ValueFormatters\UnknownFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseValueFormatterTest extends ValueFormatterTestBase {
+class UnknownFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
@@ -21,20 +20,19 @@ class WikibaseValueFormatterTest extends ValueFormatterTestBase {
 	public function validProvider() {
 		return array(
 			array(
-				new StringValue('foo'),
-				new StringResourceNode('foo'),
-				null,
-				new WikibaseValueFormatter(array(
-					'string' => new StringFormatter(new FormatterOptions())
-				))
+				new UnknownValue('foo'),
+				new StringResourceNode('foo')
 			),
 		);
 	}
 
 	/**
 	 * @see ValueFormatterTestBase::getFormatterClass
+	 *
+	 * @return string
 	 */
 	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\WikibaseValueFormatter';
+		return 'PPP\Wikidata\ValueFormatters\UnknownFormatter';
 	}
+
 }

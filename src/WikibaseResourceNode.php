@@ -33,4 +33,19 @@ class WikibaseResourceNode extends ResourceNode {
 	public function getDataValue() {
 		return $this->dataValue;
 	}
+
+	/**
+	 * @see AbstractNode::equals
+	 */
+	public function equals($target) {
+		return $target instanceof self &&
+			$this->dataValue->equals($target->dataValue);
+	}
+
+	/**
+	 * @see WikibaseResourceNode::equals
+	 */
+	public function getValueType() {
+		return 'wikidata-datavalue';
+	}
 }

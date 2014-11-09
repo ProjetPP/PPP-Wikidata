@@ -3,8 +3,6 @@
 namespace PPP\Wikidata\SentenceTreeSimplifier;
 
 use Doctrine\Common\Cache\ArrayCache;
-use PPP\DataModel\MissingNode;
-use PPP\DataModel\ResourceNode;
 
 /**
  * @covers PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifierFactory

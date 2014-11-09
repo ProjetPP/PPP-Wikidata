@@ -3,15 +3,8 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\MonolingualTextValue;
-use Mediawiki\Api\MediawikiApi;
-use PPP\Wikidata\WikibaseEntityProvider;
-use ValueFormatters\FormatterOptions;
+use PPP\DataModel\StringResourceNode;
 use ValueFormatters\Test\ValueFormatterTestBase;
-use ValueFormatters\ValueFormatter;
-use Wikibase\Api\WikibaseFactory;
-use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Entity\PropertyId;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\MonolingualTextFormatter
@@ -28,15 +21,7 @@ class MonolingualTextFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new MonolingualTextValue('en', 'foo'),
-				'foo'
-			),
-			array(
-				new MonolingualTextValue('ru', 'foo'),
-				'foo'
-			),
-			array(
-				new MonolingualTextValue('en', ' '),
-				' '
+				new StringResourceNode('foo', 'en')
 			),
 		);
 	}

@@ -6,7 +6,7 @@ use DataValues\UnknownValue;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
-use PPP\DataModel\ResourceNode;
+use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
 use Wikibase\DataModel\Entity\EntityIdValue;
@@ -44,13 +44,13 @@ class WikibaseNodeAnnotatorTest extends \PHPUnit_Framework_TestCase {
 	public function annotatedNodeProvider() {
 		return array(
 			array(
-				new ResourceNode('Douglas Adams'),
+				new StringResourceNode('Douglas Adams'),
 				array(new WikibaseResourceNode('Douglas Adams', new UnknownValue('Douglas Adams')))
 			),
 			array(
 				new TripleNode(
-					new ResourceNode('Ramesses III'),
-					new ResourceNode('Place of birth'),
+					new StringResourceNode('Ramesses III'),
+					new StringResourceNode('Place of birth'),
 					new MissingNode()
 				),
 				array(new TripleNode(
