@@ -66,7 +66,7 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testFormatterFormatTime() {
 		$this->assertEquals(
-			new TimeResourceNode('1952-03-11T00:00:00Z'),
+			new TimeResourceNode('1952-03-11'),
 			$this->newFactory()->newWikibaseValueFormatter()->format(
 				new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, '')
 			)
