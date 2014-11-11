@@ -9,7 +9,7 @@ use ValueParsers\Test\ValueParserTestBase;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Entity\PropertyId;
 
 /**
  * @covers PPP\Wikidata\ValueParsers\WikibaseEntityIdParser
@@ -27,8 +27,27 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	public function validInputProvider() {
 		return array(
 			array(
-				'Douglas Adams',
-				array(new EntityIdValue(new ItemId('Q42')))
+				'VIAF',
+				array(new EntityIdValue(new PropertyId('P214')))
+			),
+			array(
+				'Birth name',
+				array(
+					new EntityIdValue(new PropertyId('P1477')),
+					new EntityIdValue(new PropertyId('P513'))
+				)
+			),
+			array(
+				'VIAF identifi',
+				array(
+					new EntityIdValue(new PropertyId('P214'))
+				)
+			),
+			array(
+				'father',
+				array(
+					new EntityIdValue(new PropertyId('P22'))
+				)
 			)
 		);
 	}
@@ -70,8 +89,8 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	protected function newParserOptions() {
 		$parserOptions = parent::newParserOptions();
 
-		$parserOptions->setOption(ValueParser::OPT_LANG, 'fr');
-		$parserOptions->setOption(WikibaseEntityIdParser::OPT_ENTITY_TYPE, 'item');
+		$parserOptions->setOption(ValueParser::OPT_LANG, 'en');
+		$parserOptions->setOption(WikibaseEntityIdParser::OPT_ENTITY_TYPE, 'property');
 
 		return $parserOptions;
 	}

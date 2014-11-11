@@ -63,7 +63,7 @@ class WikibaseEntityIdParser extends StringValueParser {
 		if($this->entityIdParserCache->contains($value, $entityType, $languageCode)) {
 			$result = $this->entityIdParserCache->fetch($value, $entityType, $languageCode);
 		} else {
-			$result = $this->doQuery($value, $entityType, $languageCode);
+			$result = $this->parseResult($this->doQuery($value, $entityType, $languageCode), $value);
 			$this->entityIdParserCache->save($value, $entityType, $languageCode, $result);
 		}
 
@@ -80,19 +80,51 @@ class WikibaseEntityIdParser extends StringValueParser {
 			'language' => $languageCode,
 			'type' => $entityType
 		);
-		$result = $this->api->getAction('wbsearchentities', $params);
-
-
-		return $this->parseResult($result);
+		return $this->api->getAction('wbsearchentities', $params);
 	}
 
-	private function parseResult(array $result) {
+	private function parseResult(array $result, $search) {
+		$search = $this->cleanLabel($search);
 		$entityIds = array();
 
 		foreach($result['search'] as $entry) {
-			$entityIds[] = new EntityIdValue($this->entityIdParser->parse($entry['id']));
+			if($this->doResultsMatch($entry, $search)) {
+				$entityIds[] = new EntityIdValue($this->entityIdParser->parse($entry['id']));
+			}
 		}
 
 		return $entityIds;
+	}
+
+	private function doResultsMatch(array $entry, $search) {
+		if(array_key_exists('aliases', $entry)) {
+			foreach($entry['aliases'] as $alias) {
+				if($this->areSimilar($this->cleanLabel($alias), $search)) {
+					return true;
+				}
+			}
+		}
+
+		return array_key_exists('label', $entry) &&
+			$this->areSimilar($this->cleanLabel($entry['label']), $search);
+	}
+
+	private function cleanLabel($label) {
+		$label = strtolower($label);
+		$label = preg_replace('/(\(.*\))/', '', $label); //Removes comments
+		$label = str_replace(
+			array('\'', '-'),
+			array(' ', ' '),
+			$label
+		);
+		return trim($label);
+	}
+
+	/**
+	 * Returns if the strings have less than 3 character different and more than 90% percent of characters similar
+	 */
+	private function areSimilar($str1, $str2) {
+		return similar_text($str1, $str2, $percentage) - strlen($str1) < 3 &&
+			$percentage > 90;
 	}
 }
