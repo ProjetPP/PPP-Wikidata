@@ -12,12 +12,10 @@ use Wikibase\DataModel\Entity\EntityId;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- *
- * @todo Serialize entity before caching them?
  */
 class WikibaseEntityIdParserCache {
 
-	const CACHE_ID_PREFIX = 'ppp-wikidata-entityidparser-';
+	const CACHE_ID_PREFIX = 'ppp-wd-eip-';
 
 	const CACHE_LIFE_TIME = 86400;
 
@@ -76,7 +74,7 @@ class WikibaseEntityIdParserCache {
 	}
 
 	private function getCacheId($search, $entityType, $languageCode) {
-		return self::CACHE_ID_PREFIX . WIKIBASE_DATAMODEL_VERSION . '-' . $entityType . '-' . $languageCode . '-' . $search;
+		return self::CACHE_ID_PREFIX . WIKIBASE_DATAMODEL_VERSION . '-' . md5($entityType . '-' . $languageCode . '-' . $search);
 	}
 }
 

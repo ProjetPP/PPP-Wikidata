@@ -18,7 +18,7 @@ use Wikibase\DataModel\Entity\EntityId;
  */
 class WikibaseEntityCache {
 
-	const CACHE_ID_PREFIX = 'ppp-wikidata-entity-';
+	const CACHE_ID_PREFIX = 'ppp-wd-entity-';
 
 	const CACHE_LIFE_TIME = 86400;
 
