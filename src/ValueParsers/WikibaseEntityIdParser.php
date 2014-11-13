@@ -78,7 +78,8 @@ class WikibaseEntityIdParser extends StringValueParser {
 		$params = array(
 			'search' => $search,
 			'language' => $languageCode,
-			'type' => $entityType
+			'type' => $entityType,
+			'limit' => 50
 		);
 		return $this->api->getAction('wbsearchentities', $params);
 	}
