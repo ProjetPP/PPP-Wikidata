@@ -5,6 +5,7 @@ namespace PPP\Wikidata;
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\StringResourceNode;
+use PPP\DataModel\TimeResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
@@ -45,12 +46,12 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			array(
 				new ModuleRequest(
 					'en',
-					new StringResourceNode('Douglas Adam'),
+					new TimeResourceNode('1933-11'),
 					'a'
 				),
 				array(new ModuleResponse(
 					'en',
-					new StringResourceNode('Douglas Adam')
+					new TimeResourceNode('1933-11')
 				))
 			),
 			array(

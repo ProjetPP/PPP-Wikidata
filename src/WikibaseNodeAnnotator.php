@@ -60,7 +60,7 @@ class WikibaseNodeAnnotator {
 		if($type === null) {
 			return array(new WikibaseResourceNode(
 				$node->getValue(),
-				new UnknownValue($node->getValue())
+				new UnknownValue($node)
 			));
 		}
 

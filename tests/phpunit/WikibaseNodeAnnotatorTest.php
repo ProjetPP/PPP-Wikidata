@@ -50,7 +50,7 @@ class WikibaseNodeAnnotatorTest extends \PHPUnit_Framework_TestCase {
 		return array(
 			array(
 				new StringResourceNode('Douglas Adams'),
-				array(new WikibaseResourceNode('Douglas Adams', new UnknownValue('Douglas Adams')))
+				array(new WikibaseResourceNode('Douglas Adams', new UnknownValue(new StringResourceNode('Douglas Adams'))))
 			),
 			array(
 				new TripleNode(
