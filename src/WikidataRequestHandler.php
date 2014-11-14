@@ -4,6 +4,8 @@ namespace PPP\Wikidata;
 
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\DataModel\AbstractNode;
+use PPP\DataModel\ResourceNode;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
 use PPP\Module\RequestHandler;
@@ -67,10 +69,27 @@ class WikidataRequestHandler implements RequestHandler {
 		$nodeFormatter = $this->buildNodeFormatter($request->getLanguageCode());
 		$responses = array();
 		foreach($simplifiedTrees as $tree) {
-			$responses[] = new ModuleResponse($request->getLanguageCode(), $nodeFormatter->formatNode($tree));
+			$formattedNodes = $nodeFormatter->formatNode($tree);
+			$responses[] = new ModuleResponse(
+				$request->getLanguageCode(),
+				$formattedNodes,
+				$this->buildMeasures($formattedNodes, $request->getMeasures())
+			);
 		}
 
 		return $responses;
+	}
+
+	private function buildMeasures(AbstractNode $node, array $measures) {
+		if(array_key_exists('accuracy', $measures)) {
+			$measures['accuracy'] /= 2;
+		}
+
+		if($node instanceof ResourceNode) {
+			$measures['relevance'] = 1;
+		}
+
+		return $measures;
 	}
 
 	private function buildNodeAnnotator($languageCode) {
