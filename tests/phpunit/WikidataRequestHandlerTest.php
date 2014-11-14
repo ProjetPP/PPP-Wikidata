@@ -47,11 +47,18 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				new ModuleRequest(
 					'en',
 					new TimeResourceNode('1933-11'),
-					'a'
+					'a',
+					array(
+						'accuracy' => 0.5
+					)
 				),
 				array(new ModuleResponse(
 					'en',
-					new TimeResourceNode('1933-11')
+					new TimeResourceNode('1933-11'),
+					array(
+						'accuracy' => 0.25,
+						'relevance' => 1
+					)
 				))
 			),
 			array(
@@ -66,7 +73,10 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new StringResourceNode('113230702')
+					new StringResourceNode('113230702'),
+					array(
+						'relevance' => 1
+					)
 				))
 			),
 			array(
@@ -81,7 +91,10 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'ru',
-					new StringResourceNode('Дуглас Адамс')
+					new StringResourceNode('Дуглас Адамс'),
+					array(
+						'relevance' => 1
+					)
 				))
 			),
 			array(
@@ -100,7 +113,10 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new StringResourceNode('Cambridge')
+					new StringResourceNode('Cambridge'),
+					array(
+						'relevance' => 1
+					)
 				))
 			),
 			array(
@@ -120,11 +136,17 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(
 					new ModuleResponse(
 						'en',
-						new StringResourceNode('Setnakhte')
+						new StringResourceNode('Setnakhte'),
+						array(
+							'relevance' => 1
+						)
 					),
 					new ModuleResponse(
 						'en',
-						new StringResourceNode('Tiy-Merenese')
+						new StringResourceNode('Tiy-Merenese'),
+						array(
+							'relevance' => 1
+						)
 					),
 				)
 			),
