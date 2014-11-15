@@ -19,9 +19,19 @@ class TimeResourceNodeTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('foo', $node->getValue());
 	}
 
-	public function testGetEntity() {
+	public function testGetEntityId() {
 		$node = new WikibaseEntityResourceNode('', new ItemId('Q42'));
 		$this->assertEquals(new ItemId('Q42'), $node->getEntityId());
+	}
+
+	public function testGetDescription() {
+		$node = new WikibaseEntityResourceNode('', new ItemId('Q42'), 'foo');
+		$this->assertEquals('foo', $node->getDescription());
+	}
+
+	public function testGetDefaultDescription() {
+		$node = new WikibaseEntityResourceNode('', new ItemId('Q42'));
+		$this->assertEquals('', $node->getDescription());
 	}
 
 	public function testGetValueType() {

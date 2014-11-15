@@ -94,7 +94,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'ru',
-					new WikibaseEntityResourceNode('Дуглас Адамс', new ItemId('Q42')),
+					new WikibaseEntityResourceNode(
+						'Дуглас Адамс',
+						new ItemId('Q42'),
+						'английский писатель, драматург и сценарист, автор серии книг «Автостопом по галактике».'
+					),
 					array(
 						'relevance' => 1
 					)
@@ -116,7 +120,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new WikibaseEntityResourceNode('Cambridge', new ItemId('Q350')),
+					new WikibaseEntityResourceNode(
+						'Cambridge',
+						new ItemId('Q350'),
+						'city and non-metropolitan district in England'
+					),
 					array(
 						'relevance' => 1
 					)
@@ -139,7 +147,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(
 					new ModuleResponse(
 						'en',
-						new WikibaseEntityResourceNode('Setnakhte', new ItemId('Q312402')),
+						new WikibaseEntityResourceNode(
+							'Setnakhte',
+							new ItemId('Q312402'),
+							'first pharaoh of the 20th dynasty'
+						),
 						array(
 							'relevance' => 1
 						)

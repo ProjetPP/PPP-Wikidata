@@ -32,12 +32,17 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new EntityIdValue(new ItemId('Q42')),
-				new WikibaseEntityResourceNode('Douglas Adams', new ItemId('Q42'))
+				new WikibaseEntityResourceNode('Douglas Adams', new ItemId('Q42'), 'Author')
 			),
 			array(
 				new EntityIdValue(new ItemId('Q42')),
 				new WikibaseEntityResourceNode('Дуглас Адамс', new ItemId('Q42')),
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'ru'))
+			),
+			array(
+				new EntityIdValue(new ItemId('Q42')),
+				new WikibaseEntityResourceNode('', new ItemId('Q42')),
+				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'de'))
 			),
 			array(
 				new EntityIdValue(new PropertyId('P214')),
@@ -78,6 +83,7 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 		$item = Item::newEmpty();
 		$item->setId( new ItemId('Q42'));
 		$item->getFingerprint()->setLabel('en', 'Douglas Adams');
+		$item->getFingerprint()->setDescription('en', 'Author');
 		$item->getFingerprint()->setLabel('ru', 'Дуглас Адамс');
 
 		return $item;

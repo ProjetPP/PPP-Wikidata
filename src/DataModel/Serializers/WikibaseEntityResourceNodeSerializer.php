@@ -21,8 +21,14 @@ class WikibaseEntityResourceNodeSerializer extends BasicResourceNodeSerializer {
 	 * @param WikibaseEntityResourceNode $node
 	 */
 	protected function getAdditionalSerialization(ResourceNode $node) {
-		return array(
+		$serialization = array(
 			'entity-id' => $node->getEntityId()->getSerialization()
 		);
+
+		if($node->getDescription() !== '') {
+			$serialization['description'] = $node->getDescription();
+		}
+
+		return $serialization;
 	}
 }

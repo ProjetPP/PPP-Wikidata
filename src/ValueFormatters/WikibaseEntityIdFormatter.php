@@ -49,9 +49,11 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 			throw new InvalidArgumentException('$value should be a DataValue');
 		}
 
+		$fingerprint = $this->getFingerprintForEntityId($value->getEntityId());
 		return new WikibaseEntityResourceNode(
-			$this->getLabelFromFingerprint($this->getFingerprintForEntityId($value->getEntityId())),
-			$value->getEntityId()
+			$this->getLabelFromFingerprint($fingerprint),
+			$value->getEntityId(),
+			$this->getDescriptionFromFingerprint($fingerprint)
 		);
 	}
 
@@ -71,6 +73,14 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 	private function getLabelFromFingerprint(Fingerprint $fingerprint) {
 		try {
 			return $fingerprint->getLabel($this->getOption(ValueFormatter::OPT_LANG))->getText();
+		} catch(OutOfBoundsException $e) {
+			return '';
+		}
+	}
+
+	private function getDescriptionFromFingerprint(Fingerprint $fingerprint) {
+		try {
+			return $fingerprint->getDescription($this->getOption(ValueFormatter::OPT_LANG))->getText();
 		} catch(OutOfBoundsException $e) {
 			return '';
 		}

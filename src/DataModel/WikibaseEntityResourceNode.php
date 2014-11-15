@@ -19,11 +19,18 @@ class WikibaseEntityResourceNode extends ResourceNode {
 	private $entityId;
 
 	/**
+	 * @var string
+	 */
+	private $description;
+
+	/**
 	 * @param string $value
 	 * @param EntityId $entityId
+	 * @param string $description
 	 */
-	public function __construct($value, EntityId $entityId) {
+	public function __construct($value, EntityId $entityId, $description = '') {
 		$this->entityId = $entityId;
+		$this->description = $description;
 
 		parent::__construct($value);
 	}
@@ -33,6 +40,15 @@ class WikibaseEntityResourceNode extends ResourceNode {
 	 */
 	public function getEntityId() {
 		return $this->entityId;
+	}
+
+	/**
+	 * @return string Returns a string describing the entity.
+	 *
+	 * Example: For Jimmy Wales "Wikipedia co-founder"
+	 */
+	public function getDescription() {
+		return $this->description;
 	}
 
 	/**

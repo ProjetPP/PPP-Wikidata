@@ -52,15 +52,37 @@ class WikibaseEntityResourceNodeSerializerTest extends \PHPUnit_Framework_TestCa
 		);
 	}
 
-	public function testSerialization() {
+	/**
+	 * @dataProvider serializationProvider
+	 */
+	public function testSerialization($serialization, $object) {
 		$this->assertEquals(
+			$serialization,
+			$this->buildSerializer()->serialize($object)
+		);
+	}
+
+	public function serializationProvider() {
+		return array(
 			array(
-				'type' => 'resource',
-				'value' => 'a',
-				'value-type' => 'wikibase-entity',
-				'entity-id' => 'Q42'
+				array(
+					'type' => 'resource',
+					'value' => 'a',
+					'value-type' => 'wikibase-entity',
+					'entity-id' => 'Q42'
+				),
+				new WikibaseEntityResourceNode('a', new ItemId('Q42'))
 			),
-			$this->buildSerializer()->serialize(new WikibaseEntityResourceNode('a', new ItemId('Q42')))
+			array(
+				array(
+					'type' => 'resource',
+					'value' => 'a',
+					'value-type' => 'wikibase-entity',
+					'entity-id' => 'Q42',
+					'description' => 'foo'
+				),
+				new WikibaseEntityResourceNode('a', new ItemId('Q42'), 'foo')
+			)
 		);
 	}
 }
