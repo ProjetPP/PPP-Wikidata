@@ -5,10 +5,12 @@ namespace PPP\Wikidata\ValueFormatters;
 use InvalidArgumentException;
 use OutOfBoundsException;
 use PPP\DataModel\StringResourceNode;
+use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
+use Wikibase\DataModel\Entity\EntityDocument;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
@@ -47,13 +49,16 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 			throw new InvalidArgumentException('$value should be a DataValue');
 		}
 
-		return $this->formatFingerprint($this->getFingerprintForEntityId($value->getEntityId()));
+		return new WikibaseEntityResourceNode(
+			$this->getLabelFromFingerprint($this->getFingerprintForEntityId($value->getEntityId())),
+			$value->getEntityId()
+		);
 	}
 
 	/**
 	 * @return Fingerprint
 	 */
-	public function getFingerprintForEntityId(EntityId $entityId) {
+	private function getFingerprintForEntityId(EntityId $entityId) {
 		if($entityId instanceof ItemId) {
 			return $this->entityProvider->getItem($entityId)->getFingerprint();
 		} elseif($entityId instanceof PropertyId) {
@@ -63,9 +68,9 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		}
 	}
 
-	private function formatFingerprint(Fingerprint $fingerprint) {
+	private function getLabelFromFingerprint(Fingerprint $fingerprint) {
 		try {
-			return new StringResourceNode($fingerprint->getLabel($this->getOption(ValueFormatter::OPT_LANG))->getText());
+			return $fingerprint->getLabel($this->getOption(ValueFormatter::OPT_LANG))->getText();
 		} catch(OutOfBoundsException $e) {
 			return '';
 		}

@@ -4,15 +4,17 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
-use PPP\DataModel\StringResourceNode;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
+use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
 use Wikibase\Api\WikibaseFactory;
 use Wikibase\DataModel\Entity\EntityIdValue;
+use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
 
 /**
@@ -20,8 +22,6 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- *
- * @todo mock instead of requests to the real API?
  */
 class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 
@@ -32,16 +32,16 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new EntityIdValue(new ItemId('Q42')),
-				new StringResourceNode('Douglas Adams')
+				new WikibaseEntityResourceNode('Douglas Adams', new ItemId('Q42'))
 			),
 			array(
 				new EntityIdValue(new ItemId('Q42')),
-				new StringResourceNode('Дуглас Адамс'),
+				new WikibaseEntityResourceNode('Дуглас Адамс', new ItemId('Q42')),
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'ru'))
 			),
 			array(
 				new EntityIdValue(new PropertyId('P214')),
-				new StringResourceNode('VIAF identifier')
+				new WikibaseEntityResourceNode('VIAF identifier', new PropertyId('P214'))
 			)
 		);
 	}
@@ -59,14 +59,35 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 	 */
 	protected function getInstance(FormatterOptions $options) {
 		$class = $this->getFormatterClass();
-		$wikibaseFactory = new WikibaseFactory(new MediawikiApi('http://www.wikidata.org/w/api.php'));
+		$wikibaseFactory = new WikibaseFactory(new MediawikiApi(''));
+
+		$cache = new WikibaseEntityCache(new ArrayCache());
+		$cache->save($this->getQ42());
+		$cache->save($this->getP214());
 
 		return new $class(
 			new WikibaseEntityProvider(
 				$wikibaseFactory->newRevisionGetter(),
-				new WikibaseEntityCache(new ArrayCache())
+				$cache
 			),
 			$options
 		);
+	}
+
+	private function getQ42() {
+		$item = Item::newEmpty();
+		$item->setId( new ItemId('Q42'));
+		$item->getFingerprint()->setLabel('en', 'Douglas Adams');
+		$item->getFingerprint()->setLabel('ru', 'Дуглас Адамс');
+
+		return $item;
+	}
+
+	private function getP214() {
+		$property = Property::newFromType('string');
+		$property->setId(new PropertyId('P214'));
+		$property->getFingerprint()->setLabel('en', 'VIAF identifier');
+
+		return $property;
 	}
 }

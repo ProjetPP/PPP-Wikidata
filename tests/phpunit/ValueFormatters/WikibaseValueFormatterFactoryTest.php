@@ -14,8 +14,12 @@ use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
+use PPP\Wikidata\Cache\WikibaseEntityCache;
+use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
+use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
 
 /**
@@ -23,13 +27,16 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- *
- * @todo mock instead of requests to the real API?
  */
 class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	private function newFactory() {
-		return new WikibaseValueFormatterFactory('fr', new MediawikiApi('http://www.wikidata.org/w/api.php'), new ArrayCache());
+		$cache = new ArrayCache();
+		$entityCache = new WikibaseEntityCache($cache);
+		$entityCache->save($this->getQ42());
+		$entityCache->save($this->getP214());
+
+		return new WikibaseValueFormatterFactory('en', new MediawikiApi(''), $cache);
 	}
 
 	public function testFormatterFormatGlobeCoordinate() {
@@ -82,15 +89,31 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testFormatterFormatWikibaseItem() {
 		$this->assertEquals(
-			new StringResourceNode('Douglas Adams'),
+			new WikibaseEntityResourceNode('Douglas Adams', new ItemId('Q42')),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new ItemId('Q42')))
 		);
 	}
 
 	public function testFormatterFormatWikibaseProperty() {
 		$this->assertEquals(
-			new StringResourceNode('date de naissance'),
-			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new PropertyId('P569')))
+			new WikibaseEntityResourceNode('VIAF identifier', new PropertyId('P214')),
+			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new PropertyId('P214')))
 		);
+	}
+
+	private function getQ42() {
+		$item = Item::newEmpty();
+		$item->setId( new ItemId('Q42'));
+		$item->getFingerprint()->setLabel('en', 'Douglas Adams');
+
+		return $item;
+	}
+
+	private function getP214() {
+		$property = Property::newFromType('string');
+		$property->setId(new PropertyId('P214'));
+		$property->getFingerprint()->setLabel('en', 'VIAF identifier');
+
+		return $property;
 	}
 }
