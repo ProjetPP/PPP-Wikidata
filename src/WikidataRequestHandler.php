@@ -6,9 +6,9 @@ use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\ResourceNode;
+use PPP\Module\AbstractRequestHandler;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
-use PPP\Module\RequestHandler;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifierFactory;
 use PPP\Wikidata\SentenceTreeSimplifier\SimplifierException;
@@ -24,7 +24,7 @@ use WikidataQueryApi\WikidataQueryApi;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikidataRequestHandler implements RequestHandler {
+class WikidataRequestHandler extends AbstractRequestHandler {
 
 	/**
 	 * @var MediawikiApi
