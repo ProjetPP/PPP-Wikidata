@@ -10,12 +10,15 @@ use PPP\Module\AbstractRequestHandler;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
+use PPP\Wikidata\DataModel\Deserializers\WikibaseEntityResourceNodeDeserializer;
+use PPP\Wikidata\DataModel\Serializers\WikibaseEntityResourceNodeSerializer;
 use PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifierFactory;
 use PPP\Wikidata\SentenceTreeSimplifier\SimplifierException;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
 use ValueParsers\ParseException;
 use Wikibase\Api\WikibaseFactory;
+use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use WikidataQueryApi\WikidataQueryApi;
 
 /**
@@ -113,5 +116,23 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	private function buildNodeFormatter($languageCode) {
 		$formatterFactory = new WikibaseValueFormatterFactory($languageCode, $this->mediawikiApi, $this->cache);
 		return new WikibaseNodeFormatter($formatterFactory->newWikibaseValueFormatter());
+	}
+
+	/**
+	 * @see RequestHandler::getCustomNodeSerializers
+	 */
+	public function getCustomNodeSerializers() {
+		return array(
+			new WikibaseEntityResourceNodeSerializer()
+		);
+	}
+
+	/**
+	 * @see RequestHandler::getCustomNodeDeserializers
+	 */
+	public function getCustomNodeDeserializers() {
+		return array(
+			new WikibaseEntityResourceNodeDeserializer(new BasicEntityIdParser())
+		);
 	}
 }

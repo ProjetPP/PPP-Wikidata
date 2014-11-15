@@ -2,6 +2,7 @@
 
 namespace PPP\Wikidata;
 
+
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\StringResourceNode;
@@ -9,6 +10,8 @@ use PPP\DataModel\TimeResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
+use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
+use Wikibase\DataModel\Entity\ItemId;
 
 /**
  * @covers PPP\Wikidata\WikidataRequestHandler
@@ -91,7 +94,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'ru',
-					new StringResourceNode('Дуглас Адамс'),
+					new WikibaseEntityResourceNode(
+						'Дуглас Адамс',
+						new ItemId('Q42'),
+						'английский писатель, драматург и сценарист, автор серии книг «Автостопом по галактике».'
+					),
 					array(
 						'relevance' => 1
 					)
@@ -113,7 +120,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new StringResourceNode('Cambridge'),
+					new WikibaseEntityResourceNode(
+						'Cambridge',
+						new ItemId('Q350'),
+						'city and non-metropolitan district in England'
+					),
 					array(
 						'relevance' => 1
 					)
@@ -136,14 +147,18 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(
 					new ModuleResponse(
 						'en',
-						new StringResourceNode('Setnakhte'),
+						new WikibaseEntityResourceNode(
+							'Setnakhte',
+							new ItemId('Q312402'),
+							'first pharaoh of the 20th dynasty'
+						),
 						array(
 							'relevance' => 1
 						)
 					),
 					new ModuleResponse(
 						'en',
-						new StringResourceNode('Tiy-Merenese'),
+						new WikibaseEntityResourceNode('Tiy-Merenese', new ItemId('Q1321008')),
 						array(
 							'relevance' => 1
 						)
