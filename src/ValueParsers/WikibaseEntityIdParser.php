@@ -122,10 +122,10 @@ class WikibaseEntityIdParser extends StringValueParser {
 	}
 
 	/**
-	 * Returns if the strings have less than 3 character different and more than 90% percent of characters similar
+	 * Returns if the strings have less than 3 character different and more than 80% percent of characters similar
 	 */
 	private function areSimilar($str1, $str2) {
 		return similar_text($str1, $str2, $percentage) - strlen($str1) < 3 &&
-			$percentage > 90;
+			$percentage > 80;
 	}
 }
