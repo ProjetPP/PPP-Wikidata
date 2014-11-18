@@ -53,8 +53,11 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	 * @see RequestHandler::buildResponse
 	 */
 	public function buildResponse(ModuleRequest $request) {
+		$cleaner = new WikidataTreeCleaner();
+		$cleanTree = $cleaner->clean($request->getSentenceTree());
+
 		try {
-			$annotatedTrees = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($request->getSentenceTree());
+			$annotatedTrees = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($cleanTree);
 		} catch(ParseException $e) {
 			return array();
 		}
