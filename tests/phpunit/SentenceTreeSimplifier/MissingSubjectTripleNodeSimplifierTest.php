@@ -15,12 +15,12 @@ use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
-use WikidataQueryApi\DataModel\AbstractQuery;
-use WikidataQueryApi\DataModel\AroundQuery;
-use WikidataQueryApi\DataModel\BetweenQuery;
-use WikidataQueryApi\DataModel\ClaimQuery;
-use WikidataQueryApi\DataModel\QuantityQuery;
-use WikidataQueryApi\DataModel\StringQuery;
+use WikidataQueryApi\Query\AbstractQuery;
+use WikidataQueryApi\Query\AroundQuery;
+use WikidataQueryApi\Query\BetweenQuery;
+use WikidataQueryApi\Query\ClaimQuery;
+use WikidataQueryApi\Query\QuantityQuery;
+use WikidataQueryApi\Query\StringQuery;
 
 /**
  * @covers PPP\Wikidata\SentenceTreeSimplifier\MissingSubjectTripleNodeSimplifier
