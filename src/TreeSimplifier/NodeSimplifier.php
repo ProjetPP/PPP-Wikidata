@@ -1,6 +1,6 @@
 <?php
 
-namespace PPP\Wikidata\SentenceTreeSimplifier;
+namespace PPP\Wikidata\TreeSimplifier;
 
 use PPP\DataModel\AbstractNode;
 

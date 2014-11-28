@@ -1,12 +1,16 @@
 <?php
 
-namespace PPP\Wikidata\SentenceTreeSimplifier;
+namespace PPP\Wikidata\TreeSimplifier;
 
 use DataValues\DataValue;
-use InvalidArgumentException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
+use PPP\DataModel\ResourceListNode;
+use PPP\DataModel\ResourceNode;
 use PPP\DataModel\TripleNode;
+use PPP\Module\TreeSimplifier\AbstractTripleNodeSimplifier;
+use PPP\Module\TreeSimplifier\NodeSimplifierException;
+use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\PropertyId;
@@ -23,8 +27,9 @@ use WikidataQueryApi\Services\SimpleQueryService;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
+ * @todo do only one query with OR
  */
-class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
+class MissingSubjectTripleNodeSimplifier extends AbstractTripleNodeSimplifier {
 
 	/**
 	 * @var SimpleQueryService
@@ -34,37 +39,49 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	/**
 	 * @param SimpleQueryService $simpleQueryService
 	 */
-	public function __construct(SimpleQueryService $simpleQueryService) {
+	public function __construct(NodeSimplifierFactory $simplifierFactory, SimpleQueryService $simpleQueryService) {
 		$this->simpleQueryService = $simpleQueryService;
+
+		parent::__construct($simplifierFactory);
 	}
 
 	/**
 	 * @see AbstractNode::isSimplifierFor
 	 */
 	public function isSimplifierFor(AbstractNode $node) {
-		return $node instanceof TripleNode &&
-			$node->getSubject() instanceof MissingNode &&
-			$node->getPredicate() instanceof WikibaseResourceNode &&
-			$node->getObject() instanceof WikibaseResourceNode;
+		return $node instanceof TripleNode && $node->getSubject() instanceof MissingNode;
 	}
 
 	/**
-	 * @see AbstractNode::simplify
+	 * @see AbstractTripleNodeSimplifier::doSimplification
+	 * @param MissingNode $subjects
+	 * @param ResourceListNode $predicates
+	 * @param ResourceListNode $objects
 	 */
-	public function simplify(AbstractNode $node) {
-		/** @var TripleNode $node */
-		if(!$this->isSimplifierFor($node)) {
-			throw new InvalidArgumentException('MissingSubjectTripleNodeSimplifier can not simplify this node!');
+	protected function doSimplification(AbstractNode $subjects, AbstractNode $predicates, AbstractNode $objects) {
+		$queryResult = array();
+
+		foreach($predicates as $predicate) {
+			foreach($objects as $object) {
+				$queryResult = array_merge(
+					$queryResult,
+					$this->getQueryResultsForObject($predicate, $object)
+				);
+			}
 		}
 
-		/** @var PropertyId $propertyId */
-		$propertyId = $node->getPredicate()->getDataValue()->getEntityId();
-		/** @var DataValue $value */
-		$value = $node->getObject()->getDataValue();
+		return $this->formatQueryResult($queryResult);
+	}
 
-		return $this->formatQueryResult($this->simpleQueryService->doQuery(
+	private function getQueryResultsForObject(WikibaseResourceNode $predicate, WikibaseResourceNode $object) {
+		/** @var PropertyId $propertyId */
+		$propertyId = $predicate->getDataValue()->getEntityId();
+		/** @var DataValue $value */
+		$value = $object->getDataValue();
+
+		return $this->simpleQueryService->doQuery(
 			$this->buildQueryForValue($propertyId, $value)
-		));
+		);
 	}
 
 	/**
@@ -83,7 +100,7 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 			case 'wikibase-entityid':
 				return new ClaimQuery($propertyId, $value->getEntityId());
 			default:
-				throw new SimplifierException('The data type ' . $value->getType() . ' is not supported.');
+				throw new NodeSimplifierException('The data type ' . $value->getType() . ' is not supported.');
 		}
 	}
 
@@ -94,6 +111,6 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 			$nodes[] = new WikibaseResourceNode('', new EntityIdValue($subjectId));
 		}
 
-		return $nodes;
+		return new ResourceListNode($nodes);
 	}
 }

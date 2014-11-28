@@ -5,15 +5,16 @@ namespace PPP\Wikidata;
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
+use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\ResourceNode;
 use PPP\Module\AbstractRequestHandler;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
+use PPP\Module\TreeSimplifier\NodeSimplifierException;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\DataModel\Deserializers\WikibaseEntityResourceNodeDeserializer;
 use PPP\Wikidata\DataModel\Serializers\WikibaseEntityResourceNodeSerializer;
-use PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifierFactory;
-use PPP\Wikidata\SentenceTreeSimplifier\SimplifierException;
+use PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
 use ValueParsers\ParseException;
@@ -66,9 +67,9 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		$simplifiedTrees = array();
 		try {
 			foreach($annotatedTrees as $tree) {
-				$simplifiedTrees += $treeSimplifier->simplify($tree);
+				$simplifiedTrees += $this->toOldRepresentation($treeSimplifier->simplify($tree));
 			}
-		} catch(SimplifierException $e) {
+		} catch(NodeSimplifierException $e) {
 			return array();
 		}
 
@@ -84,6 +85,17 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		}
 
 		return $responses;
+	}
+
+	/**
+	 * @todo move to new representation
+	 */
+	private function toOldRepresentation(AbstractNode $node) {
+		if($node instanceof ResourceListNode) {
+			return iterator_to_array($node);
+		} else {
+			return array($node);
+		}
 	}
 
 	private function buildMeasures(AbstractNode $node, array $measures) {
@@ -112,8 +124,8 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	}
 
 	private function buildTreeSimplifier() {
-		$factory = new SentenceTreeSimplifierFactory($this->mediawikiApi, $this->wikidataQueryApi, $this->cache);
-		return $factory->newSentenceTreeSimplifier();
+		$factory = new WikibaseNodeSimplifierFactory($this->mediawikiApi, $this->wikidataQueryApi, $this->cache);
+		return $factory->newNodeSimplifier();
 	}
 
 	private function buildNodeFormatter($languageCode) {
