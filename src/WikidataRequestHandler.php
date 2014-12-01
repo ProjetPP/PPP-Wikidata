@@ -11,6 +11,7 @@ use PPP\Module\AbstractRequestHandler;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
 use PPP\Module\TreeSimplifier\NodeSimplifierException;
+use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\DataModel\Deserializers\WikibaseEntityResourceNodeDeserializer;
 use PPP\Wikidata\DataModel\Serializers\WikibaseEntityResourceNodeSerializer;
@@ -54,20 +55,18 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	 * @see RequestHandler::buildResponse
 	 */
 	public function buildResponse(ModuleRequest $request) {
-		$cleaner = new WikidataTreeCleaner();
+		$cleaner = new WikidataTripleNodeCleaner();
 		$cleanTree = $cleaner->clean($request->getSentenceTree());
 
 		$annotatedTree = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($cleanTree);
 
 		$simplifiedTree = $this->buildTreeSimplifier()->simplify($annotatedTree);
 
-		$nodeFormatter = $this->buildNodeFormatter($request->getLanguageCode());
-		$responses = array();
-		$formattedNodes = $nodeFormatter->formatNode($simplifiedTree);
+		$formattedTree = $this->buildNodeFormatter($request->getLanguageCode())->simplify($simplifiedTree);
 		$responses[] = new ModuleResponse(
 			$request->getLanguageCode(),
-			$formattedNodes,
-			$this->buildMeasures($formattedNodes, $request->getMeasures())
+			$formattedTree,
+			$this->buildMeasures($formattedTree, $request->getMeasures())
 		);
 
 		return $responses;
@@ -78,7 +77,7 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 			$measures['accuracy'] /= 2;
 		}
 
-		if($node instanceof ResourceNode) {
+		if($node instanceof ResourceListNode) {
 			$measures['relevance'] = 1;
 		}
 
@@ -105,7 +104,10 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 
 	private function buildNodeFormatter($languageCode) {
 		$formatterFactory = new WikibaseValueFormatterFactory($languageCode, $this->mediawikiApi, $this->cache);
-		return new WikibaseNodeFormatter($formatterFactory->newWikibaseValueFormatter());
+		$simplifierFactory = new NodeSimplifierFactory(array(
+			new ResourceListNodeFormatter($formatterFactory->newWikibaseValueFormatter())
+		));
+		return $simplifierFactory->newNodeSimplifier();
 	}
 
 	/**
