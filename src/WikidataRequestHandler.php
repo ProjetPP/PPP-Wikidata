@@ -134,18 +134,18 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	}
 
 	/**
-	 * @see RequestHandler::getCustomNodeSerializers
+	 * @see RequestHandler::getCustomResourceNodeSerializers
 	 */
-	public function getCustomNodeSerializers() {
+	public function getCustomResourceNodeSerializers() {
 		return array(
 			new WikibaseEntityResourceNodeSerializer()
 		);
 	}
 
 	/**
-	 * @see RequestHandler::getCustomNodeDeserializers
+	 * @see RequestHandler::getCustomResourceNodeDeserializers
 	 */
-	public function getCustomNodeDeserializers() {
+	public function getCustomResourceNodeDeserializers() {
 		return array(
 			new WikibaseEntityResourceNodeDeserializer(new BasicEntityIdParser())
 		);
