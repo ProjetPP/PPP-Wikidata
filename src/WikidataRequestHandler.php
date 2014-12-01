@@ -67,7 +67,7 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		$simplifiedTrees = array();
 		try {
 			foreach($annotatedTrees as $tree) {
-				$simplifiedTrees += $this->toOldRepresentation($treeSimplifier->simplify($tree));
+				$simplifiedTrees[] = $treeSimplifier->simplify($tree);
 			}
 		} catch(NodeSimplifierException $e) {
 			return array();
@@ -85,17 +85,6 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		}
 
 		return $responses;
-	}
-
-	/**
-	 * @todo move to new representation
-	 */
-	private function toOldRepresentation(AbstractNode $node) {
-		if($node instanceof ResourceListNode) {
-			return iterator_to_array($node);
-		} else {
-			return array($node);
-		}
 	}
 
 	private function buildMeasures(AbstractNode $node, array $measures) {

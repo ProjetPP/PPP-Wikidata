@@ -5,6 +5,7 @@ namespace PPP\Wikidata;
 
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\MissingNode;
+use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
 use PPP\DataModel\TripleNode;
@@ -49,7 +50,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			array(
 				new ModuleRequest(
 					'en',
-					new TimeResourceNode('1933-11'),
+					new ResourceListNode(array(new TimeResourceNode('1933-11'))),
 					'a',
 					array(
 						'accuracy' => 0.5
@@ -57,7 +58,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new TimeResourceNode('1933-11'),
+					new ResourceListNode(array(new TimeResourceNode('1933-11'))),
 					array(
 						'accuracy' => 0.25,
 						'relevance' => 1
@@ -68,15 +69,15 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				new ModuleRequest(
 					'en',
 					new TripleNode(
-						new StringResourceNode('Douglas Adam'),
-						new StringResourceNode('VIAF'),
+						new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+						new ResourceListNode(array(new StringResourceNode('VIAF'))),
 						new MissingNode()
 					),
 					'a'
 				),
 				array(new ModuleResponse(
 					'en',
-					new StringResourceNode('113230702'),
+					new ResourceListNode(array(new StringResourceNode('113230702'))),
 					array(
 						'relevance' => 1
 					)
@@ -86,15 +87,15 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				new ModuleRequest(
 					'en',
 					new TripleNode(
-						new StringResourceNode('Douglas Adam'),
-						new StringResourceNode('name'),
+						new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+						new ResourceListNode(array(new StringResourceNode('name'))),
 						new MissingNode()
 					),
 					'a'
 				),
 				array(new ModuleResponse(
 					'en',
-					new StringResourceNode('Douglas Adam'),
+					new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
 					array(
 						'relevance' => 1
 					)
@@ -105,18 +106,18 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'ru',
 					new TripleNode(
 						new MissingNode(),
-						new StringResourceNode('VIAF'),
-						new StringResourceNode('113230702')
+						new ResourceListNode(array(new StringResourceNode('VIAF'))),
+						new ResourceListNode(array(new StringResourceNode('113230702')))
 					),
 					'a'
 				),
 				array(new ModuleResponse(
 					'ru',
-					new WikibaseEntityResourceNode(
+					new ResourceListNode(array(new WikibaseEntityResourceNode(
 						'Дуглас Адамс',
 						new ItemId('Q42'),
 						'английский писатель, драматург и сценарист, автор серии книг «Автостопом по галактике».'
-					),
+					))),
 					array(
 						'relevance' => 1
 					)
@@ -128,21 +129,21 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					new TripleNode(
 						new TripleNode(
 							new MissingNode(),
-							new StringResourceNode('VIAF'),
-							new StringResourceNode('113230702')
+							new ResourceListNode(array(new StringResourceNode('VIAF'))),
+							new ResourceListNode(array(new StringResourceNode('113230702')))
 						),
-						new StringResourceNode('Birth place'),
+						new ResourceListNode(array(new StringResourceNode('Birth place'))),
 						new MissingNode()
 					),
 					'a'
 				),
 				array(new ModuleResponse(
 					'en',
-					new WikibaseEntityResourceNode(
+					new ResourceListNode(array(new WikibaseEntityResourceNode(
 						'Cambridge',
 						new ItemId('Q350'),
 						'city and non-metropolitan district in England'
-					),
+					))),
 					array(
 						'relevance' => 1
 					)
@@ -153,11 +154,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'en',
 					new TripleNode(
 						new MissingNode(),
-						new StringResourceNode('son'),
+						new ResourceListNode(array(new StringResourceNode('son'))),
 						new TripleNode(
 							new MissingNode(),
-							new StringResourceNode('VIAF identifier'),
-							new StringResourceNode('45777651')
+							new ResourceListNode(array(new StringResourceNode('VIAF identifier'))),
+							new ResourceListNode(array(new StringResourceNode('45777651')))
 						)
 					),
 					'a'
@@ -165,18 +166,14 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(
 					new ModuleResponse(
 						'en',
-						new WikibaseEntityResourceNode(
-							'Setnakhte',
-							new ItemId('Q312402'),
-							'first pharaoh of the 20th dynasty'
-						),
-						array(
-							'relevance' => 1
-						)
-					),
-					new ModuleResponse(
-						'en',
-						new WikibaseEntityResourceNode('Tiy-Merenese', new ItemId('Q1321008')),
+						new ResourceListNode(array(
+							new WikibaseEntityResourceNode(
+								'Setnakhte',
+								new ItemId('Q312402'),
+								'first pharaoh of the 20th dynasty'
+							),
+							new WikibaseEntityResourceNode('Tiy-Merenese', new ItemId('Q1321008'))
+						)),
 						array(
 							'relevance' => 1
 						)
