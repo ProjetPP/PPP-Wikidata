@@ -6,8 +6,10 @@ use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
+use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
+use PPP\DataModel\SentenceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
@@ -84,6 +86,38 @@ class WikibaseNodeAnnotatorTest extends \PHPUnit_Framework_TestCase {
 						new MissingNode()
 					),
 				))
+			),
+			array(
+				new TripleNode(
+					new ResourceListNode(array(new StringResourceNode('Ramesses III'))),
+					new ResourceListNode(array(new StringResourceNode('Place of birth'))),
+					new MissingNode()
+				),
+				new UnionNode(array(new TripleNode(
+					new ResourceListNode(array(new WikibaseResourceNode('Ramesses III', new EntityIdValue(new ItemId('Q1528'))))),
+					new ResourceListNode(array(new WikibaseResourceNode('Place of birth', new EntityIdValue(new PropertyId('P19'))))),
+					new MissingNode()
+				)))
+			),
+			array(
+				new SentenceNode(''),
+				new SentenceNode('')
+			),
+			array(
+				new UnionNode(array(
+					new ResourceListNode(array(new StringResourceNode('foo')))
+				)),
+				new UnionNode(array(
+					new ResourceListNode(array(new WikibaseResourceNode('foo', new UnknownValue(new StringResourceNode('foo')))))
+				)),
+			),
+			array(
+				new IntersectionNode(array(
+					new ResourceListNode(array(new StringResourceNode('foo')))
+				)),
+				new IntersectionNode(array(
+					new ResourceListNode(array(new WikibaseResourceNode('foo', new UnknownValue(new StringResourceNode('foo')))))
+				)),
 			),
 		);
 	}
