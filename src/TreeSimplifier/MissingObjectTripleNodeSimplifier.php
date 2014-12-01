@@ -1,18 +1,19 @@
 <?php
 
-namespace PPP\Wikidata\SentenceTreeSimplifier;
+namespace PPP\Wikidata\TreeSimplifier;
 
 use InvalidArgumentException;
 use OutOfBoundsException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
+use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
+use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Statement\BestStatementsFinder;
@@ -39,31 +40,49 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	/**
-	 * @see AbstractNode::isSimplifierFor
+	 * @see NodeSimplifier::isSimplifierFor
 	 */
 	public function isSimplifierFor(AbstractNode $node) {
 		return $node instanceof TripleNode &&
-			$node->getSubject() instanceof WikibaseResourceNode &&
-			$node->getPredicate() instanceof WikibaseResourceNode &&
+			$node->getSubject() instanceof ResourceListNode &&
+			$node->getPredicate() instanceof ResourceListNode &&
 			$node->getObject() instanceof MissingNode;
 	}
 
 	/**
-	 * @see AbstractNode::simplify
+	 * @see NodeSimplifier::doSimplification
 	 */
 	public function simplify(AbstractNode $node) {
-		/** @var TripleNode $node */
 		if(!$this->isSimplifierFor($node)) {
-			throw new InvalidArgumentException('MissingObjectTripleNodeSimplifier can not simplify this node!');
+			throw new InvalidArgumentException('MissingObjectTripleNodeSimplifier can only simplify TripleNode with a missing object');
 		}
 
+		return $this->doSimplification($node);
+	}
+
+	private function doSimplification(TripleNode $node) {
+		$snaks = array();
+
+		foreach($node->getSubject() as $subject) {
+			foreach($node->getPredicate() as $predicate) {
+				$snaks = array_merge(
+					$snaks,
+					$this->getSnaksForObject($subject, $predicate)
+				);
+			}
+		}
+
+		return $this->snaksToNode($snaks);
+	}
+
+	protected function getSnaksForObject(WikibaseResourceNode $subject, WikibaseResourceNode $predicate) {
 		/** @var ItemId $itemId */
-		$itemId = $node->getSubject()->getDataValue()->getEntityId();
+		$itemId = $subject->getDataValue()->getEntityId();
 		/** @var PropertyId $propertyId */
-		$propertyId = $node->getPredicate()->getDataValue()->getEntityId();
+		$propertyId = $predicate->getDataValue()->getEntityId();
 
 		$item = $this->entityProvider->getItem($itemId);
-		return $this->snaksToNode($this->getSnaksForProperty($item, $propertyId));
+		return $this->getSnaksForProperty($item, $propertyId);
 	}
 
 
@@ -93,23 +112,12 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 		$nodes = array();
 
 		foreach($snaks as $snak) {
-			$nodes[] = $this->snakToNode($snak);
+			if($snak instanceof PropertyValueSnak) {
+				$nodes[] = new WikibaseResourceNode('', $snak->getDataValue());
+			}
+			//TODO case of PropertySomeValueSnak (MissingNode) and PropertyNoValueSnak (return the negation of the triple?)
 		}
 
-		return $nodes;
-	}
-
-	/**
-	 * @return AbstractNode
-	 */
-	private function snakToNode(Snak $snak) {
-		if($snak instanceof PropertyValueSnak) {
-			return new WikibaseResourceNode('', $snak->getDataValue());
-		} else if($snak instanceof PropertySomeValueSnak) {
-			return new MissingNode();
-		}
-		//TODO case of PropertyNoValueSnak (return the negation of the triple?)
-
-		throw new SimplifierException('Unknown Snak type: ' . $snak->getType());
+		return new ResourceListNode($nodes);
 	}
 }

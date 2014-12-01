@@ -10,5 +10,5 @@ if(!is_readable(__DIR__ . '/../vendor/autoload.php')) {
 
 $loader = require_once(__DIR__ . '/../vendor/autoload.php');
 $loader->addClassMap(array(
-	'PPP\Wikidata\SentenceTreeSimplifier\NodeSimplifierBaseTest' => __DIR__ . '/phpunit/SentenceTreeSimplifier/NodeSimplifierBaseTest.php'
+	'PPP\Wikidata\TreeSimplifier\NodeSimplifierBaseTest' => __DIR__ . '/phpunit/TreeSimplifier/NodeSimplifierBaseTest.php'
 ));

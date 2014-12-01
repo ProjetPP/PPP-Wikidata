@@ -1,9 +1,11 @@
 <?php
 
-namespace PPP\Wikidata\SentenceTreeSimplifier;
+namespace PPP\Wikidata\TreeSimplifier;
 
 use DataValues\StringValue;
+use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
+use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Claim\Claim;
@@ -11,23 +13,19 @@ use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\DataModel\Snak\PropertyNoValueSnak;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Statement\Statement;
 
 /**
- * @covers PPP\Wikidata\SentenceTreeSimplifier\MissingObjectTripleNodeSimplifier
+ * @covers PPP\Wikidata\TreeSimplifier\MissingObjectTripleNodeSimplifier
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
 class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 
-	/**
-	 * @see NodeSimplifierBaseTest::NodeSimplifierBaseTest
-	 */
-	public function buildDummySimplifier() {
+	public function buildSimplifier() {
 		$entityProvider = $this->getMockBuilder( 'PPP\Wikidata\WikibaseEntityProvider' )
 			->disableOriginalConstructor()
 			->getMock();
@@ -41,8 +39,8 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		return array(
 			array(
 				new TripleNode(
-					new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
-					new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))),
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))))),
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
 					new MissingNode()
 				)
 			),
@@ -60,24 +58,24 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 			array(
 				new TripleNode(
 					new MissingNode(),
-					new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))),
-					new WikibaseResourceNode('', new StringValue('113230702'))
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+					new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702'))))
 				)
 			),
 			array(
 				new TripleNode(
-					new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))))),
 					new MissingNode(),
-					new WikibaseResourceNode('', new StringValue('113230702'))
+						new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702'))))
 				)
 			),
 		);
 	}
 
 	/**
-	 * @dataProvider simplifiedTripleProvider
+	 * @dataProvider simplificationProvider
 	 */
-	public function testSimplify(TripleNode $queryNode, array $responseNodes, Item $item) {
+	public function testSimplification(TripleNode $queryNode, AbstractNode $responseNodes, Item $item) {
 		$entityProvider = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
 			->disableOriginalConstructor()
 			->getMock();
@@ -93,7 +91,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		);
 	}
 
-	public function simplifiedTripleProvider() {
+	public function simplificationProvider() {
 		$list = array();
 
 		//Value
@@ -106,13 +104,13 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		$douglasAdamItem->getStatements()->addStatement($birthPlaceStatement);
 		$list[] = array(
 			new TripleNode(
-				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
-				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))))),
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
 				new MissingNode()
 			),
-			array(
-				new WikibaseResourceNode('', new StringValue('113230702'))
-			),
+			new ResourceListNode(array(
+				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702'))))
+			)),
 			$douglasAdamItem
 		);
 
@@ -124,13 +122,11 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		$douglasAdamItem->getStatements()->addStatement($birthPlaceStatement);
 		$list[] = array(
 			new TripleNode(
-				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
-				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))))),
 				new MissingNode()
 			),
-			array(
-				new MissingNode()
-			),
+			new ResourceListNode(array()),
 			$douglasAdamItem
 		);
 
@@ -138,51 +134,11 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		$douglasAdamItem->setId(new ItemId('Q42'));
 		$list[] = array(
 			new TripleNode(
-				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
-				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))))),
 				new MissingNode()
 			),
-			array(),
-			$douglasAdamItem
-		);
-
-		return $list;
-	}
-
-
-	/**
-	 * @dataProvider notSimplifiedTripleProvider
-	 */
-	public function testSimplifyWithException(TripleNode $queryNode, Item $item) {
-		$entityProvider = $this->getMockBuilder( 'PPP\Wikidata\WikibaseEntityProvider' )
-			->disableOriginalConstructor()
-			->getMock();
-		$entityProvider->expects($this->any())
-			->method('getItem')
-			->with($this->equalTo(new ItemId('Q42')))
-			->will($this->returnValue($item));
-
-		$simplifier = new MissingObjectTripleNodeSimplifier($entityProvider);
-
-		$this->setExpectedException('PPP\Wikidata\SentenceTreeSimplifier\SimplifierException');
-		$simplifier->simplify($queryNode);
-	}
-
-	public function notSimplifiedTripleProvider() {
-		$list = array();
-
-		//NoValue
-		$douglasAdamItem = Item::newEmpty();
-		$douglasAdamItem->setId(new ItemId('Q42'));
-		$birthPlaceStatement = new Statement(new Claim(new PropertyNoValueSnak(new PropertyId('P19'))));
-		$birthPlaceStatement->setGuid('42');
-		$douglasAdamItem->getStatements()->addStatement($birthPlaceStatement);
-		$list[] = array(
-			new TripleNode(
-				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))),
-				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))),
-				new MissingNode()
-			),
+			new ResourceListNode(array()),
 			$douglasAdamItem
 		);
 

@@ -1,16 +1,16 @@
 <?php
 
-namespace PPP\Wikidata\SentenceTreeSimplifier;
+namespace PPP\Wikidata\TreeSimplifier;
 
 use Doctrine\Common\Cache\ArrayCache;
 
 /**
- * @covers PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifierFactory
+ * @covers PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class SentenceTreeSimplifierFactoryTest extends \PHPUnit_Framework_TestCase {
+class WikibaseNodeSimplifierFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testNewSentenceTreeSimplifier() {
 		$mediawikiApiMock = $this->getMockBuilder('Mediawiki\Api\MediawikiApi')
@@ -19,11 +19,11 @@ class SentenceTreeSimplifierFactoryTest extends \PHPUnit_Framework_TestCase {
 		$wikidataQueryApiMock = $this->getMockBuilder('WikidataQueryApi\WikidataQueryApi')
 			->disableOriginalConstructor()
 			->getMock();
-		$factory = new SentenceTreeSimplifierFactory($mediawikiApiMock, $wikidataQueryApiMock, new ArrayCache());
+		$factory = new WikibaseNodeSimplifierFactory($mediawikiApiMock, $wikidataQueryApiMock, new ArrayCache());
 
 		$this->assertInstanceOf(
-			'PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifier',
-			$factory->newSentenceTreeSimplifier()
+			'PPP\Module\TreeSimplifier\NodeSimplifier',
+			$factory->newNodeSimplifier()
 		);
 	}
 }

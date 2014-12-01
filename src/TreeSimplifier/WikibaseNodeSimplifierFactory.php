@@ -1,9 +1,10 @@
 <?php
 
-namespace PPP\Wikidata\SentenceTreeSimplifier;
+namespace PPP\Wikidata\TreeSimplifier;
 
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
 use Wikibase\Api\WikibaseFactory;
@@ -18,7 +19,7 @@ use WikidataQueryApi\WikidataQueryFactory;
  *
  * @todo tests
  */
-class SentenceTreeSimplifierFactory {
+class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	/**
 	 * @var MediawikiApi
 	 */
@@ -42,13 +43,8 @@ class SentenceTreeSimplifierFactory {
 		$this->mediawikiApi = $mediawikiApi;
 		$this->wikidataQueryApi = $wikidataQueryApi;
 		$this->cache = $cache;
-	}
 
-	/**
-	 * @return SentenceTreeSimplifier
-	 */
-	public function newSentenceTreeSimplifier() {
-		return new SentenceTreeSimplifier(array(
+		parent::__construct(array(
 			$this->newMissingObjectTripleNodeSimplifier(),
 			$this->newMissingSubjectTripleNodeSimplifier()
 		));

@@ -5,18 +5,17 @@ namespace PPP\Wikidata;
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
-use PPP\DataModel\ResourceNode;
+use PPP\DataModel\ResourceListNode;
 use PPP\Module\AbstractRequestHandler;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
+use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\DataModel\Deserializers\WikibaseEntityResourceNodeDeserializer;
 use PPP\Wikidata\DataModel\Serializers\WikibaseEntityResourceNodeSerializer;
-use PPP\Wikidata\SentenceTreeSimplifier\SentenceTreeSimplifierFactory;
-use PPP\Wikidata\SentenceTreeSimplifier\SimplifierException;
+use PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
-use ValueParsers\ParseException;
 use Wikibase\Api\WikibaseFactory;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use WikidataQueryApi\WikidataQueryApi;
@@ -53,35 +52,18 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	 * @see RequestHandler::buildResponse
 	 */
 	public function buildResponse(ModuleRequest $request) {
-		$cleaner = new WikidataTreeCleaner();
-		$cleanTree = $cleaner->clean($request->getSentenceTree());
+		$cleanTree = $this->buildTreeCleaner()->simplify($request->getSentenceTree());
 
-		try {
-			$annotatedTrees = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($cleanTree);
-		} catch(ParseException $e) {
-			return array();
-		}
+		$annotatedTree = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($cleanTree);
 
-		$treeSimplifier = $this->buildTreeSimplifier();
-		$simplifiedTrees = array();
-		try {
-			foreach($annotatedTrees as $tree) {
-				$simplifiedTrees += $treeSimplifier->simplify($tree);
-			}
-		} catch(SimplifierException $e) {
-			return array();
-		}
+		$simplifiedTree = $this->buildTreeSimplifier()->simplify($annotatedTree);
 
-		$nodeFormatter = $this->buildNodeFormatter($request->getLanguageCode());
-		$responses = array();
-		foreach($simplifiedTrees as $tree) {
-			$formattedNodes = $nodeFormatter->formatNode($tree);
-			$responses[] = new ModuleResponse(
-				$request->getLanguageCode(),
-				$formattedNodes,
-				$this->buildMeasures($formattedNodes, $request->getMeasures())
-			);
-		}
+		$formattedTree = $this->buildNodeFormatter($request->getLanguageCode())->simplify($simplifiedTree);
+		$responses[] = new ModuleResponse(
+			$request->getLanguageCode(),
+			$formattedTree,
+			$this->buildMeasures($formattedTree, $request->getMeasures())
+		);
 
 		return $responses;
 	}
@@ -91,11 +73,18 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 			$measures['accuracy'] /= 2;
 		}
 
-		if($node instanceof ResourceNode) {
+		if($node instanceof ResourceListNode) {
 			$measures['relevance'] = 1;
 		}
 
 		return $measures;
+	}
+
+	private function buildTreeCleaner() {
+		$simplifierFactory = new NodeSimplifierFactory(array(
+			new WikidataTripleNodeCleaner()
+		));
+		return $simplifierFactory->newNodeSimplifier();
 	}
 
 	private function buildNodeAnnotator($languageCode) {
@@ -112,28 +101,31 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	}
 
 	private function buildTreeSimplifier() {
-		$factory = new SentenceTreeSimplifierFactory($this->mediawikiApi, $this->wikidataQueryApi, $this->cache);
-		return $factory->newSentenceTreeSimplifier();
+		$factory = new WikibaseNodeSimplifierFactory($this->mediawikiApi, $this->wikidataQueryApi, $this->cache);
+		return $factory->newNodeSimplifier();
 	}
 
 	private function buildNodeFormatter($languageCode) {
 		$formatterFactory = new WikibaseValueFormatterFactory($languageCode, $this->mediawikiApi, $this->cache);
-		return new WikibaseNodeFormatter($formatterFactory->newWikibaseValueFormatter());
+		$simplifierFactory = new NodeSimplifierFactory(array(
+			new ResourceListNodeFormatter($formatterFactory->newWikibaseValueFormatter())
+		));
+		return $simplifierFactory->newNodeSimplifier();
 	}
 
 	/**
-	 * @see RequestHandler::getCustomNodeSerializers
+	 * @see RequestHandler::getCustomResourceNodeSerializers
 	 */
-	public function getCustomNodeSerializers() {
+	public function getCustomResourceNodeSerializers() {
 		return array(
 			new WikibaseEntityResourceNodeSerializer()
 		);
 	}
 
 	/**
-	 * @see RequestHandler::getCustomNodeDeserializers
+	 * @see RequestHandler::getCustomResourceNodeDeserializers
 	 */
-	public function getCustomNodeDeserializers() {
+	public function getCustomResourceNodeDeserializers() {
 		return array(
 			new WikibaseEntityResourceNodeDeserializer(new BasicEntityIdParser())
 		);
