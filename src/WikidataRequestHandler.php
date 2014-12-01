@@ -57,32 +57,18 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		$cleaner = new WikidataTreeCleaner();
 		$cleanTree = $cleaner->clean($request->getSentenceTree());
 
-		try {
-			$annotatedTrees = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($cleanTree);
-		} catch(ParseException $e) {
-			return array();
-		}
+		$annotatedTree = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($cleanTree);
 
-		$treeSimplifier = $this->buildTreeSimplifier();
-		$simplifiedTrees = array();
-		try {
-			foreach($annotatedTrees as $tree) {
-				$simplifiedTrees[] = $treeSimplifier->simplify($tree);
-			}
-		} catch(NodeSimplifierException $e) {
-			return array();
-		}
+		$simplifiedTree = $this->buildTreeSimplifier()->simplify($annotatedTree);
 
 		$nodeFormatter = $this->buildNodeFormatter($request->getLanguageCode());
 		$responses = array();
-		foreach($simplifiedTrees as $tree) {
-			$formattedNodes = $nodeFormatter->formatNode($tree);
-			$responses[] = new ModuleResponse(
-				$request->getLanguageCode(),
-				$formattedNodes,
-				$this->buildMeasures($formattedNodes, $request->getMeasures())
-			);
-		}
+		$formattedNodes = $nodeFormatter->formatNode($simplifiedTree);
+		$responses[] = new ModuleResponse(
+			$request->getLanguageCode(),
+			$formattedNodes,
+			$this->buildMeasures($formattedNodes, $request->getMeasures())
+		);
 
 		return $responses;
 	}
