@@ -51,12 +51,12 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	}
 
 	private function newMissingObjectTripleNodeSimplifier() {
-		return new MissingObjectTripleNodeSimplifier($this, $this->newEntityProvider());
+		return new MissingObjectTripleNodeSimplifier($this->newEntityProvider());
 	}
 
 	private function newMissingSubjectTripleNodeSimplifier() {
 		$wikidataQueryFactory = new WikidataQueryFactory($this->wikidataQueryApi);
-		return new MissingSubjectTripleNodeSimplifier($this, $wikidataQueryFactory->newSimpleQueryService());
+		return new MissingSubjectTripleNodeSimplifier($wikidataQueryFactory->newSimpleQueryService());
 	}
 
 	private function newEntityProvider() {

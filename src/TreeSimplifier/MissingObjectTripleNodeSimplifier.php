@@ -2,14 +2,13 @@
 
 namespace PPP\Wikidata\TreeSimplifier;
 
+use InvalidArgumentException;
 use OutOfBoundsException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
-use PPP\DataModel\ResourceNode;
 use PPP\DataModel\TripleNode;
-use PPP\Module\TreeSimplifier\AbstractTripleNodeSimplifier;
-use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
+use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\Item;
@@ -26,7 +25,7 @@ use Wikibase\DataModel\Statement\Statement;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class MissingObjectTripleNodeSimplifier extends AbstractTripleNodeSimplifier {
+class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 
 	/**
 	 * @var WikibaseEntityProvider
@@ -34,33 +33,38 @@ class MissingObjectTripleNodeSimplifier extends AbstractTripleNodeSimplifier {
 	private $entityProvider;
 
 	/**
-	 * @param NodeSimplifierFactory $simplifierFactory
 	 * @param WikibaseEntityProvider $entityProvider
 	 */
-	public function __construct(NodeSimplifierFactory $simplifierFactory, WikibaseEntityProvider $entityProvider) {
+	public function __construct(WikibaseEntityProvider $entityProvider) {
 		$this->entityProvider = $entityProvider;
-
-		parent::__construct($simplifierFactory);
 	}
 
 	/**
 	 * @see NodeSimplifier::isSimplifierFor
 	 */
 	public function isSimplifierFor(AbstractNode $node) {
-		return $node instanceof TripleNode && $node->getObject() instanceof MissingNode;
+		return $node instanceof TripleNode &&
+			$node->getSubject() instanceof ResourceListNode &&
+			$node->getPredicate() instanceof ResourceListNode &&
+			$node->getObject() instanceof MissingNode;
 	}
 
 	/**
-	 * @see AbstractTripleNodeSimplifier::doSimplification
-	 * @param ResourceListNode $subjects
-	 * @param ResourceListNode $predicates
-	 * @param MissingNode $objects
+	 * @see NodeSimplifier::doSimplification
 	 */
-	protected function doSimplification(AbstractNode $subjects, AbstractNode $predicates, AbstractNode $objects) {
+	public function simplify(AbstractNode $node) {
+		if(!$this->isSimplifierFor($node)) {
+			throw new InvalidArgumentException('MissingObjectTripleNodeSimplifier can only simplify TripleNode with a missing object');
+		}
+
+		return $this->doSimplification($node);
+	}
+
+	private function doSimplification(TripleNode $node) {
 		$snaks = array();
 
-		foreach($subjects as $subject) {
-			foreach($predicates as $predicate) {
+		foreach($node->getSubject() as $subject) {
+			foreach($node->getPredicate() as $predicate) {
 				$snaks = array_merge(
 					$snaks,
 					$this->getSnaksForObject($subject, $predicate)
