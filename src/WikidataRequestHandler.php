@@ -55,8 +55,7 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	 * @see RequestHandler::buildResponse
 	 */
 	public function buildResponse(ModuleRequest $request) {
-		$cleaner = new WikidataTripleNodeCleaner();
-		$cleanTree = $cleaner->clean($request->getSentenceTree());
+		$cleanTree = $this->buildTreeCleaner()->simplify($request->getSentenceTree());
 
 		$annotatedTree = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($cleanTree);
 
@@ -82,6 +81,13 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		}
 
 		return $measures;
+	}
+
+	private function buildTreeCleaner() {
+		$simplifierFactory = new NodeSimplifierFactory(array(
+			new WikidataTripleNodeCleaner()
+		));
+		return $simplifierFactory->newNodeSimplifier();
 	}
 
 	private function buildNodeAnnotator($languageCode) {
