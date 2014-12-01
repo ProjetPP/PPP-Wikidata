@@ -12,7 +12,6 @@ use DataValues\TimeValue;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
-use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;

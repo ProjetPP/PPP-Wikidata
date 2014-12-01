@@ -4,13 +4,11 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use InvalidArgumentException;
 use OutOfBoundsException;
-use PPP\DataModel\StringResourceNode;
 use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
-use Wikibase\DataModel\Entity\EntityDocument;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;

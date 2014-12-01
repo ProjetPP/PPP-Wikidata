@@ -5,12 +5,9 @@ namespace PPP\Wikidata;
 use DataValues\StringValue;
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
-use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
-use PPP\DataModel\TripleNode;
-use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
 

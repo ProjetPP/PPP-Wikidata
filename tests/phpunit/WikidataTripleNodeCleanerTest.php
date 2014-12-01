@@ -2,7 +2,6 @@
 
 namespace PPP\Wikidata;
 
-use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
