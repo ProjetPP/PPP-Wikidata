@@ -5,6 +5,7 @@ namespace PPP\Wikidata;
 use DataValues\UnknownValue;
 use InvalidArgumentException;
 use PPP\DataModel\AbstractNode;
+use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\ResourceNode;
 use PPP\DataModel\TripleNode;
@@ -58,7 +59,12 @@ class WikibaseNodeAnnotator {
 				return $this->annotateResourceListNode($node, $type);
 			case 'triple':
 				return $this->annotateTripleNode($node, $type);
+			case 'union':
+				return $this->annotateUnionNode($node, $type);
+			case 'intersection':
+				return $this->annotateIntersectionNode($node, $type);
 			case 'missing':
+			case 'sentence':
 				return $node;
 			default:
 				throw new InvalidArgumentException('Unsupported node type ' . $node->getType());
@@ -110,5 +116,23 @@ class WikibaseNodeAnnotator {
 		}
 
 		return new UnionNode($result);
+	}
+
+	private function annotateUnionNode(UnionNode $node, $type) {
+		return new UnionNode($this->annotateNodeArray($node->getOperands(), $type));
+	}
+
+	private function annotateIntersectionNode(IntersectionNode $node, $type) {
+		return new IntersectionNode($this->annotateNodeArray($node->getOperands(), $type));
+	}
+
+	private function annotateNodeArray(array $nodes, $type) {
+		$annotatedNodes = array();
+
+		foreach($nodes as $node) {
+			$annotatedNodes[] = $this->annotateNode($node, $type);
+		}
+
+		return $annotatedNodes;
 	}
 }

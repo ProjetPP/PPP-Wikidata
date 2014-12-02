@@ -4,11 +4,14 @@ namespace PPP\Wikidata;
 
 
 use Doctrine\Common\Cache\ArrayCache;
+use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
+use PPP\DataModel\SentenceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
 use PPP\DataModel\TripleNode;
+use PPP\DataModel\UnionNode;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
 use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
@@ -45,6 +48,17 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new MissingNode()
+				))
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new SentenceNode(''),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new SentenceNode('')
 				))
 			),
 			array(
@@ -179,6 +193,83 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						)
 					),
 				)
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new TripleNode(
+						new ResourceListNode(array(
+							new StringResourceNode('Douglas Adam'),
+							new StringResourceNode('Jean-François Champollion')
+						)),
+						new ResourceListNode(array(new StringResourceNode('VIAF'))),
+						new MissingNode()
+					),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new ResourceListNode(array(
+						new StringResourceNode('113230702'),
+						new StringResourceNode('34454460')
+					)),
+					array(
+						'relevance' => 1
+					)
+				))
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new UnionNode(array(
+						new TripleNode(
+							new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+							new ResourceListNode(array(new StringResourceNode('VIAF'))),
+							new MissingNode()
+						),
+						new TripleNode(
+							new ResourceListNode(array(new StringResourceNode('Jean-François Champollion'))),
+							new ResourceListNode(array(new StringResourceNode('VIAF'))),
+							new MissingNode()
+						)
+					)),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new ResourceListNode(array(
+						new StringResourceNode('113230702'),
+						new StringResourceNode('34454460')
+					)),
+					array(
+						'relevance' => 1
+					)
+				))
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new IntersectionNode(array(
+						new TripleNode(
+							new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+							new ResourceListNode(array(new StringResourceNode('VIAF'))),
+							new MissingNode()
+						),
+						new TripleNode(
+							new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+							new ResourceListNode(array(new StringResourceNode('VIAF'))),
+							new MissingNode()
+						)
+					)),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new ResourceListNode(array(new StringResourceNode('113230702'))),
+					array(
+						'relevance' => 1
+					)
+				))
 			),
 		);
 	}
