@@ -2,7 +2,6 @@
 
 namespace PPP\Wikidata\ValueFormatters;
 
-use DataValues\Geo\Formatters\GlobeCoordinateFormatter;
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
@@ -54,7 +53,7 @@ class WikibaseValueFormatterFactory {
 		$options = $this->newFormatterOptions();
 
 		return new WikibaseValueFormatter(array(
-			'globecoordinate' => new ToStringFormatter(new GlobeCoordinateFormatter($options)),
+			'globecoordinate' => new GlobeCoordinateFormatter($options),
 			'monolingualtext' => new MonolingualTextFormatter($options),
 			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
 			'string' => new StringFormatter($options),
