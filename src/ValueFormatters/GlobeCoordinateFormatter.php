@@ -50,6 +50,10 @@ class GlobeCoordinateFormatter extends ValueFormatterBase {
 	 * copy of GeoCoordinateFormatter::roundDegrees
 	 */
 	private function roundDegrees($degrees, $precision) {
+		if($precision <= 0) {
+			$precision = 1 / 3600;
+		}
+
 		$sign = $degrees > 0 ? 1 : -1;
 		$reduced = round(abs($degrees) / $precision);
 		$expanded = $reduced * $precision;

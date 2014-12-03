@@ -25,6 +25,10 @@ class GlobeCoordinateFormatterTest extends ValueFormatterTestBase {
 				new GlobeCoordinateValue(new LatLongValue(42, 42), 1),
 				new GeoJsonResourceNode('42, 42', new Point(array(42, 42)))
 			),
+			array(
+				new GlobeCoordinateValue(new LatLongValue(42, 42), 0),
+				new GeoJsonResourceNode('42, 42', new Point(array(42, 42)))
+			),
 		);
 	}
 
