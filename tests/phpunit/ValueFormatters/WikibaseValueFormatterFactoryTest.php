@@ -11,7 +11,9 @@ use DataValues\StringValue;
 use DataValues\TimeValue;
 use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
+use GeoJson\Geometry\Point;
 use Mediawiki\Api\MediawikiApi;
+use PPP\DataModel\GeoJsonResourceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
@@ -41,7 +43,7 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testFormatterFormatGlobeCoordinate() {
 		$this->assertEquals(
-			new StringResourceNode('42, 42'),
+			new GeoJsonResourceNode('42, 42', new Point(array(42, 42))),
 			$this->newFactory()->newWikibaseValueFormatter()->format(
 				new GlobeCoordinateValue(new LatLongValue(42, 42), 1)
 			)
