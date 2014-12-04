@@ -44,6 +44,12 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 				)
 			),
 			array(
+				'lieu de naissan',
+				array(
+					new EntityIdValue(new PropertyId('P19'))
+				)
+			),
+			array(
 				'PÈRE',
 				array(
 					new EntityIdValue(new PropertyId('P22'))

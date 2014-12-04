@@ -86,28 +86,52 @@ class WikibaseEntityIdParser extends StringValueParser {
 
 	private function parseResult(array $result, $search) {
 		$search = $this->cleanLabel($search);
-		$entityIds = array();
 
-		foreach($result['search'] as $entry) {
-			if($this->doResultsMatch($entry, $search)) {
-				$entityIds[] = new EntityIdValue($this->entityIdParser->parse($entry['id']));
-			}
+		$results = $this->filterResults($result['search'], $search, true);
+		if(empty($results)) {
+			$results = $this->filterResults($result['search'], $search, false);
+		}
+
+		$entityIds = array();
+		foreach($results as $entry) {
+			$entityIds[] = new EntityIdValue($this->entityIdParser->parse($entry['id']));
 		}
 
 		return $entityIds;
 	}
 
-	private function doResultsMatch(array $entry, $search) {
+	private function filterResults(array $results, $search, $isStrict) {
+		$filtered = array();
+		foreach($results as $entry) {
+			if($this->doResultsMatch($entry, $search, $isStrict)) {
+				$filtered[] = $entry;
+			}
+		}
+
+		return $filtered;
+	}
+
+	private function doResultsMatch(array $entry, $search, $isStrict) {
 		if(array_key_exists('aliases', $entry)) {
 			foreach($entry['aliases'] as $alias) {
-				if($this->cleanLabel($alias) === $search) {
+				if($this->areSimilar($this->cleanLabel($alias), $search, $isStrict)) {
 					return true;
 				}
 			}
 		}
 
 		return array_key_exists('label', $entry) &&
-			$this->cleanLabel($entry['label']) === $search;
+			$this->areSimilar($this->cleanLabel($entry['label']), $search, $isStrict);
+	}
+
+	private function areSimilar($a, $b, $isStrict) {
+		if($isStrict) {
+			return $a === $b;
+		} else {
+			//checks if the strings have less than 3 character different and more than 80% percent of characters similar
+			return similar_text($a, $b, $percentage) - strlen($a) < 3 &&
+				$percentage > 80;
+		}
 	}
 
 	private function cleanLabel($label) {
