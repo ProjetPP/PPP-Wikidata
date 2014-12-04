@@ -41,8 +41,8 @@ class GlobeCoordinateFormatter extends ValueFormatterBase {
 
 	private function toGeoJson(GlobeCoordinateValue $value) {
 		return new Point(array(
-			$this->roundDegrees($value->getLatitude(), $value->getPrecision()),
-			$this->roundDegrees($value->getLongitude(), $value->getPrecision())
+			$this->roundDegrees($value->getLongitude(), $value->getPrecision()),
+			$this->roundDegrees($value->getLatitude(), $value->getPrecision())
 		));
 	}
 
