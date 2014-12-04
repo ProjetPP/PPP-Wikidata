@@ -83,7 +83,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				new ModuleRequest(
 					'en',
 					new TripleNode(
-						new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+						new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 						new ResourceListNode(array(new StringResourceNode('VIAF'))),
 						new MissingNode()
 					),
@@ -101,7 +101,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				new ModuleRequest(
 					'en',
 					new TripleNode(
-						new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+						new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 						new ResourceListNode(array(new StringResourceNode('name'))),
 						new MissingNode()
 					),
@@ -109,7 +109,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 					array(
 						'relevance' => 1
 					)
@@ -199,7 +199,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'en',
 					new TripleNode(
 						new ResourceListNode(array(
-							new StringResourceNode('Douglas Adam'),
+							new StringResourceNode('Douglas Adams'),
 							new StringResourceNode('Jean-François Champollion')
 						)),
 						new ResourceListNode(array(new StringResourceNode('VIAF'))),
@@ -223,7 +223,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'en',
 					new UnionNode(array(
 						new TripleNode(
-							new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+							new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 							new ResourceListNode(array(new StringResourceNode('VIAF'))),
 							new MissingNode()
 						),
@@ -251,12 +251,12 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'en',
 					new IntersectionNode(array(
 						new TripleNode(
-							new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+							new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 							new ResourceListNode(array(new StringResourceNode('VIAF'))),
 							new MissingNode()
 						),
 						new TripleNode(
-							new ResourceListNode(array(new StringResourceNode('Douglas Adam'))),
+							new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 							new ResourceListNode(array(new StringResourceNode('VIAF'))),
 							new MissingNode()
 						)

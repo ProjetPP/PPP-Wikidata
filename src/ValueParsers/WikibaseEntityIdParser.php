@@ -100,18 +100,18 @@ class WikibaseEntityIdParser extends StringValueParser {
 	private function doResultsMatch(array $entry, $search) {
 		if(array_key_exists('aliases', $entry)) {
 			foreach($entry['aliases'] as $alias) {
-				if($this->areSimilar($this->cleanLabel($alias), $search)) {
+				if($this->cleanLabel($alias) === $search) {
 					return true;
 				}
 			}
 		}
 
 		return array_key_exists('label', $entry) &&
-			$this->areSimilar($this->cleanLabel($entry['label']), $search);
+			$this->cleanLabel($entry['label']) === $search;
 	}
 
 	private function cleanLabel($label) {
-		$label = strtolower($label);
+		$label = mb_strtolower($label, 'UTF-8');
 		$label = preg_replace('/(\(.*\))/', '', $label); //Removes comments
 		$label = str_replace(
 			array('\'', '-'),
@@ -119,13 +119,5 @@ class WikibaseEntityIdParser extends StringValueParser {
 			$label
 		);
 		return trim($label);
-	}
-
-	/**
-	 * Returns if the strings have less than 3 character different and more than 80% percent of characters similar
-	 */
-	private function areSimilar($str1, $str2) {
-		return similar_text($str1, $str2, $percentage) - strlen($str1) < 3 &&
-			$percentage > 80;
 	}
 }
