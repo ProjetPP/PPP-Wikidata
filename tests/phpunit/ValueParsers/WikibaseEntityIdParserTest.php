@@ -31,20 +31,26 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 				array(new EntityIdValue(new PropertyId('P214')))
 			),
 			array(
-				'Birth name',
+				'nom de naissance',
 				array(
 					new EntityIdValue(new PropertyId('P1477')),
 					new EntityIdValue(new PropertyId('P513'))
 				)
 			),
 			array(
-				'VIAF identifi',
+				'identifiant VIAF',
 				array(
 					new EntityIdValue(new PropertyId('P214'))
 				)
 			),
 			array(
-				'father',
+				'lieu de naissan',
+				array(
+					new EntityIdValue(new PropertyId('P19'))
+				)
+			),
+			array(
+				'PÈRE',
 				array(
 					new EntityIdValue(new PropertyId('P22'))
 				)
@@ -89,7 +95,7 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	protected function newParserOptions() {
 		$parserOptions = parent::newParserOptions();
 
-		$parserOptions->setOption(ValueParser::OPT_LANG, 'en');
+		$parserOptions->setOption(ValueParser::OPT_LANG, 'fr');
 		$parserOptions->setOption(WikibaseEntityIdParser::OPT_ENTITY_TYPE, 'property');
 
 		return $parserOptions;
