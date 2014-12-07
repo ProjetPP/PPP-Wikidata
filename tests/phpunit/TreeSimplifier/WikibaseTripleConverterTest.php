@@ -1,40 +1,37 @@
 <?php
 
-namespace PPP\Wikidata;
+namespace PPP\Wikidata\TreeSimplifier;
 
-use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\AbstractNode;
-use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
-use PPP\DataModel\SentenceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
+use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
+use PPP\Wikidata\WikibaseEntityProvider;
+use PPP\Wikidata\WikibasePropertyTypeProvider;
+use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\Api\WikibaseFactory;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
 
 /**
- * @covers PPP\Wikidata\WikibaseNodeAnnotator
+ * @covers PPP\Wikidata\TreeSimplifier\WikibaseTripleConverter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  *
  * @todo mock instead of requests to the real API?
- * @todo object for multiple types
  */
-class WikibaseNodeAnnotatorTest extends \PHPUnit_Framework_TestCase {
+class WikibaseTripleConverterTest extends NodeSimplifierBaseTest {
 
-	/**
-	 * @dataProvider annotatedNodeProvider
-	 */
-	public function testAnnotateNode(AbstractNode $inputNode, AbstractNode $expectedNode) {
+	public function buildSimplifier() {
 		$valueParserFactory = new WikibaseValueParserFactory(
 			'en',
 			new MediawikiApi('http://www.wikidata.org/w/api.php'),
@@ -46,27 +43,56 @@ class WikibaseNodeAnnotatorTest extends \PHPUnit_Framework_TestCase {
 			new WikibaseEntityCache(new ArrayCache())
 		));
 
-		$annotator = new WikibaseNodeAnnotator($valueParserFactory->newWikibaseValueParser(), $propertyTypeProvider);
-		$this->assertEquals($expectedNode, $annotator->annotateNode($inputNode));
+		return new WikibaseTripleConverter(new ResourceListNodeParser($valueParserFactory->newWikibaseValueParser()), $propertyTypeProvider);
+	}
+
+	public function simplifiableProvider() {
+		return array(
+			array(
+				new TripleNode(
+					new MissingNode(),
+					new ResourceListNode(array(new StringResourceNode('a'))),
+					new ResourceListNode(array())
+				)
+			),
+		);
+	}
+
+	public function nonSimplifiableProvider() {
+		return array(
+			array(
+				new MissingNode()
+			),
+			array(
+				new TripleNode(
+					new UnionNode(array()),
+					new MissingNode(),
+					new MissingNode()
+				)
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider annotatedNodeProvider
+	 */
+	public function testSimplifyNode(AbstractNode $inputNode, AbstractNode $expectedNode) {
+		$this->assertEquals($expectedNode, $this->buildSimplifier()->simplify($inputNode));
 	}
 
 	public function annotatedNodeProvider() {
 		return array(
-			array(
-				new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
-				new ResourceListNode(array(new WikibaseResourceNode('Douglas Adams', new UnknownValue(new StringResourceNode('Douglas Adams')))))
-			),
 			array(
 				new TripleNode(
 					new ResourceListNode(array(new StringResourceNode('Ramesses III'))),
 					new ResourceListNode(array(new StringResourceNode('Place of birth'))),
 					new MissingNode()
 				),
-				new UnionNode(array(new TripleNode(
+				new TripleNode(
 					new ResourceListNode(array(new WikibaseResourceNode('Ramesses III', new EntityIdValue(new ItemId('Q1528'))))),
 					new ResourceListNode(array(new WikibaseResourceNode('Place of birth', new EntityIdValue(new PropertyId('P19'))))),
 					new MissingNode()
-				)))
+				)
 			),
 			array(
 				new TripleNode(
@@ -86,38 +112,6 @@ class WikibaseNodeAnnotatorTest extends \PHPUnit_Framework_TestCase {
 						new MissingNode()
 					),
 				))
-			),
-			array(
-				new TripleNode(
-					new ResourceListNode(array(new StringResourceNode('Ramesses III'))),
-					new ResourceListNode(array(new StringResourceNode('Place of birth'))),
-					new MissingNode()
-				),
-				new UnionNode(array(new TripleNode(
-					new ResourceListNode(array(new WikibaseResourceNode('Ramesses III', new EntityIdValue(new ItemId('Q1528'))))),
-					new ResourceListNode(array(new WikibaseResourceNode('Place of birth', new EntityIdValue(new PropertyId('P19'))))),
-					new MissingNode()
-				)))
-			),
-			array(
-				new SentenceNode(''),
-				new SentenceNode('')
-			),
-			array(
-				new UnionNode(array(
-					new ResourceListNode(array(new StringResourceNode('foo')))
-				)),
-				new UnionNode(array(
-					new ResourceListNode(array(new WikibaseResourceNode('foo', new UnknownValue(new StringResourceNode('foo')))))
-				)),
-			),
-			array(
-				new IntersectionNode(array(
-					new ResourceListNode(array(new StringResourceNode('foo')))
-				)),
-				new IntersectionNode(array(
-					new ResourceListNode(array(new WikibaseResourceNode('foo', new UnknownValue(new StringResourceNode('foo')))))
-				)),
 			),
 		);
 	}

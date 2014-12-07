@@ -2,7 +2,6 @@
 
 namespace PPP\Wikidata;
 
-
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\MissingNode;
