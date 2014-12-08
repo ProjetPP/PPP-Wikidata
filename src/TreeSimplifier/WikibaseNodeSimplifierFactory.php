@@ -32,10 +32,20 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	 */
 	public function __construct(MediawikiApi $mediawikiApi, WikidataQueryApi $wikidataQueryApi, Cache $cache, $languageCode) {
 		parent::__construct(array(
+			new MeaninglessPredicateTripleNodeSimplifier(),
+			$this->newIdentityTripleNodeSimplifier($mediawikiApi, $cache, $languageCode),
 			$this->newTripleConverter($mediawikiApi, $cache, $languageCode),
 			$this->newMissingObjectTripleNodeSimplifier($mediawikiApi, $cache),
 			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi)
 		));
+	}
+
+	private function newIdentityTripleNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
+		return new IdentityTripleNodeSimplifier(
+			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode),
+			$this->newEntityProvider($mediawikiApi, $cache),
+			$languageCode
+		);
 	}
 
 	private function newMissingObjectTripleNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache) {
@@ -48,19 +58,15 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	}
 
 	private function newTripleConverter(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
-		$parserFactory = new WikibaseValueParserFactory($languageCode, $mediawikiApi, $cache);
 		return new WikibaseTripleConverter(
-			new ResourceListNodeParser($parserFactory->newWikibaseValueParser()),
-			$this->newPropertyTypeProvider($mediawikiApi, $cache)
+			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode),
+			new WikibasePropertyTypeProvider($this->newEntityProvider($mediawikiApi, $cache))
 		);
 	}
 
-	private function newPropertyTypeProvider(MediawikiApi $mediawikiApi, Cache $cache) {
-		$wikibaseFactory = new WikibaseFactory($mediawikiApi);
-		return new WikibasePropertyTypeProvider(new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionGetter(),
-			new WikibaseEntityCache($cache)
-		));
+	private function newResourceListNodeParser(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
+		$parserFactory = new WikibaseValueParserFactory($languageCode, $mediawikiApi, $cache);
+		return new ResourceListNodeParser($parserFactory->newWikibaseValueParser());
 	}
 
 	private function newEntityProvider(MediawikiApi $mediawikiApi, Cache $cache) {

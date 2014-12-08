@@ -52,17 +52,6 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			array(
 				new ModuleRequest(
 					'en',
-					new SentenceNode(''),
-					'a'
-				),
-				array(new ModuleResponse(
-					'en',
-					new SentenceNode('')
-				))
-			),
-			array(
-				new ModuleRequest(
-					'en',
 					new ResourceListNode(array(new TimeResourceNode('1933-11'))),
 					'a',
 					array(
@@ -269,6 +258,46 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						'relevance' => 1
 					)
 				))
+			),
+			array(
+				new ModuleRequest(
+					'fr',
+					new TripleNode(
+						new ResourceListNode(array(new StringResourceNode('Léon de la Brière'))),
+						new ResourceListNode(array(new StringResourceNode('Identity'))),
+						new MissingNode()
+					),
+					'a'
+				),
+				array(new ModuleResponse(
+					'fr',
+					new ResourceListNode(array(new StringResourceNode('Léon Leroy de la Brière (14 janvier 1845 - 12 septembre 1899) est un écrivain politique français de la fin du XIXe siècle.'))),
+					array(
+						'relevance' => 1
+					)
+				)),
+			),
+			array(
+				new ModuleRequest(
+					'fr',
+					new SentenceNode('Léon de la Brière'),
+					'a'
+				),
+				array(new ModuleResponse(
+					'fr',
+					new ResourceListNode(array(new StringResourceNode('Léon Leroy de la Brière (14 janvier 1845 - 12 septembre 1899) est un écrivain politique français de la fin du XIXe siècle.'))),
+					array(
+						'relevance' => 1
+					)
+				)),
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new SentenceNode('Who is Obama'),
+					'a'
+				),
+				array(),
 			),
 		);
 	}

@@ -49,18 +49,19 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	 * @see RequestHandler::buildResponse
 	 */
 	public function buildResponse(ModuleRequest $request) {
-		$cleanTree = $this->buildTreeCleaner()->simplify($request->getSentenceTree());
-
-		$simplifiedTree = $this->buildTreeSimplifier($request->getLanguageCode())->simplify($cleanTree);
+		$simplifiedTree = $this->buildTreeSimplifier($request->getLanguageCode())->simplify($request->getSentenceTree());
 
 		$formattedTree = $this->buildNodeFormatter($request->getLanguageCode())->simplify($simplifiedTree);
-		$responses[] = new ModuleResponse(
+
+		if($formattedTree->equals(new ResourceListNode())) {
+			return array();
+		}
+
+		return array(new ModuleResponse(
 			$request->getLanguageCode(),
 			$formattedTree,
 			$this->buildMeasures($formattedTree, $request->getMeasures())
-		);
-
-		return $responses;
+		));
 	}
 
 	private function buildMeasures(AbstractNode $node, array $measures) {
@@ -73,13 +74,6 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		}
 
 		return $measures;
-	}
-
-	private function buildTreeCleaner() {
-		$simplifierFactory = new NodeSimplifierFactory(array(
-			new WikidataTripleNodeCleaner()
-		));
-		return $simplifierFactory->newNodeSimplifier();
 	}
 
 	private function buildTreeSimplifier($languageCode) {
