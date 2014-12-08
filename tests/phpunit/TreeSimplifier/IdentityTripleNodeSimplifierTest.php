@@ -2,6 +2,7 @@
 
 namespace PPP\Wikidata\TreeSimplifier;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
@@ -9,6 +10,11 @@ use PPP\DataModel\SentenceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
+use PPP\Wikidata\Cache\WikibaseEntityCache;
+use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
+use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
+use PPP\Wikidata\WikibaseEntityProvider;
+use Wikibase\Api\WikibaseFactory;
 
 /**
  * @covers PPP\Wikidata\TreeSimplifier\IdentityTripleNodeSimplifier
@@ -19,7 +25,21 @@ use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
 class IdentityTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 
 	public function buildSimplifier() {
-		return new IdentityTripleNodeSimplifier('fr');
+		$valueParserFactory = new WikibaseValueParserFactory(
+			'fr',
+			new MediawikiApi('http://www.wikidata.org/w/api.php'),
+			new ArrayCache()
+		);
+		$wikibaseFactory = new WikibaseFactory(new MediawikiApi('http://www.wikidata.org/w/api.php'));
+
+		return new IdentityTripleNodeSimplifier(
+			new ResourceListNodeParser($valueParserFactory->newWikibaseValueParser()),
+			new WikibaseEntityProvider(
+				$wikibaseFactory->newRevisionGetter(),
+				new WikibaseEntityCache(new ArrayCache())
+			),
+			'fr'
+		);
 	}
 
 	/**

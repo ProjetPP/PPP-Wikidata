@@ -4,6 +4,7 @@ namespace PPP\Wikidata\TreeSimplifier;
 
 use InvalidArgumentException;
 use Mediawiki\Api\MediawikiApi;
+use OutOfBoundsException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
@@ -12,6 +13,11 @@ use PPP\DataModel\SentenceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
+use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
+use PPP\Wikidata\WikibaseEntityProvider;
+use PPP\Wikidata\WikibaseResourceNode;
+use ValueParsers\ParseException;
+use Wikibase\DataModel\Entity\ItemId;
 
 /**
  * Simplifies triples with identity predicate or sentence nodes
@@ -22,14 +28,34 @@ use PPP\Module\TreeSimplifier\NodeSimplifier;
 class IdentityTripleNodeSimplifier implements NodeSimplifier {
 
 	/**
+	 * @var ResourceListNodeParser
+	 */
+	private $resourceListNodeParser;
+
+	/**
+	 * @var WikibaseEntityProvider
+	 */
+	private $entityProvider;
+
+	/**
+	 * @var string
+	 */
+	private $languageCode;
+
+	/**
 	 * @var MediawikiApi
 	 */
 	private $mediawikiApi;
 
 	/**
+	 * @param ResourceListNodeParser $resourceListNodeParser
+	 * @param WikibaseEntityProvider $entityProvider
 	 * @param string $languageCode
 	 */
-	public function __construct($languageCode) {
+	public function __construct(ResourceListNodeParser $resourceListNodeParser, WikibaseEntityProvider $entityProvider, $languageCode) {
+		$this->resourceListNodeParser = $resourceListNodeParser;
+		$this->entityProvider = $entityProvider;
+		$this->languageCode = $languageCode;
 		$this->mediawikiApi = $this->getWikipediaApiForLanguage($languageCode);
 	}
 
@@ -54,7 +80,7 @@ class IdentityTripleNodeSimplifier implements NodeSimplifier {
 		}
 
 		if($node instanceof SentenceNode) {
-			return $this->doSimplificationForSentence($node);
+			return $this->doSimplificationForResourceList(new ResourceListNode(array(new StringResourceNode($node->getValue()))));
 		} else if($node instanceof TripleNode) {
 			return $this->doSimplificationForTriple($node);
 		} else {
@@ -62,20 +88,24 @@ class IdentityTripleNodeSimplifier implements NodeSimplifier {
 		}
 	}
 
-	private function doSimplificationForSentence(SentenceNode $node) {
-		return $this->getDescriptionsForSubjects($this->filterDisambiguation(array($node->getValue())));
-	}
-
 	private function doSimplificationForTriple(TripleNode $node) {
 		if(!$this->isPredicateIdentity($node->getPredicate())) {
 			return $node;
 		}
 
-		return $this->getDescriptionsForSubjects(
-			$this->filterDisambiguation(
-				$this->resourceListToStringArray($node->getSubject())
-			)
-		);
+		return $this->doSimplificationForResourceList($node->getSubject());
+	}
+
+	private function doSimplificationForResourceList(ResourceListNode $resourceList) {
+		try {
+			$wikibaseResources = $this->resourceListNodeParser->parse($resourceList, 'wikibase-item');
+		} catch(ParseException $e) {
+			return new ResourceListNode();
+		}
+
+		$titles = $this->filterDisambiguation($this->getTitlesForWikibaseResources($wikibaseResources));
+
+		return $this->getDescriptionsForSubjects($titles);
 	}
 
 	private function isPredicateIdentity(ResourceListNode $predicates) {
@@ -87,6 +117,24 @@ class IdentityTripleNodeSimplifier implements NodeSimplifier {
 		return strtolower($predicates->getIterator()->current()->getValue()) === 'identity';
 	}
 
+	private function getTitlesForWikibaseResources(ResourceListNode $resourceList) {
+		$titles = array();
+
+		/** @var WikibaseResourceNode $resource */
+		foreach($resourceList as $resource) {
+			/** @var ItemId $itemId */
+			$itemId = $resource->getDataValue()->getEntityId();
+			$item = $this->entityProvider->getItem($itemId);
+			try {
+				$titles[] = $item->getSiteLinkList()->getBySiteId($this->languageCode . 'wiki')->getPageName();
+			} catch(OutOfBoundsException $e) {
+			}
+		}
+
+		return $titles;
+	}
+
+	//TODO: use Wikidata content
 	private function filterDisambiguation(array $titles) {
 		$result = $this->mediawikiApi->getAction('query', array(
 			'titles' => implode('|', $titles),
@@ -124,22 +172,14 @@ class IdentityTripleNodeSimplifier implements NodeSimplifier {
 		));
 
 		$descriptions = array();
+
 		foreach($result['query']['pages'] as $pageResult) {
-			$descriptions[] = new StringResourceNode($pageResult['extract']);
+			if(array_key_exists('extract', $pageResult)) {
+				$descriptions[] = new StringResourceNode($pageResult['extract']);
+			}
 		}
 
 		return new ResourceListNode($descriptions);
-	}
-
-	private function resourceListToStringArray(ResourceListNode $subjects) {
-		$titles = array();
-
-		/** @var ResourceNode $subject */
-		foreach($subjects as $subject) {
-			$titles[] = $subject->getValue();
-		}
-
-		return $titles;
 	}
 
 	private function getWikipediaApiForLanguage($languageCode) {
