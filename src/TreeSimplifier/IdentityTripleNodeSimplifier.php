@@ -17,7 +17,12 @@ use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use ValueParsers\ParseException;
+use Wikibase\DataModel\Entity\EntityIdValue;
+use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\DataModel\Snak\PropertyValueSnak;
+use Wikibase\DataModel\Statement\Statement;
 
 /**
  * Simplifies triples with identity predicate or sentence nodes
@@ -26,6 +31,9 @@ use Wikibase\DataModel\Entity\ItemId;
  * @author Thomas Pellissier Tanon
  */
 class IdentityTripleNodeSimplifier implements NodeSimplifier {
+
+	const DISAMBIGUATION_QID = 'Q4167410';
+	const INSTANCEOF_PID = 'P31';
 
 	/**
 	 * @var ResourceListNodeParser
@@ -103,7 +111,7 @@ class IdentityTripleNodeSimplifier implements NodeSimplifier {
 			return new ResourceListNode();
 		}
 
-		$titles = $this->filterDisambiguation($this->getTitlesForWikibaseResources($wikibaseResources));
+		$titles = $this->getTitlesForWikibaseResources($wikibaseResources);
 
 		return $this->getDescriptionsForSubjects($titles);
 	}
@@ -125,35 +133,31 @@ class IdentityTripleNodeSimplifier implements NodeSimplifier {
 			/** @var ItemId $itemId */
 			$itemId = $resource->getDataValue()->getEntityId();
 			$item = $this->entityProvider->getItem($itemId);
-			try {
-				$titles[] = $item->getSiteLinkList()->getBySiteId($this->languageCode . 'wiki')->getPageName();
-			} catch(OutOfBoundsException $e) {
+
+			if(!$this->isDisambiguation($item)) {
+				try {
+					$titles[] = $item->getSiteLinkList()->getBySiteId($this->languageCode . 'wiki')->getPageName();
+				} catch(OutOfBoundsException $e) {
+				}
 			}
 		}
 
 		return $titles;
 	}
 
-	//TODO: use Wikidata content
-	private function filterDisambiguation(array $titles) {
-		$result = $this->mediawikiApi->getAction('query', array(
-			'titles' => implode('|', $titles),
-			'prop' => 'pageprops',
-			'redirects' => true,
-			'ppprop' => 'disambiguation'
-		));
-
-		$filteredTitles = array();
-		foreach($result['query']['pages'] as $id => $pageResult) {
+	private function isDisambiguation(Item $item) {
+		/** @var Statement $statement */
+		foreach($item->getStatements()->getWithPropertyId(new PropertyId(self::INSTANCEOF_PID)) as $statement) {
+			$mainSnak = $statement->getMainSnak();
 			if(
-				$id > 0 &&
-				(!array_key_exists('pageprops', $pageResult) || !array_key_exists('disambiguation', $pageResult['pageprops']))
+				$mainSnak instanceof PropertyValueSnak &&
+				$mainSnak->getDataValue()->equals(new EntityIdValue(new ItemId(self::DISAMBIGUATION_QID)))
 			) {
-				$filteredTitles[] = $pageResult['title'];
+				return true;
 			}
 		}
 
-		return $filteredTitles;
+		return false;
 	}
 
 	private function getDescriptionsForSubjects(array $titles) {

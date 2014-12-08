@@ -92,6 +92,10 @@ class IdentityTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new SentenceNode('Léon de la Brière')
 			),
 			array(
+				new ResourceListNode(),
+				new SentenceNode('Lowendal')
+			),
+			array(
 				new ResourceListNode(array(new StringResourceNode('Léon Leroy de la Brière (14 janvier 1845 - 12 septembre 1899) est un écrivain politique français de la fin du XIXe siècle.'))),
 				new TripleNode(
 					new ResourceListNode(array(new StringResourceNode('Léon de la Brière'))),

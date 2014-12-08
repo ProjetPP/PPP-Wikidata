@@ -294,14 +294,6 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			array(
 				new ModuleRequest(
 					'en',
-					new SentenceNode('Newton'),
-					'a'
-				),
-				array(),
-			),
-			array(
-				new ModuleRequest(
-					'en',
 					new SentenceNode('Who is Obama'),
 					'a'
 				),
