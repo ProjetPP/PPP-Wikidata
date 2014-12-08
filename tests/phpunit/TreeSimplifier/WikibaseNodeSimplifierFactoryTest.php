@@ -19,7 +19,7 @@ class WikibaseNodeSimplifierFactoryTest extends \PHPUnit_Framework_TestCase {
 		$wikidataQueryApiMock = $this->getMockBuilder('WikidataQueryApi\WikidataQueryApi')
 			->disableOriginalConstructor()
 			->getMock();
-		$factory = new WikibaseNodeSimplifierFactory($mediawikiApiMock, $wikidataQueryApiMock, new ArrayCache());
+		$factory = new WikibaseNodeSimplifierFactory($mediawikiApiMock, $wikidataQueryApiMock, new ArrayCache(), 'en');
 
 		$this->assertInstanceOf(
 			'PPP\Module\TreeSimplifier\NodeSimplifier',

@@ -92,14 +92,13 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	private function getSnaksForProperty(Item $item, PropertyId $propertyId) {
 		$statementFinder = new BestStatementsFinder($item->getStatements());
 
-		$snaks = array();
-		$statements = array();
 		try {
 			$statements = $statementFinder->getBestStatementsForProperty($propertyId);
 		} catch(OutOfBoundsException $e) {
 			return array();
 		}
 
+		$snaks = array();
 		/** @var Statement $statement */
 		foreach($statements as $statement) {
 			$snaks[] = $statement->getMainSnak();

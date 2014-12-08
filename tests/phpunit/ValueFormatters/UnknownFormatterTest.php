@@ -20,10 +20,6 @@ class UnknownFormatterTest extends ValueFormatterTestBase {
 	public function validProvider() {
 		return array(
 			array(
-				new UnknownValue(new StringResourceNode('foo')),
-				new StringResourceNode('foo')
-			),
-			array(
 				new UnknownValue('foo'),
 				new StringResourceNode('foo')
 			),

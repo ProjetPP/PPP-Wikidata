@@ -10,13 +10,10 @@ use PPP\Module\AbstractRequestHandler;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
-use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\DataModel\Deserializers\WikibaseEntityResourceNodeDeserializer;
 use PPP\Wikidata\DataModel\Serializers\WikibaseEntityResourceNodeSerializer;
 use PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
-use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
-use Wikibase\Api\WikibaseFactory;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use WikidataQueryApi\WikidataQueryApi;
 
@@ -54,9 +51,7 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	public function buildResponse(ModuleRequest $request) {
 		$cleanTree = $this->buildTreeCleaner()->simplify($request->getSentenceTree());
 
-		$annotatedTree = $this->buildNodeAnnotator($request->getLanguageCode())->annotateNode($cleanTree);
-
-		$simplifiedTree = $this->buildTreeSimplifier()->simplify($annotatedTree);
+		$simplifiedTree = $this->buildTreeSimplifier($request->getLanguageCode())->simplify($cleanTree);
 
 		$formattedTree = $this->buildNodeFormatter($request->getLanguageCode())->simplify($simplifiedTree);
 		$responses[] = new ModuleResponse(
@@ -87,21 +82,8 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		return $simplifierFactory->newNodeSimplifier();
 	}
 
-	private function buildNodeAnnotator($languageCode) {
-		$parserFactory = new WikibaseValueParserFactory($languageCode, $this->mediawikiApi, $this->cache);
-		return new WikibaseNodeAnnotator($parserFactory->newWikibaseValueParser(), $this->buildPropertyTypeProvider());
-	}
-
-	private function buildPropertyTypeProvider() {
-		$wikibaseFactory = new WikibaseFactory($this->mediawikiApi);
-		return new WikibasePropertyTypeProvider(new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionGetter(),
-			new WikibaseEntityCache($this->cache)
-		));
-	}
-
-	private function buildTreeSimplifier() {
-		$factory = new WikibaseNodeSimplifierFactory($this->mediawikiApi, $this->wikidataQueryApi, $this->cache);
+	private function buildTreeSimplifier($languageCode) {
+		$factory = new WikibaseNodeSimplifierFactory($this->mediawikiApi, $this->wikidataQueryApi, $this->cache, $languageCode);
 		return $factory->newNodeSimplifier();
 	}
 
