@@ -168,7 +168,8 @@ class IdentityTripleNodeSimplifier implements NodeSimplifier {
 			'exintro' => true,
 			'exsectionformat' => 'plain',
 			'explaintext' => true,
-			'exsentences' => 3
+			'exsentences' => 3,
+			'exlimit' => count($titles)
 		));
 
 		$descriptions = array();
