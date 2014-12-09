@@ -5,9 +5,12 @@ namespace PPP\Wikidata\ValueParsers;
 use DataValues\Geo\Parsers\GlobeCoordinateParser;
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\Cache\WikibaseEntityIdParserCache;
+use PPP\Wikidata\WikibaseEntityProvider;
 use ValueParsers\ParserOptions;
 use ValueParsers\ValueParser;
+use Wikibase\Api\WikibaseFactory;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
 
 /**
@@ -60,10 +63,12 @@ class WikibaseValueParserFactory {
 			ValueParser::OPT_LANG => $this->languageCode,
 			WikibaseEntityIdParser::OPT_ENTITY_TYPE => $type
 		));
+		$wikibaseFactory = new WikibaseFactory($this->api);
 		return new WikibaseEntityIdParser(
 			$this->api,
 			new BasicEntityIdParser(),
 			new WikibaseEntityIdParserCache($this->cache),
+			new WikibaseEntityProvider($wikibaseFactory->newRevisionGetter(), new WikibaseEntityCache($this->cache)),
 			$parserOptions
 		);
 	}
