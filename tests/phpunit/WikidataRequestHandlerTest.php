@@ -110,7 +110,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+					new ResourceListNode(array(new WikibaseEntityResourceNode(
+						'Douglas Adams',
+						new ItemId('Q42'),
+						'English writer and humorist'
+					))),
 					array(
 						'relevance' => 1
 					)

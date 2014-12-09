@@ -10,17 +10,31 @@ use PPP\DataModel\ResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
+use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 
 /**
- * Simplifies a triple node with an unuseful predicate like "name"
+ * Simplifies a triple node with an unuseful predicate like "name" or "identity" and cast them to wikibase entity
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
 class MeaninglessPredicateTripleNodeSimplifier implements NodeSimplifier {
 
+	/**
+	 * @var ResourceListNodeParser
+	 */
+	private $resourceListNodeParser;
+
+	/**
+	 * @param ResourceListNodeParser $resourceListNodeParser
+	 */
+	public function __construct(ResourceListNodeParser $resourceListNodeParser) {
+		$this->resourceListNodeParser = $resourceListNodeParser;
+	}
+
 	private static $MEANINGLESS_PREDICATES = array(
-		'name'
+		'name',
+		'identity'
 	);
 
 	/**
@@ -28,6 +42,7 @@ class MeaninglessPredicateTripleNodeSimplifier implements NodeSimplifier {
 	 */
 	public function isSimplifierFor(AbstractNode $node) {
 		return $node instanceof TripleNode &&
+			$node->getSubject() instanceof ResourceListNode &&
 			$node->getPredicate() instanceof ResourceListNode &&
 			$node->getObject() instanceof MissingNode;
 	}
@@ -59,10 +74,10 @@ class MeaninglessPredicateTripleNodeSimplifier implements NodeSimplifier {
 		if(empty($meaninglessPredicates)) {
 			return $node;
 		} else if(empty($otherPredicates)) {
-			return $node->getSubject();
+			return $this->resourceListNodeParser->parse($node->getSubject(), 'wikibase-item');
 		} else {
 			return new UnionNode(array(
-				$node->getSubject(),
+				$this->resourceListNodeParser->parse($node->getSubject(), 'wikibase-item'),
 				new TripleNode($node->getSubject(), new ResourceListNode($otherPredicates), $node->getObject())
 			));
 		}
