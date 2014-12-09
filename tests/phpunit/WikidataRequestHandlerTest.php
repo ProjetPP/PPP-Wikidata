@@ -57,10 +57,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					new SentenceNode(''),
 					'a'
 				),
-				array(new ModuleResponse(
-					'en',
-					new SentenceNode('')
-				))
+				array()
 			),
 			array(
 				new ModuleRequest(
@@ -296,6 +293,14 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						new StringResourceNode('default')
 					))
 				))
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new SentenceNode('Who are you?'),
+					'a'
+				),
+				array()
 			),
 		);
 	}

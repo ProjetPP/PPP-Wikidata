@@ -32,11 +32,16 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	 */
 	public function __construct(MediawikiApi $mediawikiApi, WikidataQueryApi $wikidataQueryApi, Cache $cache, $languageCode) {
 		parent::__construct(array(
+			$this->newSentenceNodeSimplifier($mediawikiApi, $cache, $languageCode),
 			$this->newMeaninglessPredicateTripleNodeSimplifier($mediawikiApi, $cache, $languageCode),
 			$this->newTripleConverter($mediawikiApi, $cache, $languageCode),
 			$this->newMissingObjectTripleNodeSimplifier($mediawikiApi, $cache),
 			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi)
 		));
+	}
+
+	private function newSentenceNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
+		return new SentenceNodeSimplifier($this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode));
 	}
 
 	private function newMeaninglessPredicateTripleNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {

@@ -52,13 +52,16 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		$simplifiedTree = $this->buildTreeSimplifier($request->getLanguageCode())->simplify($request->getSentenceTree());
 
 		$formattedTree = $this->buildNodeFormatter($request->getLanguageCode())->simplify($simplifiedTree);
-		$responses[] = new ModuleResponse(
+
+		if($formattedTree->equals(new ResourceListNode())) {
+			return array();
+		}
+
+		return array(new ModuleResponse(
 			$request->getLanguageCode(),
 			$formattedTree,
 			$this->buildMeasures($formattedTree, $request->getMeasures())
-		);
-
-		return $responses;
+		));
 	}
 
 	private function buildMeasures(AbstractNode $node, array $measures) {
