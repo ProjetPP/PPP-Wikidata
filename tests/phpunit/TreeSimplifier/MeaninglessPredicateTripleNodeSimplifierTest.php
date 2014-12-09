@@ -1,6 +1,6 @@
 <?php
 
-namespace PPP\Wikidata;
+namespace PPP\Wikidata\TreeSimplifier;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
@@ -10,9 +10,9 @@ use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
 use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
-use PPP\Wikidata\TreeSimplifier\MeaninglessPredicateTripleNodeSimplifier;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
+use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 
@@ -69,6 +69,14 @@ class MeaninglessPredicateTripleNodeSimplifierTest extends NodeSimplifierBaseTes
 				new TripleNode(
 					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 					new ResourceListNode(array(new StringResourceNode('name'))),
+					new MissingNode()
+				)
+			),
+			array(
+				new ResourceListNode(array(new WikibaseResourceNode('Douglas Adams', new EntityIdValue(new ItemId('Q42'))))),
+				new TripleNode(
+					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+					new ResourceListNode(array(new StringResourceNode('definition'))),
 					new MissingNode()
 				)
 			),

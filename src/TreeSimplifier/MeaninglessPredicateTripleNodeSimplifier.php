@@ -34,7 +34,8 @@ class MeaninglessPredicateTripleNodeSimplifier implements NodeSimplifier {
 
 	private static $MEANINGLESS_PREDICATES = array(
 		'name',
-		'identity'
+		'identity',
+		'definition'
 	);
 
 	/**
