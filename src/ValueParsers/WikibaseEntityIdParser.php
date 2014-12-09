@@ -4,12 +4,18 @@ namespace PPP\Wikidata\ValueParsers;
 
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\WikibaseEntityIdParserCache;
+use PPP\Wikidata\WikibaseEntityProvider;
 use ValueParsers\ParseException;
 use ValueParsers\ParserOptions;
 use ValueParsers\StringValueParser;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Entity\EntityIdParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
+use Wikibase\DataModel\Entity\Item;
+use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\DataModel\Snak\PropertyValueSnak;
+use Wikibase\DataModel\Statement\Statement;
 
 /**
  * Try to find a Wikibase entity id from a given string. Only returns the first id found.
@@ -20,6 +26,9 @@ use Wikibase\DataModel\Entity\EntityIdValue;
 class WikibaseEntityIdParser extends StringValueParser {
 
 	const FORMAT_NAME = 'wikibase-entity';
+
+	const DISAMBIGUATION_QID = 'Q4167410';
+	const INSTANCEOF_PID = 'P31';
 
 	/**
 	 * Identifier for the option that holds the type of entity the parser should looks for.
@@ -37,6 +46,11 @@ class WikibaseEntityIdParser extends StringValueParser {
 	private $entityIdParser;
 
 	/**
+	 * @var WikibaseEntityProvider
+	 */
+	private $entityProvider;
+
+	/**
 	 * @var WikibaseEntityIdParserCache
 	 */
 	private $entityIdParserCache;
@@ -44,14 +58,17 @@ class WikibaseEntityIdParser extends StringValueParser {
 	/**
 	 * @param MediaWikiApi $api
 	 * @param EntityIdParser $entityIdParser
+	 * @param WikibaseEntityIdParserCache $entityIdParserCache
+	 * @param WikibaseEntityProvider $entityProvider
 	 * @param ParserOptions|null $options
 	 */
-	public function __construct(MediaWikiApi $api, EntityIdParser $entityIdParser, WikibaseEntityIdParserCache $entityIdParserCache, ParserOptions $options = null) {
+	public function __construct(MediaWikiApi $api, EntityIdParser $entityIdParser, WikibaseEntityIdParserCache $entityIdParserCache, WikibaseEntityProvider $entityProvider, ParserOptions $options = null) {
 		$options->requireOption(self::OPT_ENTITY_TYPE);
 
 		$this->api = $api;
 		$this->entityIdParser = $entityIdParser;
 		$this->entityIdParserCache = $entityIdParserCache;
+		$this->entityProvider = $entityProvider;
 
 		parent::__construct($options);
 	}
@@ -97,7 +114,7 @@ class WikibaseEntityIdParser extends StringValueParser {
 			$entityIds[] = new EntityIdValue($this->entityIdParser->parse($entry['id']));
 		}
 
-		return $entityIds;
+		return $this->filterDisambiguation($entityIds);
 	}
 
 	private function filterResults(array $results, $search, $isStrict) {
@@ -144,4 +161,41 @@ class WikibaseEntityIdParser extends StringValueParser {
 		);
 		return trim($label);
 	}
+
+	/**
+	 * @param EntityIdValue[] $entityIds
+	 * @return array
+	 */
+	private function filterDisambiguation(array $entityIds) {
+		$filtered = array();
+
+		foreach($entityIds as $entityValue) {
+			$entityId = $entityValue->getEntityId();
+			if($entityId instanceof ItemId) {
+				$item = $this->entityProvider->getItem($entityId);
+				if(!$this->isDisambiguation($item)) {
+					$filtered[] = $entityValue;
+				}
+			} else {
+				$filtered[] = $entityValue;
+			}
+		}
+
+		return $filtered;
+	}
+
+	private function isDisambiguation(Item $item) {
+		/** @var Statement $statement */
+		foreach($item->getStatements()->getWithPropertyId(new PropertyId(self::INSTANCEOF_PID)) as $statement) {
+			$mainSnak = $statement->getMainSnak();
+			if(
+				$mainSnak instanceof PropertyValueSnak &&
+				$mainSnak->getDataValue()->equals(new EntityIdValue(new ItemId(self::DISAMBIGUATION_QID)))
+			) {
+				return true;
+ 			}
+		}
+
+		return false;
+ 	}
 }

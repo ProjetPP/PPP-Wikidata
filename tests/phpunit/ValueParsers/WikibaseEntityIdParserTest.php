@@ -4,12 +4,15 @@ namespace PPP\Wikidata\ValueParsers;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\Cache\WikibaseEntityIdParserCache;
+use PPP\Wikidata\WikibaseEntityProvider;
 use ValueParsers\Test\ValueParserTestBase;
 use ValueParsers\ValueParser;
+use Wikibase\Api\WikibaseFactory;
 use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\DataModel\Entity\ItemId;
 
 /**
  * @covers PPP\Wikidata\ValueParsers\WikibaseEntityIdParser
@@ -27,34 +30,20 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	public function validInputProvider() {
 		return array(
 			array(
-				'VIAF',
-				array(new EntityIdValue(new PropertyId('P214')))
+				'Douglas Adams',
+				array(new EntityIdValue(new ItemId('Q42')))
 			),
 			array(
-				'nom de naissance',
+				'TUNGSTÈNE',
 				array(
-					new EntityIdValue(new PropertyId('P1477')),
-					new EntityIdValue(new PropertyId('P513'))
+					new EntityIdValue(new ItemId('Q743')),
+					new EntityIdValue(new ItemId('Q3542087'))
 				)
 			),
 			array(
-				'identifiant VIAF',
-				array(
-					new EntityIdValue(new PropertyId('P214'))
-				)
+				'Douglas Noel Ada',
+				array(new EntityIdValue(new ItemId('Q42')))
 			),
-			array(
-				'lieu de naissan',
-				array(
-					new EntityIdValue(new PropertyId('P19'))
-				)
-			),
-			array(
-				'PÈRE',
-				array(
-					new EntityIdValue(new PropertyId('P22'))
-				)
-			)
 		);
 	}
 
@@ -80,11 +69,15 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	 * @see ValueParserTestBase::getInstance
 	 */
 	protected function getInstance() {
+		$api = new MediawikiApi('http://www.wikidata.org/w/api.php');
+		$wikibaseFactory = new WikibaseFactory($api);
+
 		$class = $this->getParserClass();
 		return new $class(
-			new MediawikiApi('http://www.wikidata.org/w/api.php'),
+			$api,
 			new BasicEntityIdParser(),
 			new WikibaseEntityIdParserCache(new ArrayCache()),
+			new WikibaseEntityProvider($wikibaseFactory->newRevisionGetter(), new WikibaseEntityCache(new ArrayCache())),
 			$this->newParserOptions()
 		);
 	}
@@ -96,7 +89,7 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 		$parserOptions = parent::newParserOptions();
 
 		$parserOptions->setOption(ValueParser::OPT_LANG, 'fr');
-		$parserOptions->setOption(WikibaseEntityIdParser::OPT_ENTITY_TYPE, 'property');
+		$parserOptions->setOption(WikibaseEntityIdParser::OPT_ENTITY_TYPE, 'item');
 
 		return $parserOptions;
 	}
