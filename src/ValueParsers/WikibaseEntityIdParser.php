@@ -162,17 +162,22 @@ class WikibaseEntityIdParser extends StringValueParser {
 		return trim($label);
 	}
 
+	/**
+	 * @param EntityIdValue[] $entityIds
+	 * @return array
+	 */
 	private function filterDisambiguation(array $entityIds) {
 		$filtered = array();
 
-		foreach($entityIds as $entityId) {
+		foreach($entityIds as $entityValue) {
+			$entityId = $entityValue->getEntityId();
 			if($entityId instanceof ItemId) {
 				$item = $this->entityProvider->getItem($entityId);
 				if(!$this->isDisambiguation($item)) {
-					$filtered[] = $entityId;
+					$filtered[] = $entityValue;
 				}
 			} else {
-				$filtered[] = $entityId;
+				$filtered[] = $entityValue;
 			}
 		}
 
