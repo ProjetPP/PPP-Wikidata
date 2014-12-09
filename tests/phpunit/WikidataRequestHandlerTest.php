@@ -3,10 +3,12 @@
 namespace PPP\Wikidata;
 
 use Doctrine\Common\Cache\ArrayCache;
+use PPP\DataModel\FirstNode;
 use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\SentenceNode;
+use PPP\DataModel\SortNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
 use PPP\DataModel\TripleNode;
@@ -268,6 +270,27 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					array(
 						'relevance' => 1
 					)
+				))
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new FirstNode(new SortNode(
+						new TripleNode(
+							new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+							new ResourceListNode(array(new StringResourceNode('VIAF'))),
+							new MissingNode()
+						),
+						new StringResourceNode('default')
+					)),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new FirstNode(new SortNode(
+						new ResourceListNode(array(new StringResourceNode('113230702'))),
+						new StringResourceNode('default')
+					))
 				))
 			),
 		);
