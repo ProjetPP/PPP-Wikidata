@@ -297,7 +297,25 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			array(
 				new ModuleRequest(
 					'en',
-					new SentenceNode('Who are you?'),
+					new SentenceNode('Douglas Adams'),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new ResourceListNode(array(new WikibaseEntityResourceNode(
+						'Douglas Adams',
+						new ItemId('Q42'),
+						'English writer and humorist'
+					))),
+					array(
+						'relevance' => 1
+					)
+				))
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new SentenceNode('Who is Tpt?'),
 					'a'
 				),
 				array()
