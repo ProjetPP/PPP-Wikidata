@@ -34,6 +34,10 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 				array(new EntityIdValue(new ItemId('Q42')))
 			),
 			array(
+				'Barack Obama',
+				array(new EntityIdValue(new ItemId('Q76')))
+			),
+			array(
 				'TUNGSTÈNE',
 				array(
 					new EntityIdValue(new ItemId('Q743')),
