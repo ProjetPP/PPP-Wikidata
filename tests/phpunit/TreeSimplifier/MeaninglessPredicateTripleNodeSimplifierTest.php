@@ -73,9 +73,9 @@ class MeaninglessPredicateTripleNodeSimplifierTest extends NodeSimplifierBaseTes
 				)
 			),
 			array(
-				new ResourceListNode(array(new WikibaseResourceNode('Douglas Adams', new EntityIdValue(new ItemId('Q42'))))),
+				new ResourceListNode(array(new WikibaseResourceNode('P=NP', new EntityIdValue(new ItemId('Q746242'))))),
 				new TripleNode(
-					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+					new ResourceListNode(array(new StringResourceNode('P=NP'))),
 					new ResourceListNode(array(new StringResourceNode('definition'))),
 					new MissingNode()
 				)

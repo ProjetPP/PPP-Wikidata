@@ -27,7 +27,8 @@ class WikibaseEntityIdParser extends StringValueParser {
 
 	const FORMAT_NAME = 'wikibase-entity';
 
-	const DISAMBIGUATION_QID = 'Q4167410';
+	private static $INSTANCES_TO_FILTER = array('Q4167410', 'Q17362920', 'Q4167836', 'Q13406463', 'Q11266439');
+
 	const INSTANCEOF_PID = 'P31';
 
 	/**
@@ -190,7 +191,8 @@ class WikibaseEntityIdParser extends StringValueParser {
 			$mainSnak = $statement->getMainSnak();
 			if(
 				$mainSnak instanceof PropertyValueSnak &&
-				$mainSnak->getDataValue()->equals(new EntityIdValue(new ItemId(self::DISAMBIGUATION_QID)))
+				$mainSnak->getDataValue() instanceof EntityIdValue &&
+				in_array($mainSnak->getDataValue()->getEntityId()->getSerialization(), self::$INSTANCES_TO_FILTER)
 			) {
 				return true;
  			}

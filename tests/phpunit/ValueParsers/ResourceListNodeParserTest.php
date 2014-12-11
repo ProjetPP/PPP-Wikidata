@@ -49,6 +49,11 @@ class ResourceListNodeParserTest extends \PHPUnit_Framework_TestCase {
 				new ResourceListNode(array(new WikibaseResourceNode('Ramesses III', new EntityIdValue(new ItemId('Q1528')))))
 			),
 			array(
+				new ResourceListNode(array(new StringResourceNode('P=NP'))),
+				'wikibase-item',
+				new ResourceListNode(array(new WikibaseResourceNode('P=NP', new EntityIdValue(new ItemId('Q746242')))))
+			),
+			array(
 				new ResourceListNode(array(new StringResourceNode('Place of birth'))),
 				'wikibase-property',
 				new ResourceListNode(array(new WikibaseResourceNode('Place of birth', new EntityIdValue(new PropertyId('P19')))))
