@@ -1,14 +1,20 @@
 <?php
 
-namespace PPP\Wikidata;
+namespace PPP\Wikidata\TreeSimplifier;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
 use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
-use PPP\Wikidata\TreeSimplifier\MeaninglessPredicateTripleNodeSimplifier;
+use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
+use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
+use PPP\Wikidata\WikibaseResourceNode;
+use Wikibase\DataModel\Entity\EntityIdValue;
+use Wikibase\DataModel\Entity\ItemId;
 
 /**
  * @covers PPP\Wikidata\TreeSimplifier\MeaninglessPredicateTripleNodeSimplifier
@@ -19,13 +25,19 @@ use PPP\Wikidata\TreeSimplifier\MeaninglessPredicateTripleNodeSimplifier;
 class MeaninglessPredicateTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 
 	protected function buildSimplifier() {
-		return new MeaninglessPredicateTripleNodeSimplifier();
+		$valueParserFactory = new WikibaseValueParserFactory(
+			'en',
+			new MediawikiApi('http://www.wikidata.org/w/api.php'),
+			new ArrayCache()
+		);
+
+		return new MeaninglessPredicateTripleNodeSimplifier(new ResourceListNodeParser($valueParserFactory->newWikibaseValueParser()));
 	}
 
 	public function simplifiableProvider() {
 		return array(
 			array(
-				new TripleNode(new MissingNode(), new ResourceListNode(), new MissingNode())
+				new TripleNode(new ResourceListNode(), new ResourceListNode(), new MissingNode())
 			)
 		);
 	}
@@ -53,24 +65,32 @@ class MeaninglessPredicateTripleNodeSimplifierTest extends NodeSimplifierBaseTes
 				)
 			),
 			array(
-				new ResourceListNode(array(new StringResourceNode('a'))),
+				new ResourceListNode(array(new WikibaseResourceNode('Douglas Adams', new EntityIdValue(new ItemId('Q42'))))),
 				new TripleNode(
-					new ResourceListNode(array(new StringResourceNode('a'))),
+					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 					new ResourceListNode(array(new StringResourceNode('name'))),
 					new MissingNode()
 				)
 			),
 			array(
+				new ResourceListNode(array(new WikibaseResourceNode('Douglas Adams', new EntityIdValue(new ItemId('Q42'))))),
+				new TripleNode(
+					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+					new ResourceListNode(array(new StringResourceNode('definition'))),
+					new MissingNode()
+				)
+			),
+			array(
 				new UnionNode(array(
-					new ResourceListNode(array(new StringResourceNode('a'))),
+					new ResourceListNode(array(new WikibaseResourceNode('Douglas Adams', new EntityIdValue(new ItemId('Q42'))))),
 					new TripleNode(
-						new ResourceListNode(array(new StringResourceNode('a'))),
+						new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 						new ResourceListNode(array(new StringResourceNode('foo'))),
 						new MissingNode()
 					)
 				)),
 				new TripleNode(
-					new ResourceListNode(array(new StringResourceNode('a'))),
+					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 					new ResourceListNode(array(new StringResourceNode('name'), new StringResourceNode('foo'))),
 					new MissingNode()
 				)

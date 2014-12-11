@@ -44,6 +44,14 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 				'Douglas Noel Ada',
 				array(new EntityIdValue(new ItemId('Q42')))
 			),
+			array(
+				'',
+				array()
+			),
+			array(
+				'abcabcabc',
+				array()
+			),
 		);
 	}
 
@@ -53,7 +61,7 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	public function invalidInputProvider() {
 		return parent::invalidInputProvider() + array(
 			array(
-				'abcabc'
+				new ItemId('Q23')
 			)
 		);
 	}

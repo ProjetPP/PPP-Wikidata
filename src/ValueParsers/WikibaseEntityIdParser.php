@@ -74,6 +74,10 @@ class WikibaseEntityIdParser extends StringValueParser {
 	}
 
 	protected function stringParse($value) {
+		if($value === '') {
+			return array();
+		}
+
 		$languageCode = $this->getOption(ValueParser::OPT_LANG);
 		$entityType = $this->getOption(self::OPT_ENTITY_TYPE);
 
@@ -82,10 +86,6 @@ class WikibaseEntityIdParser extends StringValueParser {
 		} else {
 			$result = $this->parseResult($this->doQuery($value, $entityType, $languageCode), $value);
 			$this->entityIdParserCache->save($value, $entityType, $languageCode, $result);
-		}
-
-		if(empty($result)) {
-			throw new ParseException('No entity returned.', $value, self::FORMAT_NAME);
 		}
 
 		return $result;
