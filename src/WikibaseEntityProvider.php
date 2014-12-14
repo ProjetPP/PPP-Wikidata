@@ -2,7 +2,6 @@
 
 namespace PPP\Wikidata;
 
-use Mediawiki\DataModel\Revision;
 use OutOfBoundsException;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use Wikibase\Api\Service\RevisionsGetter;

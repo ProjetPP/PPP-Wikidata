@@ -36,7 +36,7 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 			$this->newMeaninglessPredicateTripleNodeSimplifier($mediawikiApi, $cache, $languageCode),
 			$this->newTripleConverter($mediawikiApi, $cache, $languageCode),
 			$this->newMissingObjectTripleNodeSimplifier($mediawikiApi, $cache),
-			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi)
+			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi, $mediawikiApi, $cache)
 		));
 	}
 
@@ -52,9 +52,12 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 		return new MissingObjectTripleNodeSimplifier($this->newEntityProvider($mediawikiApi, $cache));
 	}
 
-	private function newMissingSubjectTripleNodeSimplifier(WikidataQueryApi $wikidataQueryApi) {
+	private function newMissingSubjectTripleNodeSimplifier(WikidataQueryApi $wikidataQueryApi, MediawikiApi $mediawikiApi, Cache $cache) {
 		$wikidataQueryFactory = new WikidataQueryFactory($wikidataQueryApi);
-		return new MissingSubjectTripleNodeSimplifier($wikidataQueryFactory->newSimpleQueryService());
+		return new MissingSubjectTripleNodeSimplifier(
+			$wikidataQueryFactory->newSimpleQueryService(),
+			$this->newEntityProvider($mediawikiApi, $cache)
+		);
 	}
 
 	private function newTripleConverter(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {

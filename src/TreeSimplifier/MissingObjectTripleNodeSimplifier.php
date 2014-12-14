@@ -11,6 +11,7 @@ use PPP\DataModel\TripleNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
+use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
@@ -72,7 +73,9 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 			}
 		}
 
-		return $this->snaksToNode($snaks);
+		$node = $this->snaksToNode($snaks);
+		$this->loadEntitiesFromNode($node);
+		return $node;
 	}
 
 	protected function getSnaksForObject(WikibaseResourceNode $subject, WikibaseResourceNode $predicate) {
@@ -105,6 +108,21 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 		}
 
 		return $snaks;
+	}
+
+	private function loadEntitiesFromNode(ResourceListNode $nodes) {
+		$entityIds = array();
+
+		/** @var WikibaseResourceNode $node */
+		foreach($nodes as $node) {
+			$value =  $node->getDataValue();
+
+			if($value instanceof EntityIdValue) {
+				$entityIds[] = $value->getEntityId();
+			}
+		}
+
+		$this->entityProvider->loadEntities($entityIds);
 	}
 
 	private function snaksToNode(array $snaks) {
