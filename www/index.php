@@ -3,6 +3,7 @@
 namespace PPP\Wikidata;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Cache\ChainCache;
 use Doctrine\Common\Cache\MemcachedCache;
 use Memcached;
 use PPP\Module\ModuleEntryPoint;
@@ -15,8 +16,9 @@ $cache = new ArrayCache();
 if(class_exists('Memcached')) {
 	$memcached = new Memcached();
 	if($memcached->addServer('localhost', 11211)) {
-		$cache = new MemcachedCache();
-		$cache->setMemcached($memcached);
+		$memcachedCache = new MemcachedCache();
+		$memcachedCache->setMemcached($memcached);
+		$cache = new ChainCache(array($cache, $memcachedCache));
 	}
 }
 

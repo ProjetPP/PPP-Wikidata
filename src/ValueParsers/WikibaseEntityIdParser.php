@@ -5,10 +5,10 @@ namespace PPP\Wikidata\ValueParsers;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\WikibaseEntityIdParserCache;
 use PPP\Wikidata\WikibaseEntityProvider;
-use ValueParsers\ParseException;
 use ValueParsers\ParserOptions;
 use ValueParsers\StringValueParser;
 use ValueParsers\ValueParser;
+use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\EntityIdParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
@@ -112,10 +112,11 @@ class WikibaseEntityIdParser extends StringValueParser {
 
 		$entityIds = array();
 		foreach($results as $entry) {
-			$entityIds[] = new EntityIdValue($this->entityIdParser->parse($entry['id']));
+			$entityIds[] = $this->entityIdParser->parse($entry['id']);
 		}
+		$this->entityProvider->loadEntities($entityIds);
 
-		return $this->filterDisambiguation($entityIds);
+		return $this->toEntityValues($this->filterDisambiguation($entityIds));
 	}
 
 	private function filterResults(array $results, $search, $isStrict) {
@@ -139,7 +140,7 @@ class WikibaseEntityIdParser extends StringValueParser {
 		}
 
 		return array_key_exists('label', $entry) &&
-			$this->areSimilar($this->cleanLabel($entry['label']), $search, $isStrict);
+		$this->areSimilar($this->cleanLabel($entry['label']), $search, $isStrict);
 	}
 
 	private function areSimilar($a, $b, $isStrict) {
@@ -164,21 +165,20 @@ class WikibaseEntityIdParser extends StringValueParser {
 	}
 
 	/**
-	 * @param EntityIdValue[] $entityIds
+	 * @param EntityId[] $entityIds
 	 * @return array
 	 */
 	private function filterDisambiguation(array $entityIds) {
 		$filtered = array();
 
-		foreach($entityIds as $entityValue) {
-			$entityId = $entityValue->getEntityId();
+		foreach($entityIds as $entityId) {
 			if($entityId instanceof ItemId) {
 				$item = $this->entityProvider->getItem($entityId);
 				if(!$this->isDisambiguation($item)) {
-					$filtered[] = $entityValue;
+					$filtered[] = $entityId;
 				}
 			} else {
-				$filtered[] = $entityValue;
+				$filtered[] = $entityId;
 			}
 		}
 
@@ -195,9 +195,19 @@ class WikibaseEntityIdParser extends StringValueParser {
 				in_array($mainSnak->getDataValue()->getEntityId()->getSerialization(), self::$INSTANCES_TO_FILTER)
 			) {
 				return true;
- 			}
+			}
 		}
 
 		return false;
- 	}
+	}
+
+	private function toEntityValues(array $entityIds) {
+		$entityValues = array();
+
+		foreach($entityIds as $entityId) {
+			$entityValues[] = new EntityIdValue($entityId);
+		}
+
+		return $entityValues;
+	}
 }

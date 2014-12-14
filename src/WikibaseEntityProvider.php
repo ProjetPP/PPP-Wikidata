@@ -2,9 +2,9 @@
 
 namespace PPP\Wikidata;
 
-use OutOfRangeException;
+use OutOfBoundsException;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
-use Wikibase\Api\Service\RevisionGetter;
+use Wikibase\Api\Service\RevisionsGetter;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -16,13 +16,14 @@ use Wikibase\DataModel\Entity\PropertyId;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
+ * @todo loadEntities asynchronous?
  */
 class WikibaseEntityProvider {
 
 	/**
-	 * @var RevisionGetter
+	 * @var RevisionsGetter
 	 */
-	private $revisionGetter;
+	private $revisionsGetter;
 
 	/**
 	 * @var WikibaseEntityCache
@@ -30,18 +31,42 @@ class WikibaseEntityProvider {
 	private $cache;
 
 	/**
-	 * @param RevisionGetter $revisionGetter
+	 * @param RevisionsGetter $revisionGetter
 	 * @param WikibaseEntityCache $cache
 	 */
-	public function __construct(RevisionGetter $revisionGetter, WikibaseEntityCache $cache) {
-		$this->revisionGetter = $revisionGetter;
+	public function __construct(RevisionsGetter $revisionGetter, WikibaseEntityCache $cache) {
+		$this->revisionsGetter = $revisionGetter;
 		$this->cache = $cache;
+	}
+
+	/**
+	 * Makes sure that entities are loaded into the cache
+	 *
+	 * @param EntityId[] $entityIds
+	 */
+	public function loadEntities(array $entityIds) {
+		$entitiesToRetrieve = array();
+
+		foreach($entityIds as $entityId) {
+			if(!$this->cache->contains($entityId)) {
+				$entitiesToRetrieve[] = $entityId;
+			}
+		}
+
+		if(empty($entitiesToRetrieve)) {
+			return;
+		}
+		$entities = $this->getEntitiesFromApi($entitiesToRetrieve);
+
+		foreach($entities as $entity) {
+			$this->cache->save($entity);
+		}
 	}
 
 	/**
 	 * @param ItemId $itemId
 	 * @return Item
-	 * @throws OutOfRangeException
+	 * @throws OutOfBoundsException
 	 */
 	public function getItem(ItemId $itemId) {
 		return $this->getEntity($itemId);
@@ -50,16 +75,16 @@ class WikibaseEntityProvider {
 	/**
 	 * @param PropertyId $propertyId
 	 * @return Property
-	 * @throws OutOfRangeException
+	 * @throws OutOfBoundsException
 	 */
 	public function getProperty(PropertyId $propertyId) {
 		return $this->getEntity($propertyId);
 	}
 
 	private function getEntity(EntityId $entityId) {
-		if($this->cache->contains($entityId)) {
+		try {
 			return $this->cache->fetch($entityId);
-		} else {
+		} catch(OutOfBoundsException $e) {
 			$entity = $this->getEntityFromApi($entityId);
 			$this->cache->save($entity);
 			return $entity;
@@ -67,12 +92,24 @@ class WikibaseEntityProvider {
 	}
 
 	private function getEntityFromApi(EntityId $entityId) {
-		$revision = $this->revisionGetter->getFromId($entityId);
+		$entities = $this->getEntitiesFromApi(array($entityId));
 
-		if($revision === false) {
-			throw new OutOfRangeException('The entity ' . $entityId->getSerialization(). ' does not exists');
+		if(empty($entities)) {
+			throw new OutOfBoundsException('The entity ' . $entityId->getSerialization(). ' does not exists');
 		}
 
-		return $revision->getContent()->getNativeData();
+		return reset($entities);
+	}
+
+	private function getEntitiesFromApi(array $entityIds) {
+		$revisions = $this->revisionsGetter->getRevisions($entityIds);
+
+		$entities = array();
+
+		foreach($revisions->toArray() as $revision) {
+			$entities[] = $revision->getContent()->getNativeData();
+		}
+
+		return $entities;
 	}
 }

@@ -72,7 +72,7 @@ class WikibaseValueFormatterFactory {
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
 		$wikibaseFactory = new WikibaseFactory($this->api);
 		$entityProvider = new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionGetter(),
+			$wikibaseFactory->newRevisionsGetter(),
 			new WikibaseEntityCache($this->cache)
 		);
 		return new WikibaseEntityIdFormatter($entityProvider, $options);

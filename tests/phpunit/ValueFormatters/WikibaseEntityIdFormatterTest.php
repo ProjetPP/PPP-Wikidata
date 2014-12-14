@@ -72,7 +72,7 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 
 		return new $class(
 			new WikibaseEntityProvider(
-				$wikibaseFactory->newRevisionGetter(),
+				$wikibaseFactory->newRevisionsGetter(),
 				$cache
 			),
 			$options

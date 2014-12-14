@@ -10,6 +10,7 @@ use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierException;
+use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\PropertyId;
@@ -36,10 +37,16 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	private $simpleQueryService;
 
 	/**
+	 * @var WikibaseEntityProvider
+	 */
+	private $entityProvider;
+
+	/**
 	 * @param SimpleQueryService $simpleQueryService
 	 */
-	public function __construct(SimpleQueryService $simpleQueryService) {
+	public function __construct(SimpleQueryService $simpleQueryService, WikibaseEntityProvider $entityProvider) {
 		$this->simpleQueryService = $simpleQueryService;
+		$this->entityProvider = $entityProvider;
 	}
 
 	/**
@@ -74,6 +81,8 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 				);
 			}
 		}
+
+		$this->entityProvider->loadEntities($queryResult);
 
 		return $this->formatQueryResult($queryResult);
 	}
