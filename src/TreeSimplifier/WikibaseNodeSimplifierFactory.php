@@ -67,7 +67,7 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	private function newPropertyTypeProvider(MediawikiApi $mediawikiApi, Cache $cache) {
 		$wikibaseFactory = new WikibaseFactory($mediawikiApi);
 		return new WikibasePropertyTypeProvider(new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionGetter(),
+			$wikibaseFactory->newRevisionsGetter(),
 			new WikibaseEntityCache($cache)
 		));
 	}
@@ -75,7 +75,7 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	private function newEntityProvider(MediawikiApi $mediawikiApi, Cache $cache) {
 		$wikibaseFactory = new WikibaseFactory($mediawikiApi);
 		return new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionGetter(),
+			$wikibaseFactory->newRevisionsGetter(),
 			new WikibaseEntityCache($cache)
 		);
 	}

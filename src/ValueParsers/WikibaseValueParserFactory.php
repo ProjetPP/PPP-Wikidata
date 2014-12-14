@@ -68,7 +68,7 @@ class WikibaseValueParserFactory {
 			$this->api,
 			new BasicEntityIdParser(),
 			new WikibaseEntityIdParserCache($this->cache),
-			new WikibaseEntityProvider($wikibaseFactory->newRevisionGetter(), new WikibaseEntityCache($this->cache)),
+			new WikibaseEntityProvider($wikibaseFactory->newRevisionsGetter(), new WikibaseEntityCache($this->cache)),
 			$parserOptions
 		);
 	}

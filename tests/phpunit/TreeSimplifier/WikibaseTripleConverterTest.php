@@ -39,7 +39,7 @@ class WikibaseTripleConverterTest extends NodeSimplifierBaseTest {
 		);
 		$wikibaseFactory = new WikibaseFactory(new MediawikiApi('http://www.wikidata.org/w/api.php'));
 		$propertyTypeProvider = new WikibasePropertyTypeProvider(new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionGetter(),
+			$wikibaseFactory->newRevisionsGetter(),
 			new WikibaseEntityCache(new ArrayCache())
 		));
 

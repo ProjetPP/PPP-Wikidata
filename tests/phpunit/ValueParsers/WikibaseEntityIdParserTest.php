@@ -93,7 +93,7 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 			$api,
 			new BasicEntityIdParser(),
 			new WikibaseEntityIdParserCache(new ArrayCache()),
-			new WikibaseEntityProvider($wikibaseFactory->newRevisionGetter(), new WikibaseEntityCache(new ArrayCache())),
+			new WikibaseEntityProvider($wikibaseFactory->newRevisionsGetter(), new WikibaseEntityCache(new ArrayCache())),
 			$this->newParserOptions()
 		);
 	}

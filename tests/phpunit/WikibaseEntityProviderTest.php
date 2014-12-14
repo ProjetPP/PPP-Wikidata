@@ -4,6 +4,7 @@ namespace PPP\Wikidata;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\DataModel\Revision;
+use Mediawiki\DataModel\Revisions;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -24,13 +25,13 @@ class WikibaseEntityProviderTest extends \PHPUnit_Framework_TestCase {
 		$item = Item::newEmpty();
 		$item->setId(new ItemId('Q42'));
 
-		$revisionGetterMock = $this->getMockBuilder( 'Wikibase\Api\Service\RevisionGetter' )
+		$revisionGetterMock = $this->getMockBuilder('Wikibase\Api\Service\RevisionsGetter')
 			->disableOriginalConstructor()
 			->getMock();
 		$revisionGetterMock->expects($this->once())
-			->method('getFromId')
-			->with($this->equalTo(new ItemId('Q42')))
-			->will($this->returnValue(new Revision(new ItemContent($item))));
+			->method('getRevisions')
+			->with($this->equalTo(array(new ItemId('Q42'))))
+			->will($this->returnValue(new Revisions(array(new Revision(new ItemContent($item))))));
 
 		$provider = new WikibaseEntityProvider($revisionGetterMock, new WikibaseEntityCache(new ArrayCache()));
 
@@ -38,17 +39,17 @@ class WikibaseEntityProviderTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testGetItemWithException() {
-		$revisionGetterMock = $this->getMockBuilder( 'Wikibase\Api\Service\RevisionGetter' )
+		$revisionGetterMock = $this->getMockBuilder('Wikibase\Api\Service\RevisionsGetter')
 			->disableOriginalConstructor()
 			->getMock();
 		$revisionGetterMock->expects($this->once())
-			->method('getFromId')
-			->with($this->equalTo(new ItemId('Q42424242')))
-			->will($this->returnValue(false));
+			->method('getRevisions')
+			->with($this->equalTo(array(new ItemId('Q42424242'))))
+			->will($this->returnValue(new Revisions(array())));
 
 		$provider = new WikibaseEntityProvider($revisionGetterMock, new WikibaseEntityCache(new ArrayCache()));
 
-		$this->setExpectedException('\OutOfRangeException');
+		$this->setExpectedException('\OutOfBoundsException');
 		$provider->getItem(new ItemId('Q42424242'));
 	}
 
@@ -56,13 +57,13 @@ class WikibaseEntityProviderTest extends \PHPUnit_Framework_TestCase {
 		$item = Item::newEmpty();
 		$item->setId(new ItemId('Q42'));
 
-		$revisionGetterMock = $this->getMockBuilder( 'Wikibase\Api\Service\RevisionGetter' )
+		$revisionGetterMock = $this->getMockBuilder('Wikibase\Api\Service\RevisionsGetter')
 			->disableOriginalConstructor()
 			->getMock();
 		$revisionGetterMock->expects($this->once())
-			->method('getFromId')
-			->with($this->equalTo(new ItemId('Q42')))
-			->will($this->returnValue(new Revision(new ItemContent($item))));
+			->method('getRevisions')
+			->with($this->equalTo(array(new ItemId('Q42'))))
+			->will($this->returnValue(new Revisions(array(new Revision(new ItemContent($item))))));
 
 		$provider = new WikibaseEntityProvider($revisionGetterMock, new WikibaseEntityCache(new ArrayCache()));
 
@@ -70,35 +71,44 @@ class WikibaseEntityProviderTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($item, $provider->getItem(new ItemId('Q42')));
 	}
 
+	public function testGetItemWithLoad() {
+		$item42 = Item::newEmpty();
+		$item42->setId(new ItemId('Q42'));
+		$item43 = Item::newEmpty();
+		$item43->setId(new ItemId('Q43'));
+
+		$revisionGetterMock = $this->getMockBuilder('Wikibase\Api\Service\RevisionsGetter')
+			->disableOriginalConstructor()
+			->getMock();
+		$revisionGetterMock->expects($this->once())
+			->method('getRevisions')
+			->with($this->equalTo(array(new ItemId('Q42'), new ItemId('Q43'))))
+			->will($this->returnValue(new Revisions(array(
+				new Revision(new ItemContent($item42), 42, 42),
+				new Revision(new ItemContent($item43), 43, 43)
+			))));
+
+		$provider = new WikibaseEntityProvider($revisionGetterMock, new WikibaseEntityCache(new ArrayCache()));
+
+		$provider->loadEntities(array(new ItemId('Q42'), new ItemId('Q43')));
+		$provider->getItem(new ItemId('Q42'));
+		$this->assertEquals($item42, $provider->getItem(new ItemId('Q42')));
+	}
+
 	public function testGetProperty() {
 		$property = Property::newfromType('string');
 		$property->setId(new PropertyId('P42'));
 
-		$revisionGetterMock = $this->getMockBuilder( 'Wikibase\Api\Service\RevisionGetter' )
+		$revisionGetterMock = $this->getMockBuilder('Wikibase\Api\Service\RevisionsGetter')
 			->disableOriginalConstructor()
 			->getMock();
 		$revisionGetterMock->expects($this->once())
-			->method('getFromId')
-			->with($this->equalTo(new PropertyId('P42')))
-			->will($this->returnValue(new Revision(new PropertyContent($property))));
+			->method('getRevisions')
+			->with($this->equalTo(array(new PropertyId('P42'))))
+			->will($this->returnValue(new Revisions(array(new Revision(new PropertyContent($property))))));
 
 		$provider = new WikibaseEntityProvider($revisionGetterMock, new WikibaseEntityCache(new ArrayCache()));
 
 		$this->assertEquals($property, $provider->getProperty(new PropertyId('P42')));
-	}
-
-	public function testGetPropertWithException() {
-		$revisionGetterMock = $this->getMockBuilder( 'Wikibase\Api\Service\RevisionGetter' )
-			->disableOriginalConstructor()
-			->getMock();
-		$revisionGetterMock->expects($this->once())
-			->method('getFromId')
-			->with($this->equalTo(new PropertyId('P42424242')))
-			->will($this->returnValue(false));
-
-		$provider = new WikibaseEntityProvider($revisionGetterMock, new WikibaseEntityCache(new ArrayCache()));
-
-		$this->setExpectedException('\OutOfRangeException');
-		$provider->getProperty(new PropertyId('P42424242'));
 	}
 }
