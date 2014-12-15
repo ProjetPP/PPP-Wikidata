@@ -13,8 +13,6 @@ use Wikibase\DataModel\Entity\EntityId;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- *
- * @todo Serialize entity before caching them?
  */
 class WikibaseEntityCache {
 

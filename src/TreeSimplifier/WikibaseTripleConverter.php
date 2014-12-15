@@ -10,7 +10,6 @@ use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
-use PPP\Wikidata\ValueParsers\WikibaseValueParser;
 use PPP\Wikidata\WikibasePropertyTypeProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 

@@ -20,8 +20,6 @@ use Wikibase\DataModel\Term\Fingerprint;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- *
- * @todo Add description to the serialisation?
  */
 class WikibaseEntityIdFormatter extends ValueFormatterBase {
 
