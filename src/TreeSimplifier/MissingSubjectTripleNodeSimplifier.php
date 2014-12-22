@@ -37,16 +37,10 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	private $simpleQueryService;
 
 	/**
-	 * @var WikibaseEntityProvider
-	 */
-	private $entityProvider;
-
-	/**
 	 * @param SimpleQueryService $simpleQueryService
 	 */
-	public function __construct(SimpleQueryService $simpleQueryService, WikibaseEntityProvider $entityProvider) {
+	public function __construct(SimpleQueryService $simpleQueryService) {
 		$this->simpleQueryService = $simpleQueryService;
-		$this->entityProvider = $entityProvider;
 	}
 
 	/**
@@ -81,8 +75,6 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 				);
 			}
 		}
-
-		$this->entityProvider->loadEntities($queryResult);
 
 		return $this->formatQueryResult($queryResult);
 	}

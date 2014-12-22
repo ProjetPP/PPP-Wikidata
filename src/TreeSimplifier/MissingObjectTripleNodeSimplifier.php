@@ -62,6 +62,7 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function doSimplification(TripleNode $node) {
+		$this->loadEntitiesFromNode($node->getSubject());
 		$snaks = array();
 
 		foreach($node->getSubject() as $subject) {
