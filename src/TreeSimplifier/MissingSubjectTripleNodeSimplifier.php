@@ -10,6 +10,7 @@ use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierException;
+use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
@@ -37,10 +38,25 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	private $simpleQueryService;
 
 	/**
-	 * @param SimpleQueryService $simpleQueryService
+
+	 * @var WikibaseEntityProvider
 	 */
-	public function __construct(SimpleQueryService $simpleQueryService) {
+	private $entityProvider;
+
+	/**
+	 * @var ResourceListNodeParser
+	 */
+	private $resourceListNodeParser;
+
+	/**
+	 * @param SimpleQueryService $simpleQueryService
+	 * @param WikibaseEntityProvider $entityProvider
+	 * @param ResourceListNodeParser $resourceListNodeParser
+	 */
+	public function __construct(SimpleQueryService $simpleQueryService, WikibaseEntityProvider $entityProvider, ResourceListNodeParser $resourceListNodeParser) {
 		$this->simpleQueryService = $simpleQueryService;
+		$this->entityProvider = $entityProvider;
+		$this->resourceListNodeParser = $resourceListNodeParser;
 	}
 
 	/**
@@ -65,18 +81,35 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function doSimplification(TripleNode $node) {
+		$propertyNodes = $this->resourceListNodeParser->parse($node->getPredicate(), 'wikibase-property');
 		$queryResult = array();
 
-		foreach($node->getPredicate() as $predicate) {
-			foreach($node->getObject() as $object) {
-				$queryResult = array_merge(
-					$queryResult,
-					$this->getQueryResultsForObject($predicate, $object)
-				);
+		foreach($this->bagsPropertiesPerType($propertyNodes) as $objectType => $propertyNodes) {
+			$objectNodes = $this->resourceListNodeParser->parse($node->getObject(), $objectType);
+
+			foreach($propertyNodes as $property) {
+				foreach($objectNodes as $object) {
+					$queryResult = array_merge(
+						$queryResult,
+						$this->getQueryResultsForObject($property, $object)
+					);
+				}
 			}
 		}
 
 		return $this->formatQueryResult($queryResult);
+	}
+
+	private function bagsPropertiesPerType($propertyNodes) {
+		$propertyNodesPerType = array();
+
+		/** @var WikibaseResourceNode $propertyNode */
+		foreach($propertyNodes as $propertyNode) {
+			$objectType = $this->entityProvider->getProperty($propertyNode->getDataValue()->getEntityId())->getDataTypeId();
+			$propertyNodesPerType[$objectType][] = $propertyNode;
+		}
+
+		return $propertyNodesPerType;
 	}
 
 	private function getQueryResultsForObject(WikibaseResourceNode $predicate, WikibaseResourceNode $object) {

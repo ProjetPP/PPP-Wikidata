@@ -9,6 +9,7 @@ use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
+use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
@@ -29,14 +30,21 @@ use Wikibase\DataModel\Statement\Statement;
 class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 
 	/**
+	 * @var ResourceListNodeParser
+	 */
+	private $resourceListNodeParser;
+
+	/**
 	 * @var WikibaseEntityProvider
 	 */
 	private $entityProvider;
 
 	/**
+	 * @param ResourceListNodeParser $resourceListNodeParser
 	 * @param WikibaseEntityProvider $entityProvider
 	 */
-	public function __construct(WikibaseEntityProvider $entityProvider) {
+	public function __construct(ResourceListNodeParser $resourceListNodeParser, WikibaseEntityProvider $entityProvider) {
+		$this->resourceListNodeParser = $resourceListNodeParser;
 		$this->entityProvider = $entityProvider;
 	}
 
@@ -62,11 +70,13 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function doSimplification(TripleNode $node) {
-		$this->loadEntitiesFromNode($node->getSubject());
+		$subjectNodes = $this->resourceListNodeParser->parse($node->getSubject(), 'wikibase-item');
+		$propertyNodes = $this->resourceListNodeParser->parse($node->getPredicate(), 'wikibase-property');
+		$this->loadEntitiesFromNode($subjectNodes);
 		$snaks = array();
 
-		foreach($node->getSubject() as $subject) {
-			foreach($node->getPredicate() as $predicate) {
+		foreach($subjectNodes as $subject) {
+			foreach($propertyNodes as $predicate) {
 				$snaks = array_merge(
 					$snaks,
 					$this->getSnaksForObject($subject, $predicate)

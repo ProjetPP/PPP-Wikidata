@@ -6,6 +6,7 @@ use DataValues\StringValue;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
+use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Claim\Claim;
@@ -26,10 +27,13 @@ use Wikibase\DataModel\Statement\Statement;
 class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 
 	public function buildSimplifier() {
+		$resourceListNodeParserMock = $this->getMockBuilder('PPP\Wikidata\ValueParsers\ResourceListNodeParser')
+			->disableOriginalConstructor()
+			->getMock();
 		$entityProvider = $this->getMockBuilder( 'PPP\Wikidata\WikibaseEntityProvider' )
 			->disableOriginalConstructor()
 			->getMock();
-		return new MissingObjectTripleNodeSimplifier($entityProvider);
+		return new MissingObjectTripleNodeSimplifier($resourceListNodeParserMock, $entityProvider);
 	}
 
 	/**
@@ -41,6 +45,13 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new TripleNode(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))))),
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+					new MissingNode()
+				)
+			),
+			array(
+				new TripleNode(
+					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+					new ResourceListNode(array(new StringResourceNode('VIAF'))),
 					new MissingNode()
 				)
 			),
@@ -75,16 +86,25 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 	/**
 	 * @dataProvider simplificationProvider
 	 */
-	public function testSimplification(TripleNode $queryNode, AbstractNode $responseNodes, Item $item) {
+	public function testSimplification(TripleNode $queryNode, AbstractNode $responseNodes, Item $item, PropertyId $propertyId) {
+		$resourceListNodeParserMock = $this->getMockBuilder('PPP\Wikidata\ValueParsers\ResourceListNodeParser')
+			->disableOriginalConstructor()
+			->getMock();
+		$resourceListNodeParserMock->expects($this->any())
+			->method('parse')
+			->will($this->onConsecutiveCalls(
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue($item->getId())))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue($propertyId))))
+			));
 		$entityProvider = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
 			->disableOriginalConstructor()
 			->getMock();
-		$entityProvider->expects($this->any())
+		$entityProvider->expects($this->once())
 			->method('getItem')
 			->with($this->equalTo(new ItemId('Q42')))
 			->will($this->returnValue($item));
 
-		$simplifier = new MissingObjectTripleNodeSimplifier($entityProvider);
+		$simplifier = new MissingObjectTripleNodeSimplifier($resourceListNodeParserMock, $entityProvider);
 		$this->assertEquals(
 			$responseNodes,
 			$simplifier->simplify($queryNode)
@@ -111,7 +131,8 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 			new ResourceListNode(array(
 				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702'))))
 			)),
-			$douglasAdamItem
+			$douglasAdamItem,
+			new PropertyId('P214')
 		);
 
 		//SomeValue
@@ -127,9 +148,11 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new MissingNode()
 			),
 			new ResourceListNode(array()),
-			$douglasAdamItem
+			$douglasAdamItem,
+			new PropertyId('P19')
 		);
 
+		//No result
 		$douglasAdamItem = Item::newEmpty();
 		$douglasAdamItem->setId(new ItemId('Q42'));
 		$list[] = array(
@@ -139,7 +162,22 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new MissingNode()
 			),
 			new ResourceListNode(array()),
-			$douglasAdamItem
+			$douglasAdamItem,
+			new PropertyId('P19')
+		);
+
+		//Parsing
+		$douglasAdamItem = Item::newEmpty();
+		$douglasAdamItem->setId(new ItemId('Q42'));
+		$list[] = array(
+			new TripleNode(
+				new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+				new ResourceListNode(array(new StringResourceNode('VIAF'))),
+				new MissingNode()
+			),
+			new ResourceListNode(array()),
+			$douglasAdamItem,
+			new PropertyId('P214')
 		);
 
 		return $list;

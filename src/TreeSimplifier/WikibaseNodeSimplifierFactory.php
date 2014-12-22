@@ -9,7 +9,6 @@ use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
 use PPP\Wikidata\WikibaseEntityProvider;
-use PPP\Wikidata\WikibasePropertyTypeProvider;
 use Wikibase\Api\WikibaseFactory;
 use WikidataQueryApi\WikidataQueryApi;
 use WikidataQueryApi\WikidataQueryFactory;
@@ -34,9 +33,8 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 		parent::__construct(array(
 			$this->newSentenceNodeSimplifier($mediawikiApi, $cache, $languageCode),
 			$this->newMeaninglessPredicateTripleNodeSimplifier($mediawikiApi, $cache, $languageCode),
-			$this->newTripleConverter($mediawikiApi, $cache, $languageCode),
-			$this->newMissingObjectTripleNodeSimplifier($mediawikiApi, $cache),
-			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi)
+			$this->newMissingObjectTripleNodeSimplifier($mediawikiApi, $cache, $languageCode),
+			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi, $mediawikiApi, $cache, $languageCode)
 		));
 	}
 
@@ -48,30 +46,20 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 		return new MeaninglessPredicateTripleNodeSimplifier($this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode));
 	}
 
-	private function newMissingObjectTripleNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache) {
-		return new MissingObjectTripleNodeSimplifier($this->newEntityProvider($mediawikiApi, $cache));
+	private function newMissingObjectTripleNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
+		return new MissingObjectTripleNodeSimplifier(
+			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode),
+			$this->newEntityProvider($mediawikiApi, $cache)
+		);
 	}
 
-	private function newMissingSubjectTripleNodeSimplifier(WikidataQueryApi $wikidataQueryApi) {
+	private function newMissingSubjectTripleNodeSimplifier(WikidataQueryApi $wikidataQueryApi, MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
 		$wikidataQueryFactory = new WikidataQueryFactory($wikidataQueryApi);
 		return new MissingSubjectTripleNodeSimplifier(
-			$wikidataQueryFactory->newSimpleQueryService()
+			$wikidataQueryFactory->newSimpleQueryService(),
+			$this->newEntityProvider($mediawikiApi, $cache),
+			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode)
 		);
-	}
-
-	private function newTripleConverter(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
-		return new WikibaseTripleConverter(
-			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode),
-			$this->newPropertyTypeProvider($mediawikiApi, $cache)
-		);
-	}
-
-	private function newPropertyTypeProvider(MediawikiApi $mediawikiApi, Cache $cache) {
-		$wikibaseFactory = new WikibaseFactory($mediawikiApi);
-		return new WikibasePropertyTypeProvider(new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionsGetter(),
-			new WikibaseEntityCache($cache)
-		));
 	}
 
 	private function newEntityProvider(MediawikiApi $mediawikiApi, Cache $cache) {
