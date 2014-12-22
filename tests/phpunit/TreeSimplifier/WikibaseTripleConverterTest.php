@@ -94,25 +94,6 @@ class WikibaseTripleConverterTest extends NodeSimplifierBaseTest {
 					new MissingNode()
 				)
 			),
-			array(
-				new TripleNode(
-					new MissingNode(),
-					new ResourceListNode(array(new StringResourceNode('birth name'))),
-					new MissingNode()
-				),
-				new UnionNode(array(
-					new TripleNode(
-						new MissingNode(),
-						new ResourceListNode(array(new WikibaseResourceNode('birth name', new EntityIdValue(new PropertyId('P1477'))))),
-						new MissingNode()
-					),
-					new TripleNode(
-						new MissingNode(),
-						new ResourceListNode(array(new WikibaseResourceNode('birth name', new EntityIdValue(new PropertyId('P513'))))),
-						new MissingNode()
-					),
-				))
-			),
 		);
 	}
 }

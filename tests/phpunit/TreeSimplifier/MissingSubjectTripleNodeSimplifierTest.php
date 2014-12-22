@@ -35,11 +35,8 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		$queryServiceMock = $this->getMockBuilder('WikidataQueryApi\Services\SimpleQueryService')
 			->disableOriginalConstructor()
 			->getMock();
-		$entityProviderMock = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
-			->disableOriginalConstructor()
-			->getMock();
 
-		return new MissingSubjectTripleNodeSimplifier($queryServiceMock, $entityProviderMock);
+		return new MissingSubjectTripleNodeSimplifier($queryServiceMock);
 	}
 
 	public function simplifiableProvider() {
@@ -88,14 +85,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 			->with($this->equalTo($query))
 			->will($this->returnValue($queryResult));
 
-		$entityProviderMock = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
-			->disableOriginalConstructor()
-			->getMock();
-		$entityProviderMock->expects($this->any())
-			->method('loadEntities')
-			->with($this->equalTo($queryResult));
-
-		$simplifier = new MissingSubjectTripleNodeSimplifier($queryServiceMock, $entityProviderMock);
+		$simplifier = new MissingSubjectTripleNodeSimplifier($queryServiceMock);
 		$this->assertEquals(
 			$responseNodes,
 			$simplifier->simplify($queryNode)
@@ -208,11 +198,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 			->with($this->equalTo($query))
 			->will($this->returnValue($queryResult));
 
-		$entityProviderMock = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
-			->disableOriginalConstructor()
-			->getMock();
-
-		$simplifier = new MissingSubjectTripleNodeSimplifier($queryServiceMock, $entityProviderMock);
+		$simplifier = new MissingSubjectTripleNodeSimplifier($queryServiceMock);
 
 		$this->setExpectedException('PPP\Module\TreeSimplifier\NodeSimplifierException');
 		$simplifier->simplify($queryNode);
