@@ -5,9 +5,12 @@ namespace PPP\Wikidata\TreeSimplifier;
 use DataValues\DataValue;
 use InvalidArgumentException;
 use PPP\DataModel\AbstractNode;
+use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\MissingNode;
+use PPP\DataModel\OperatorNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
+use PPP\DataModel\UnionNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierException;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
@@ -16,6 +19,7 @@ use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\PropertyId;
 use WikidataQueryApi\Query\AbstractQuery;
+use WikidataQueryApi\Query\AndQuery;
 use WikidataQueryApi\Query\AroundQuery;
 use WikidataQueryApi\Query\BetweenQuery;
 use WikidataQueryApi\Query\ClaimQuery;
@@ -38,7 +42,6 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	private $simpleQueryService;
 
 	/**
-
 	 * @var WikibaseEntityProvider
 	 */
 	private $entityProvider;
@@ -63,10 +66,28 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	 * @see AbstractNode::isSimplifierFor
 	 */
 	public function isSimplifierFor(AbstractNode $node) {
+		return $this->isTripleWithMissingSubject($node) || $this->isTripleWithMissingSubjectOperator($node);
+	}
+
+	private function isTripleWithMissingSubject(AbstractNode $node) {
 		return $node instanceof TripleNode &&
-		$node->getSubject() instanceof MissingNode &&
-		$node->getPredicate() instanceof ResourceListNode &&
-		$node->getObject() instanceof ResourceListNode;
+			$node->getSubject() instanceof MissingNode &&
+			$node->getPredicate() instanceof ResourceListNode &&
+			$node->getObject() instanceof ResourceListNode;
+	}
+
+	private function isTripleWithMissingSubjectOperator(AbstractNode $node) {
+		if(!($node instanceof IntersectionNode || $node instanceof UnionNode) ) {
+			return false;
+		}
+
+		foreach($node->getOperands() as $operand) {
+			if(!$this->isSimplifierFor($operand)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -74,18 +95,48 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	 */
 	public function simplify(AbstractNode $node) {
 		if(!$this->isSimplifierFor($node)) {
-			throw new InvalidArgumentException('MissingObjectTripleNodeSimplifier can only simplify TripleNode with a missing object');
+			throw new InvalidArgumentException('MissingSubjectTripleNodeSimplifier can only simplify union and intersection of TripleNodes with missing subject');
 		}
 
 		return $this->doSimplification($node);
 	}
 
-	private function doSimplification(TripleNode $node) {
-		$propertyNodes = $this->resourceListNodeParser->parse($node->getPredicate(), 'wikibase-property');
+	private function doSimplification(AbstractNode $node) {
+		return $this->formatQueryResult($this->simpleQueryService->doQuery($this->buildQueryForNode($node)));
+	}
+
+	private function buildQueryForNode(AbstractNode $node) {
+		if($node instanceof TripleNode) {
+			return $this->buildQueryForTriple($node);
+		} else if($node instanceof OperatorNode) {
+			return $this->buildQueryForOperator($node);
+		} else {
+			throw new InvalidArgumentException('Unsupported Node');
+		}
+	}
+
+	private function buildQueryForOperator(OperatorNode $operatorNode) {
+		$queries = array();
+
+		foreach($operatorNode->getOperands() as $operandNode) {
+			$queries[] = $this->buildQueryForNode($operandNode);
+		}
+
+		if($operatorNode instanceof UnionNode) {
+			return new OrQuery($queries);
+		} elseif($operatorNode instanceof IntersectionNode) {
+			return new AndQuery($queries);
+		} else {
+			throw new InvalidArgumentException('Unsupported OperatorNode');
+		}
+	}
+
+	private function buildQueryForTriple(TripleNode $triple) {
+		$propertyNodes = $this->resourceListNodeParser->parse($triple->getPredicate(), 'wikibase-property');
 		$queryParameters = array();
 
 		foreach($this->bagsPropertiesPerType($propertyNodes) as $objectType => $propertyNodes) {
-			$objectNodes = $this->resourceListNodeParser->parse($node->getObject(), $objectType);
+			$objectNodes = $this->resourceListNodeParser->parse($triple->getObject(), $objectType);
 
 			foreach($propertyNodes as $property) {
 				foreach($objectNodes as $object) {
@@ -94,7 +145,7 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 			}
 		}
 
-		return $this->formatQueryResult($this->simpleQueryService->doQuery(new OrQuery($queryParameters)));
+		return new OrQuery($queryParameters);
 	}
 
 	private function bagsPropertiesPerType($propertyNodes) {

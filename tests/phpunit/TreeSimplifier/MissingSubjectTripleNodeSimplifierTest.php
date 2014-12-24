@@ -9,17 +9,20 @@ use DataValues\LatLongValue;
 use DataValues\QuantityValue;
 use DataValues\StringValue;
 use DataValues\TimeValue;
-use PHPUnit_Framework_MockObject_Stub_ConsecutiveCalls;
+use PPP\DataModel\AbstractNode;
+use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
+use PPP\DataModel\UnionNode;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
 use WikidataQueryApi\Query\AbstractQuery;
+use WikidataQueryApi\Query\AndQuery;
 use WikidataQueryApi\Query\AroundQuery;
 use WikidataQueryApi\Query\BetweenQuery;
 use WikidataQueryApi\Query\ClaimQuery;
@@ -65,6 +68,13 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 					new ResourceListNode(array(new StringResourceNode('113230702')))
 				)
 			),
+			array(
+				new UnionNode(array(new IntersectionNode(array(new TripleNode(
+					new MissingNode(),
+					new ResourceListNode(array(new StringResourceNode('VIAF'))),
+					new ResourceListNode(array(new StringResourceNode('113230702')))
+				)))))
+			),
 		);
 	}
 
@@ -87,13 +97,20 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 					new MissingNode()
 				)
 			),
+			array(
+				new UnionNode(array(new IntersectionNode(array(new TripleNode(
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))))),
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+					new MissingNode()
+				)))))
+			),
 		);
 	}
 
 	/**
 	 * @dataProvider simplifiedTripleProvider
 	 */
-	public function testSimplify(TripleNode $queryNode, ResourceListNode $responseNodes, AbstractQuery $query, array $queryResult, ResourceListNode $parsedPredicates, ResourceListNode $parsedObjects, array $properties) {
+	public function testSimplify(AbstractNode $queryNode, ResourceListNode $responseNodes, AbstractQuery $query, array $queryResult, ResourceListNode $parsedPredicates, ResourceListNode $parsedObjects, array $properties) {
 		$queryServiceMock = $this->getMockBuilder('WikidataQueryApi\Services\SimpleQueryService')
 			->disableOriginalConstructor()
 			->getMock();
@@ -298,6 +315,31 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 					Property::newFromType('string')
 				)
 			),
+			array(
+				new IntersectionNode(array(
+					new UnionNode(array(
+						new TripleNode(
+							new MissingNode(),
+							new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+							new ResourceListNode(array(new StringResourceNode('491268')))
+						)
+					))
+				)),
+				new ResourceListNode(array(
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q456')))))
+				)),
+				new AndQuery(array(new OrQuery(array(
+					new OrQuery(array(new StringQuery(new PropertyId('P214'), new StringValue('491268'))))
+				)))),
+				array(
+					new ItemId('Q456')
+				),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+				new ResourceListNode(array(new WikibaseResourceNode('491268', new StringValue('491268')))),
+				array(
+					Property::newFromType('string')
+				)
+			),
 		);
 	}
 
@@ -305,7 +347,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 	/**
 	 * @dataProvider notSimplifiedTripleProvider
 	 */
-	public function testSimplifyWithException(TripleNode $queryNode, AbstractQuery $query = null, array $queryResult, ResourceListNode $parsedPredicates, ResourceListNode $parsedObjects, array $properties) {
+	public function testSimplifyWithException(AbstractNode $queryNode, AbstractQuery $query = null, array $queryResult, ResourceListNode $parsedPredicates, ResourceListNode $parsedObjects, array $properties) {
 		$queryServiceMock = $this->getMockBuilder( 'WikidataQueryApi\Services\SimpleQueryService' )
 			->disableOriginalConstructor()
 			->getMock();
