@@ -23,6 +23,7 @@ use WikidataQueryApi\Query\AbstractQuery;
 use WikidataQueryApi\Query\AroundQuery;
 use WikidataQueryApi\Query\BetweenQuery;
 use WikidataQueryApi\Query\ClaimQuery;
+use WikidataQueryApi\Query\OrQuery;
 use WikidataQueryApi\Query\QuantityQuery;
 use WikidataQueryApi\Query\StringQuery;
 
@@ -140,11 +141,11 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q456'))))),
 				)),
-				new AroundQuery(
+				new OrQuery(array(new AroundQuery(
 					new PropertyId('P625'),
 					new LatLongValue(45.75972, 4.8422),
 					0.027769999999999996
-				),
+				))),
 				array(
 					new ItemId('Q456')
 				),
@@ -163,7 +164,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q456')))))
 				)),
-				new QuantityQuery(new PropertyId('P1082'), new DecimalValue('+491268')),
+				new OrQuery(array(new QuantityQuery(new PropertyId('P1082'), new DecimalValue('+491268')))),
 				array(
 					new ItemId('Q456')
 				),
@@ -182,7 +183,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
 				)),
-				new StringQuery(new PropertyId('P214'), new StringValue('113230702')),
+				new OrQuery(array(new StringQuery(new PropertyId('P214'), new StringValue('113230702')))),
 				array(
 					new ItemId('Q42')
 				),
@@ -201,11 +202,11 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
 				)),
-				new BetweenQuery(
+				new OrQuery(array(new BetweenQuery(
 					new PropertyId('P569'),
 					new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, ''),
 					new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, '')
-				),
+				))),
 				array(
 					new ItemId('Q42')
 				),
@@ -224,7 +225,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
 				)),
-				new ClaimQuery(new PropertyId('P19'), new ItemId('Q350')),
+				new OrQuery(array(new ClaimQuery(new PropertyId('P19'), new ItemId('Q350')))),
 				array(
 					new ItemId('Q42')
 				),
@@ -241,7 +242,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q350')))))
 				),
 				new ResourceListNode(array()),
-				new ClaimQuery(new PropertyId('P19'), new ItemId('Q350')),
+				new OrQuery(array(new ClaimQuery(new PropertyId('P19'), new ItemId('Q350')))),
 				array(),
 				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P19'))))),
 				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q350'))))),
@@ -258,13 +259,42 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
 				)),
-				new StringQuery(new PropertyId('P214'), new StringValue('113230702')),
+				new OrQuery(array(new StringQuery(new PropertyId('P214'), new StringValue('113230702')))),
 				array(
 					new ItemId('Q42')
 				),
 				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
 				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702')))),
 				array(
+					Property::newFromType('string')
+				)
+			),
+			array(
+				new TripleNode(
+					new MissingNode(),
+					new ResourceListNode(array(
+						new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P213'))),
+						new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214')))
+					)),
+					new ResourceListNode(array(new StringResourceNode('491268')))
+				),
+				new ResourceListNode(array(
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q456')))))
+				)),
+				new OrQuery(array(
+					new StringQuery(new PropertyId('P213'), new StringValue('491268')),
+					new StringQuery(new PropertyId('P214'), new StringValue('491268'))
+				)),
+				array(
+					new ItemId('Q456')
+				),
+				new ResourceListNode(array(
+					new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P213'))),
+					new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214')))
+				)),
+				new ResourceListNode(array(new WikibaseResourceNode('491268', new StringValue('491268')))),
+				array(
+					Property::newFromType('string'),
 					Property::newFromType('string')
 				)
 			),

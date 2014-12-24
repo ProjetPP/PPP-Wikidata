@@ -19,6 +19,7 @@ use WikidataQueryApi\Query\AbstractQuery;
 use WikidataQueryApi\Query\AroundQuery;
 use WikidataQueryApi\Query\BetweenQuery;
 use WikidataQueryApi\Query\ClaimQuery;
+use WikidataQueryApi\Query\OrQuery;
 use WikidataQueryApi\Query\QuantityQuery;
 use WikidataQueryApi\Query\StringQuery;
 use WikidataQueryApi\Services\SimpleQueryService;
@@ -28,7 +29,6 @@ use WikidataQueryApi\Services\SimpleQueryService;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- * @todo do only one query with OR
  */
 class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 
@@ -82,22 +82,19 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 
 	private function doSimplification(TripleNode $node) {
 		$propertyNodes = $this->resourceListNodeParser->parse($node->getPredicate(), 'wikibase-property');
-		$queryResult = array();
+		$queryParameters = array();
 
 		foreach($this->bagsPropertiesPerType($propertyNodes) as $objectType => $propertyNodes) {
 			$objectNodes = $this->resourceListNodeParser->parse($node->getObject(), $objectType);
 
 			foreach($propertyNodes as $property) {
 				foreach($objectNodes as $object) {
-					$queryResult = array_merge(
-						$queryResult,
-						$this->getQueryResultsForObject($property, $object)
-					);
+					$queryParameters[] = $this->buildQueryForObject($property, $object);
 				}
 			}
 		}
 
-		return $this->formatQueryResult($queryResult);
+		return $this->formatQueryResult($this->simpleQueryService->doQuery(new OrQuery($queryParameters)));
 	}
 
 	private function bagsPropertiesPerType($propertyNodes) {
@@ -112,14 +109,10 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 		return $propertyNodesPerType;
 	}
 
-	private function getQueryResultsForObject(WikibaseResourceNode $predicate, WikibaseResourceNode $object) {
-		/** @var PropertyId $propertyId */
-		$propertyId = $predicate->getDataValue()->getEntityId();
-		/** @var DataValue $value */
-		$value = $object->getDataValue();
-
-		return $this->simpleQueryService->doQuery(
-			$this->buildQueryForValue($propertyId, $value)
+	private function buildQueryForObject(WikibaseResourceNode $predicate, WikibaseResourceNode $object) {
+		return $this->buildQueryForValue(
+			$predicate->getDataValue()->getEntityId(),
+			$object->getDataValue()
 		);
 	}
 
