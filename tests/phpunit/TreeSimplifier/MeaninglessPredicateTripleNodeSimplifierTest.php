@@ -9,7 +9,6 @@ use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
-use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
 use PPP\Wikidata\WikibaseResourceNode;

@@ -4,6 +4,8 @@ namespace PPP\Wikidata\TreeSimplifier;
 
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\DataModel\IntersectionNode;
+use PPP\Module\TreeSimplifier\IntersectionNodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
@@ -34,7 +36,8 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 			$this->newSentenceNodeSimplifier($mediawikiApi, $cache, $languageCode),
 			$this->newMeaninglessPredicateTripleNodeSimplifier($mediawikiApi, $cache, $languageCode),
 			$this->newMissingObjectTripleNodeSimplifier($mediawikiApi, $cache, $languageCode),
-			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi, $mediawikiApi, $cache, $languageCode)
+			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi, $mediawikiApi, $cache, $languageCode),
+			$this->newIntersectionWithFilterNodeSimplifier($mediawikiApi, $cache, $languageCode)
 		));
 	}
 
@@ -57,6 +60,14 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 		$wikidataQueryFactory = new WikidataQueryFactory($wikidataQueryApi);
 		return new MissingSubjectTripleNodeSimplifier(
 			$wikidataQueryFactory->newSimpleQueryService(),
+			$this->newEntityProvider($mediawikiApi, $cache),
+			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode)
+		);
+	}
+
+	private function newIntersectionWithFilterNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
+		return new IntersectionWithFilterNodeSimplifier(
+			new IntersectionNodeSimplifier($this),
 			$this->newEntityProvider($mediawikiApi, $cache),
 			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode)
 		);
