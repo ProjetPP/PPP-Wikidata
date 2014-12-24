@@ -276,6 +276,36 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			array(
 				new ModuleRequest(
 					'en',
+					new IntersectionNode(array(
+						new TripleNode(
+							new MissingNode(),
+							new ResourceListNode(array(new StringResourceNode('occupation'))),
+							new ResourceListNode(array(new StringResourceNode('poet')))
+						),
+						new TripleNode(
+							new MissingNode(),
+							new ResourceListNode(array(new StringResourceNode('occupation'))),
+							new ResourceListNode(array(new StringResourceNode('computer scientist')))
+						)
+					)),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new ResourceListNode(array(
+						new WikibaseEntityResourceNode('Ada Lovelace', new ItemId('Q7259'), 'English mathematician, considered the first computer programmer'),
+						new WikibaseEntityResourceNode('Subhash Kak', new ItemId('Q92830'), ''),
+						new WikibaseEntityResourceNode('Piero Scaruffi', new ItemId('Q465428'), ''),
+						new WikibaseEntityResourceNode('', new ItemId('Q5963597'), '')
+					)),
+					array(
+						'relevance' => 1
+					)
+				))
+			),
+			array(
+				new ModuleRequest(
+					'en',
 					new FirstNode(new SortNode(
 						new TripleNode(
 							new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),

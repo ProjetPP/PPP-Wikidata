@@ -20,7 +20,7 @@
 		"addwiki/guzzle-mediawiki-client": "~0.1",
 		"doctrine/cache": "dev-master",
 		"ppp/data-model": "*",
-		"ppp/wikidataquery-api": "~1.0",
+		"ppp/wikidataquery-api": "~1.1",
 		"ppp/libmodule": "*"
 	},
 	"require-dev": {

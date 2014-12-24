@@ -5,19 +5,25 @@ namespace PPP\Wikidata\TreeSimplifier;
 use DataValues\DataValue;
 use InvalidArgumentException;
 use PPP\DataModel\AbstractNode;
+use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\MissingNode;
+use PPP\DataModel\OperatorNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
+use PPP\DataModel\UnionNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierException;
+use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\PropertyId;
 use WikidataQueryApi\Query\AbstractQuery;
+use WikidataQueryApi\Query\AndQuery;
 use WikidataQueryApi\Query\AroundQuery;
 use WikidataQueryApi\Query\BetweenQuery;
 use WikidataQueryApi\Query\ClaimQuery;
+use WikidataQueryApi\Query\OrQuery;
 use WikidataQueryApi\Query\QuantityQuery;
 use WikidataQueryApi\Query\StringQuery;
 use WikidataQueryApi\Services\SimpleQueryService;
@@ -27,7 +33,6 @@ use WikidataQueryApi\Services\SimpleQueryService;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- * @todo do only one query with OR
  */
 class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 
@@ -37,20 +42,52 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	private $simpleQueryService;
 
 	/**
-	 * @param SimpleQueryService $simpleQueryService
+	 * @var WikibaseEntityProvider
 	 */
-	public function __construct(SimpleQueryService $simpleQueryService) {
+	private $entityProvider;
+
+	/**
+	 * @var ResourceListNodeParser
+	 */
+	private $resourceListNodeParser;
+
+	/**
+	 * @param SimpleQueryService $simpleQueryService
+	 * @param WikibaseEntityProvider $entityProvider
+	 * @param ResourceListNodeParser $resourceListNodeParser
+	 */
+	public function __construct(SimpleQueryService $simpleQueryService, WikibaseEntityProvider $entityProvider, ResourceListNodeParser $resourceListNodeParser) {
 		$this->simpleQueryService = $simpleQueryService;
+		$this->entityProvider = $entityProvider;
+		$this->resourceListNodeParser = $resourceListNodeParser;
 	}
 
 	/**
 	 * @see AbstractNode::isSimplifierFor
 	 */
 	public function isSimplifierFor(AbstractNode $node) {
+		return $this->isTripleWithMissingSubject($node) || $this->isTripleWithMissingSubjectOperator($node);
+	}
+
+	private function isTripleWithMissingSubject(AbstractNode $node) {
 		return $node instanceof TripleNode &&
-		$node->getSubject() instanceof MissingNode &&
-		$node->getPredicate() instanceof ResourceListNode &&
-		$node->getObject() instanceof ResourceListNode;
+			$node->getSubject() instanceof MissingNode &&
+			$node->getPredicate() instanceof ResourceListNode &&
+			$node->getObject() instanceof ResourceListNode;
+	}
+
+	private function isTripleWithMissingSubjectOperator(AbstractNode $node) {
+		if(!($node instanceof IntersectionNode || $node instanceof UnionNode) ) {
+			return false;
+		}
+
+		foreach($node->getOperands() as $operand) {
+			if(!$this->isSimplifierFor($operand)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -58,35 +95,75 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	 */
 	public function simplify(AbstractNode $node) {
 		if(!$this->isSimplifierFor($node)) {
-			throw new InvalidArgumentException('MissingObjectTripleNodeSimplifier can only simplify TripleNode with a missing object');
+			throw new InvalidArgumentException('MissingSubjectTripleNodeSimplifier can only simplify union and intersection of TripleNodes with missing subject');
 		}
 
 		return $this->doSimplification($node);
 	}
 
-	private function doSimplification(TripleNode $node) {
-		$queryResult = array();
+	private function doSimplification(AbstractNode $node) {
+		return $this->formatQueryResult($this->simpleQueryService->doQuery($this->buildQueryForNode($node)));
+	}
 
-		foreach($node->getPredicate() as $predicate) {
-			foreach($node->getObject() as $object) {
-				$queryResult = array_merge(
-					$queryResult,
-					$this->getQueryResultsForObject($predicate, $object)
-				);
+	private function buildQueryForNode(AbstractNode $node) {
+		if($node instanceof TripleNode) {
+			return $this->buildQueryForTriple($node);
+		} else if($node instanceof OperatorNode) {
+			return $this->buildQueryForOperator($node);
+		} else {
+			throw new InvalidArgumentException('Unsupported Node');
+		}
+	}
+
+	private function buildQueryForOperator(OperatorNode $operatorNode) {
+		$queries = array();
+
+		foreach($operatorNode->getOperands() as $operandNode) {
+			$queries[] = $this->buildQueryForNode($operandNode);
+		}
+
+		if($operatorNode instanceof UnionNode) {
+			return new OrQuery($queries);
+		} elseif($operatorNode instanceof IntersectionNode) {
+			return new AndQuery($queries);
+		} else {
+			throw new InvalidArgumentException('Unsupported OperatorNode');
+		}
+	}
+
+	private function buildQueryForTriple(TripleNode $triple) {
+		$propertyNodes = $this->resourceListNodeParser->parse($triple->getPredicate(), 'wikibase-property');
+		$queryParameters = array();
+
+		foreach($this->bagsPropertiesPerType($propertyNodes) as $objectType => $propertyNodes) {
+			$objectNodes = $this->resourceListNodeParser->parse($triple->getObject(), $objectType);
+
+			foreach($propertyNodes as $property) {
+				foreach($objectNodes as $object) {
+					$queryParameters[] = $this->buildQueryForObject($property, $object);
+				}
 			}
 		}
 
-		return $this->formatQueryResult($queryResult);
+		return new OrQuery($queryParameters);
 	}
 
-	private function getQueryResultsForObject(WikibaseResourceNode $predicate, WikibaseResourceNode $object) {
-		/** @var PropertyId $propertyId */
-		$propertyId = $predicate->getDataValue()->getEntityId();
-		/** @var DataValue $value */
-		$value = $object->getDataValue();
+	private function bagsPropertiesPerType($propertyNodes) {
+		$propertyNodesPerType = array();
 
-		return $this->simpleQueryService->doQuery(
-			$this->buildQueryForValue($propertyId, $value)
+		/** @var WikibaseResourceNode $propertyNode */
+		foreach($propertyNodes as $propertyNode) {
+			$objectType = $this->entityProvider->getProperty($propertyNode->getDataValue()->getEntityId())->getDataTypeId();
+			$propertyNodesPerType[$objectType][] = $propertyNode;
+		}
+
+		return $propertyNodesPerType;
+	}
+
+	private function buildQueryForObject(WikibaseResourceNode $predicate, WikibaseResourceNode $object) {
+		return $this->buildQueryForValue(
+			$predicate->getDataValue()->getEntityId(),
+			$object->getDataValue()
 		);
 	}
 
