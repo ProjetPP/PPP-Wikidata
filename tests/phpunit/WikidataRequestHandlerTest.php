@@ -26,6 +26,12 @@ use Wikibase\DataModel\Entity\ItemId;
  */
 class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 
+	private static $cache;
+
+	public static function setUpBeforeClass() {
+		self::$cache = new ArrayCache();
+	}
+
 	/**
 	 * @dataProvider requestAndResponseProvider
 	 */
@@ -33,7 +39,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 		$requestHandler = new WikidataRequestHandler(
 			'https://www.wikidata.org/w/api.php',
 			'https://wdq.wmflabs.org/api',
-			new ArrayCache()
+			self::$cache
 		);
 		$this->assertEquals($response, $requestHandler->buildResponse($request));
 	}
