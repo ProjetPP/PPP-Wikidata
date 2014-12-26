@@ -72,7 +72,6 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	private function doSimplification(TripleNode $node) {
 		$subjectNodes = $this->resourceListNodeParser->parse($node->getSubject(), 'wikibase-item');
 		$propertyNodes = $this->resourceListNodeParser->parse($node->getPredicate(), 'wikibase-property');
-		$this->loadEntitiesFromNode($subjectNodes);
 		$snaks = array();
 
 		foreach($subjectNodes as $subject) {

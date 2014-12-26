@@ -16,6 +16,7 @@ use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
+use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
@@ -39,6 +40,9 @@ use WikidataQueryApi\Query\StringQuery;
 class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 
 	public function buildSimplifier() {
+		$nodeSimplifierFactoryMock = $this->getMockBuilder('PPP\Module\TreeSimplifier\NodeSimplifierFactory')
+			->disableOriginalConstructor()
+			->getMock();
 		$queryServiceMock = $this->getMockBuilder('WikidataQueryApi\Services\SimpleQueryService')
 			->disableOriginalConstructor()
 			->getMock();
@@ -49,7 +53,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 			->disableOriginalConstructor()
 			->getMock();
 
-		return new MissingSubjectTripleNodeSimplifier($queryServiceMock, $entityProviderMock, $resourceListNodeParserMock);
+		return new MissingSubjectTripleNodeSimplifier($nodeSimplifierFactoryMock, $queryServiceMock, $entityProviderMock, $resourceListNodeParserMock);
 	}
 
 	public function simplifiableProvider() {
@@ -139,7 +143,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				$parsedObjects
 			));
 
-		$simplifier = new MissingSubjectTripleNodeSimplifier($queryServiceMock, $entityProviderMock, $resourceListNodeParserMock);
+		$simplifier = new MissingSubjectTripleNodeSimplifier(new NodeSimplifierFactory(), $queryServiceMock, $entityProviderMock, $resourceListNodeParserMock);
 
 		$this->assertEquals(
 			$responseNodes,
@@ -340,6 +344,28 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 					Property::newFromType('string')
 				)
 			),
+			array(
+				new TripleNode(
+					new MissingNode(),
+					new UnionNode(array(
+						new ResourceListNode(),
+						new ResourceListNode(array(new StringResourceNode('VIAF')))
+					)),
+					new ResourceListNode(array(new StringResourceNode('113230702')))
+				),
+				new ResourceListNode(array(
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
+				)),
+				new OrQuery(array(new StringQuery(new PropertyId('P214'), new StringValue('113230702')))),
+				array(
+					new ItemId('Q42')
+				),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702')))),
+				array(
+					Property::newFromType('string')
+				)
+			),
 		);
 	}
 
@@ -374,7 +400,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				$parsedObjects
 			));
 
-		$simplifier = new MissingSubjectTripleNodeSimplifier($queryServiceMock, $entityProviderMock, $resourceListNodeParserMock);
+		$simplifier = new MissingSubjectTripleNodeSimplifier(new NodeSimplifierFactory(), $queryServiceMock, $entityProviderMock, $resourceListNodeParserMock);
 
 		$this->setExpectedException('PPP\Module\TreeSimplifier\NodeSimplifierException');
 		$simplifier->simplify($queryNode);
