@@ -102,7 +102,11 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function doSimplification(AbstractNode $node) {
-		return $this->formatQueryResult($this->simpleQueryService->doQuery($this->buildQueryForNode($node)));
+		$entityIds = $this->simpleQueryService->doQuery($this->buildQueryForNode($node));
+
+		$this->entityProvider->loadEntities($entityIds);
+
+		return $this->formatQueryResult($entityIds);
 	}
 
 	private function buildQueryForNode(AbstractNode $node) {
