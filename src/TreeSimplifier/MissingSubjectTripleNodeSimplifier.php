@@ -13,6 +13,7 @@ use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierException;
+use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
@@ -37,6 +38,11 @@ use WikidataQueryApi\Services\SimpleQueryService;
 class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 
 	/**
+	 * @var NodeSimplifierFactory
+	 */
+	private $nodeSimplifierFactory;
+
+	/**
 	 * @var SimpleQueryService
 	 */
 	private $simpleQueryService;
@@ -52,11 +58,13 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	private $resourceListNodeParser;
 
 	/**
+	 * @param NodeSimplifierFactory $nodeSimplifierFactory
 	 * @param SimpleQueryService $simpleQueryService
 	 * @param WikibaseEntityProvider $entityProvider
 	 * @param ResourceListNodeParser $resourceListNodeParser
 	 */
-	public function __construct(SimpleQueryService $simpleQueryService, WikibaseEntityProvider $entityProvider, ResourceListNodeParser $resourceListNodeParser) {
+	public function __construct(NodeSimplifierFactory $nodeSimplifierFactory, SimpleQueryService $simpleQueryService, WikibaseEntityProvider $entityProvider, ResourceListNodeParser $resourceListNodeParser) {
+		$this->nodeSimplifierFactory = $nodeSimplifierFactory;
 		$this->simpleQueryService = $simpleQueryService;
 		$this->entityProvider = $entityProvider;
 		$this->resourceListNodeParser = $resourceListNodeParser;
@@ -71,9 +79,7 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 
 	private function isTripleWithMissingSubject(AbstractNode $node) {
 		return $node instanceof TripleNode &&
-			$node->getSubject() instanceof MissingNode &&
-			$node->getPredicate() instanceof ResourceListNode &&
-			$node->getObject() instanceof ResourceListNode;
+			$node->getSubject() instanceof MissingNode;
 	}
 
 	private function isTripleWithMissingSubjectOperator(AbstractNode $node) {
@@ -102,7 +108,13 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function doSimplification(AbstractNode $node) {
-		$entityIds = $this->simpleQueryService->doQuery($this->buildQueryForNode($node));
+		try {
+			$query = $this->buildQueryForNode($node);
+		} catch(InvalidArgumentException $e) {
+			return $node;
+		}
+
+		$entityIds = $this->simpleQueryService->doQuery($query);
 
 		$this->entityProvider->loadEntities($entityIds);
 
@@ -136,11 +148,18 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function buildQueryForTriple(TripleNode $triple) {
-		$propertyNodes = $this->resourceListNodeParser->parse($triple->getPredicate(), 'wikibase-property');
+		$simplifier = $this->nodeSimplifierFactory->newNodeSimplifier();
+		$predicate = $simplifier->simplify($triple->getPredicate());
+		$object = $simplifier->simplify($triple->getObject());
+		if(!($predicate instanceof ResourceListNode && $object instanceof ResourceListNode)) {
+			throw new InvalidArgumentException('Invalid triple');
+		}
+
+		$propertyNodes = $this->resourceListNodeParser->parse($predicate, 'wikibase-property');
 		$queryParameters = array();
 
 		foreach($this->bagsPropertiesPerType($propertyNodes) as $objectType => $propertyNodes) {
-			$objectNodes = $this->resourceListNodeParser->parse($triple->getObject(), $objectType);
+			$objectNodes = $this->resourceListNodeParser->parse($object, $objectType);
 
 			foreach($propertyNodes as $property) {
 				foreach($objectNodes as $object) {

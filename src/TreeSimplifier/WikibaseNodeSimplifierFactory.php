@@ -59,6 +59,7 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	private function newMissingSubjectTripleNodeSimplifier(WikidataQueryApi $wikidataQueryApi, MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
 		$wikidataQueryFactory = new WikidataQueryFactory($wikidataQueryApi);
 		return new MissingSubjectTripleNodeSimplifier(
+			$this,
 			$wikidataQueryFactory->newSimpleQueryService(),
 			$this->newEntityProvider($mediawikiApi, $cache),
 			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode)
