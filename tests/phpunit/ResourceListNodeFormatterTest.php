@@ -9,6 +9,7 @@ use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
+use PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
 
 /**
@@ -26,7 +27,13 @@ class ResourceListNodeFormatterTest extends NodeSimplifierBaseTest {
 			new ArrayCache()
 		);
 
-		return new ResourceListNodeFormatter($valueParserFactory->newWikibaseValueFormatter());
+		$entityIdFormatterPreloaderMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader')
+			->disableOriginalConstructor()
+			->getMock();
+		$entityIdFormatterPreloaderMock->expects($this->any())
+			->method('preload');
+
+		return new ResourceListNodeFormatter($valueParserFactory->newWikibaseValueFormatter(), $entityIdFormatterPreloaderMock);
 	}
 
 	public function simplifiableProvider() {

@@ -84,7 +84,7 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	private function buildNodeFormatter($languageCode) {
 		$formatterFactory = new WikibaseValueFormatterFactory($languageCode, $this->mediawikiApi, $this->cache);
 		$simplifierFactory = new NodeSimplifierFactory(array(
-			new ResourceListNodeFormatter($formatterFactory->newWikibaseValueFormatter())
+			new ResourceListNodeFormatter($formatterFactory->newWikibaseValueFormatter(), $formatterFactory->newWikibaseEntityIdFormatterPreloader())
 		));
 		return $simplifierFactory->newNodeSimplifier();
 	}

@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
+use PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatter;
 
 /**
@@ -22,10 +23,17 @@ class ResourceListNodeFormatter implements NodeSimplifier {
 	private $valueFormatter;
 
 	/**
-	 * @param WikibaseValueFormatter $valueFormatter
+	 * @var WikibaseEntityIdFormatterPreloader
 	 */
-	public function __construct(WikibaseValueFormatter $valueFormatter) {
+	private $entityIdFormatterPreloader;
+
+	/**
+	 * @param WikibaseValueFormatter $valueFormatter
+	 * @param WikibaseEntityIdFormatterPreloader $entityIdFormatterPreloader
+	 */
+	public function __construct(WikibaseValueFormatter $valueFormatter, WikibaseEntityIdFormatterPreloader $entityIdFormatterPreloader) {
 		$this->valueFormatter = $valueFormatter;
+		$this->entityIdFormatterPreloader = $entityIdFormatterPreloader;
 	}
 
 	/**
@@ -42,6 +50,8 @@ class ResourceListNodeFormatter implements NodeSimplifier {
 		if(!$this->isSimplifierFor($node)) {
 			throw new InvalidArgumentException('ResourceListNodeSimplifier can only simplify ResourceListNode');
 		}
+
+		$this->entityIdFormatterPreloader->preload($node);
 
 		return $this->doSimplification($node);
 	}

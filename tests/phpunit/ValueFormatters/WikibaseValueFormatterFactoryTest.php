@@ -118,4 +118,11 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 		return $property;
 	}
+
+	public function testWikibaseEntityIdFormatterPreloader() {
+		$this->assertInstanceOf(
+			'PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader',
+			$this->newFactory()->newWikibaseEntityIdFormatterPreloader()
+		);
+	}
 }

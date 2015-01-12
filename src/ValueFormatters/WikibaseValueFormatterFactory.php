@@ -70,11 +70,19 @@ class WikibaseValueFormatterFactory {
 	}
 
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
+		return new WikibaseEntityIdFormatter($this->newWikibaseEntityProvider(), $options);
+	}
+
+	public function newWikibaseEntityIdFormatterPreloader() {
+		return new WikibaseEntityIdFormatterPreloader($this->newWikibaseEntityProvider());
+	}
+
+	private function newWikibaseEntityProvider() {
 		$wikibaseFactory = new WikibaseFactory($this->api);
-		$entityProvider = new WikibaseEntityProvider(
+
+		return new WikibaseEntityProvider(
 			$wikibaseFactory->newRevisionsGetter(),
 			new WikibaseEntityCache($this->cache)
 		);
-		return new WikibaseEntityIdFormatter($entityProvider, $options);
 	}
 }
