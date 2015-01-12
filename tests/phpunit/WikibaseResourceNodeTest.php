@@ -6,6 +6,9 @@ use DataValues\BooleanValue;
 use DataValues\StringValue;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceNode;
+use PPP\DataModel\TripleNode;
+use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Entity\PropertyId;
 
 /**
  * @covers PPP\Wikidata\WikibaseResourceNode
@@ -23,6 +26,26 @@ class ResourceNodeTest extends \PHPUnit_Framework_TestCase {
 	public function testGetValueType() {
 		$node = new WikibaseResourceNode('foo', new StringValue('foo'));
 		$this->assertEquals('wikidata-datavalue', $node->getValueType());
+	}
+
+	public function testGetFromSubject() {
+		$node = new WikibaseResourceNode('foo', new StringValue('foo'), new ItemId('Q42'), new PropertyId('P42'));
+		$this->assertEquals(new ItemId('Q42'), $node->getFromSubject());
+	}
+
+	public function testGetFromSubjectDefault() {
+		$node = new WikibaseResourceNode('foo', new StringValue('foo'));
+		$this->assertEquals(null, $node->getFromSubject());
+	}
+
+	public function testGetFromPredicate() {
+		$node = new WikibaseResourceNode('foo', new StringValue('foo'), new ItemId('Q42'), new PropertyId('P42'));
+		$this->assertEquals(new PropertyId('P42'), $node->getFromPredicate());
+	}
+
+	public function testGetFromPredicateDefault() {
+		$node = new WikibaseResourceNode('foo', new StringValue('foo'));
+		$this->assertEquals(null, $node->getFromPredicate());
 	}
 
 	public function testEquals() {

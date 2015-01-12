@@ -4,6 +4,9 @@ namespace PPP\Wikidata;
 
 use DataValues\DataValue;
 use PPP\DataModel\ResourceNode;
+use PPP\DataModel\TripleNode;
+use Wikibase\DataModel\Entity\EntityId;
+use Wikibase\DataModel\Entity\PropertyId;
 
 /**
  * Annotates intermediate representation with Wikibase
@@ -19,11 +22,26 @@ class WikibaseResourceNode extends ResourceNode {
 	private $dataValue;
 
 	/**
+	 * @var EntityId|null the subject from which the value is retrieved
+	 */
+	private $fromSubject;
+
+	/**
+	 * @var PropertyId|null the predicate from which the value is retrieved
+	 */
+	private $fromPredicate;
+
+	/**
 	 * @param string $value
 	 * @param DataValue $dataValue
+	 * @param EntityId $fromSubject
+	 * @param PropertyId $fromPredicate
 	 */
-	public function __construct($value, DataValue $dataValue) {
+	public function __construct($value, DataValue $dataValue, EntityId $fromSubject = null, PropertyId $fromPredicate = null) {
 		$this->dataValue = $dataValue;
+		$this->fromSubject = $fromSubject;
+		$this->fromPredicate = $fromPredicate;
+
 		parent::__construct($value);
 	}
 
@@ -32,6 +50,20 @@ class WikibaseResourceNode extends ResourceNode {
 	 */
 	public function getDataValue() {
 		return $this->dataValue;
+	}
+
+	/**
+	 * @return EntityId|null
+	 */
+	public function getFromSubject() {
+		return $this->fromSubject;
+	}
+
+	/**
+	 * @return PropertyId|null
+	 */
+	public function getFromPredicate() {
+		return $this->fromPredicate;
 	}
 
 	/**

@@ -12,6 +12,7 @@ use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
+use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -72,32 +73,32 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	private function doSimplification(TripleNode $node) {
 		$subjectNodes = $this->resourceListNodeParser->parse($node->getSubject(), 'wikibase-item');
 		$propertyNodes = $this->resourceListNodeParser->parse($node->getPredicate(), 'wikibase-property');
-		$snaks = array();
+		$results = array();
 
 		foreach($subjectNodes as $subject) {
 			foreach($propertyNodes as $predicate) {
-				$snaks = array_merge(
-					$snaks,
-					$this->getSnaksForObject($subject, $predicate)
+				$results = array_merge(
+					$results,
+					$this->getNodesForObject($subject, $predicate)
 				);
 			}
 		}
 
-		$node = $this->snaksToNode($snaks);
+		$node = new ResourceListNode($results);
 		$this->loadEntitiesFromNode($node);
 		return $node;
 	}
 
-	protected function getSnaksForObject(WikibaseResourceNode $subject, WikibaseResourceNode $predicate) {
+	protected function getNodesForObject(WikibaseResourceNode $subject, WikibaseResourceNode $predicate) {
 		/** @var ItemId $itemId */
 		$itemId = $subject->getDataValue()->getEntityId();
 		/** @var PropertyId $propertyId */
 		$propertyId = $predicate->getDataValue()->getEntityId();
 
 		$item = $this->entityProvider->getItem($itemId);
-		return $this->getSnaksForProperty($item, $propertyId);
+		$snaks = $this->getSnaksForProperty($item, $propertyId);
+		return $this->snaksToNodes($snaks, $itemId, $propertyId);
 	}
-
 
 	/**
 	 * @return Snak[]
@@ -135,16 +136,16 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 		$this->entityProvider->loadEntities($entityIds);
 	}
 
-	private function snaksToNode(array $snaks) {
+	private function snaksToNodes(array $snaks, EntityId $fromSubject, PropertyId $fromProperty) {
 		$nodes = array();
 
 		foreach($snaks as $snak) {
 			if($snak instanceof PropertyValueSnak) {
-				$nodes[] = new WikibaseResourceNode('', $snak->getDataValue());
+				$nodes[] = new WikibaseResourceNode('', $snak->getDataValue(), $fromSubject, $fromProperty);
 			}
 			//TODO case of PropertySomeValueSnak (MissingNode) and PropertyNoValueSnak (return the negation of the triple?)
 		}
 
-		return new ResourceListNode($nodes);
+		return $nodes;
 	}
 }
