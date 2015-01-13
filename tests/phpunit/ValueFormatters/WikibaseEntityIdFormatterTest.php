@@ -5,8 +5,11 @@ namespace PPP\Wikidata\ValueFormatters;
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\JsonLdResourceNode;
+use PPP\Wikidata\Cache\PerSiteLinkCache;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
+use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
@@ -16,6 +19,7 @@ use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\DataModel\SiteLink;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatter
@@ -42,6 +46,14 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 						'description' => (object) array('@value' => 'Author', '@language' => 'en'),
 						'alternateName' => array(
 							(object) array('@value' => '42', '@language' => 'en')
+						),
+						'image' => (object) array(
+							'@type' => 'ImageObject',
+							'@id' => 'http://commons.wikimedia.org/wiki/Image:Douglas_adams_portrait_cropped.jpg',
+							'contentUrl' => '//upload.wikimedia.org/wikipedia/commons/c/c0/Douglas_adams_portrait_cropped.jpg',
+							'name' => 'Douglas adams portrait cropped.jpg',
+							'width' => 100,
+							'height' => 200
 						)
 					)
 				),
@@ -102,14 +114,29 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 		$class = $this->getFormatterClass();
 		$wikibaseFactory = new WikibaseFactory(new MediawikiApi(''));
 
-		$cache = new WikibaseEntityCache(new ArrayCache());
-		$cache->save($this->getQ42());
-		$cache->save($this->getP214());
+		$entityCache = new WikibaseEntityCache(new ArrayCache());
+		$entityCache->save($this->getQ42());
+		$entityCache->save($this->getP214());
+
+		$imageCache = new PerSiteLinkCache(new ArrayCache(), 'wpimg');
+		$imageCache->save(new MediawikiArticleImage(
+			new SiteLink('enwiki', 'Douglas Adams'),
+			'//upload.wikimedia.org/wikipedia/commons/c/c0/Douglas_adams_portrait_cropped.jpg',
+			100,
+			200,
+			'Douglas adams portrait cropped.jpg'
+		));
 
 		return new $class(
 			new WikibaseEntityProvider(
 				$wikibaseFactory->newRevisionsGetter(),
-				$cache
+				$entityCache
+			),
+			new MediawikiArticleImageProvider(
+				array(
+					'enwiki' => new MediawikiApi('http://example.org')
+				),
+				$imageCache
 			),
 			$options
 		);
@@ -122,6 +149,7 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 		$item->getFingerprint()->setDescription('en', 'Author');
 		$item->getFingerprint()->setAliasGroup('en', array('42'));
 		$item->getFingerprint()->setLabel('ru', 'Дуглас Адамс');
+		$item->getSiteLinkList()->addNewSiteLink('enwiki', 'Douglas Adams');
 
 		return $item;
 	}

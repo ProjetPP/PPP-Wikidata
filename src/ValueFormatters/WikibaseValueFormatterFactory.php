@@ -4,8 +4,10 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\PerSiteLinkCache;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\QuantityFormatter;
@@ -70,7 +72,11 @@ class WikibaseValueFormatterFactory {
 	}
 
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
-		return new WikibaseEntityIdFormatter($this->newWikibaseEntityProvider(), $options);
+		return new WikibaseEntityIdFormatter(
+			$this->newWikibaseEntityProvider(),
+			$this->newMediawikiArcleImageProvider(),
+			$options
+		);
 	}
 
 	public function newWikibaseEntityIdFormatterPreloader() {
@@ -83,6 +89,17 @@ class WikibaseValueFormatterFactory {
 		return new WikibaseEntityProvider(
 			$wikibaseFactory->newRevisionsGetter(),
 			new WikibaseEntityCache($this->cache)
+		);
+	}
+
+	private function newMediawikiArcleImageProvider() {
+		return new MediawikiArticleImageProvider(
+			array(
+				'enwiki' => new MediawikiApi('http://en.wikipedia.org/w/api.php'),
+				'dewiki' => new MediawikiApi('http://de.wikipedia.org/w/api.php'),
+				'frwiki' => new MediawikiApi('http://fr.wikipedia.org/w/api.php')
+			),
+			new PerSiteLinkCache($this->cache, 'wpimg')
 		);
 	}
 }

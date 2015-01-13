@@ -6,11 +6,14 @@ use InvalidArgumentException;
 use OutOfBoundsException;
 use PPP\DataModel\JsonLdResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
 use Wikibase\DataModel\Entity\EntityIdValue;
+use Wikibase\DataModel\Entity\Item;
+use Wikibase\DataModel\SiteLinkList;
 use Wikibase\DataModel\Term\Fingerprint;
 use Wikibase\DataModel\Term\FingerprintProvider;
 use Wikibase\DataModel\Term\Term;
@@ -29,11 +32,17 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 	private $entityProvider;
 
 	/**
+	 * @var MediawikiArticleImageProvider
+	 */
+	private $mediawikiArticleImageProvider;
+
+	/**
 	 * @param WikibaseEntityProvider $entityProvider
 	 * @param FormatterOptions $options
 	 */
-	public function __construct(WikibaseEntityProvider $entityProvider, FormatterOptions $options) {
+	public function __construct(WikibaseEntityProvider $entityProvider, MediawikiArticleImageProvider $mediawikiArticleImageProvider, FormatterOptions $options) {
 		$this->entityProvider = $entityProvider;
+		$this->mediawikiArticleImageProvider = $mediawikiArticleImageProvider;
 		parent::__construct($options);
 	}
 
@@ -56,6 +65,10 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		if($entity instanceof FingerprintProvider) {
 			$this->addFingerprintToResource($entity->getFingerprint(), $resource);
 			$stringAlternative = $this->getLabelFromFingerprint($entity->getFingerprint());
+		}
+
+		if($entity instanceof Item) {
+			$this->addImageToResource($entity->getSiteLinkList(), $resource);
 		}
 
 		return new JsonLdResourceNode(
@@ -100,5 +113,30 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		$resource->{'@language'} = $term->getLanguageCode();
 		$resource->{'@value'} = $term->getText();
 		return $resource;
+	}
+
+	/**
+	 * @param SiteLinkList $siteLinkList
+	 * @param stdClass $resource
+	 */
+	private function addImageToResource(SiteLinkList $siteLinkList, stdClass $resource) {
+		$wikiId = $this->getOption(ValueFormatter::OPT_LANG) . 'wiki';
+
+		if(!$this->mediawikiArticleImageProvider->isWikiIdSupported($wikiId)) {
+			return;
+		}
+
+		try {
+			$image = $this->mediawikiArticleImageProvider->getImageForSiteLink($siteLinkList->getBySiteId($wikiId));
+
+			$resource->image = new stdClass();
+			$resource->image->{'@type'} = 'ImageObject';
+			$resource->image->{'@id'} = 'http://commons.wikimedia.org/wiki/Image:' . str_replace(' ', '_', $image->getTitle());
+			$resource->image->contentUrl = $image->getUrl();
+			$resource->image->width = $image->getWidth();
+			$resource->image->height = $image->getHeight();
+			$resource->image->name = $image->getTitle();
+		} catch(OutOfBoundsException $e) {
+		}
 	}
 }
