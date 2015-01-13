@@ -12,7 +12,7 @@ use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\SiteLink;
 
 /**
- * @covers PPP\Wikidata\WikibaseEntityIdFormatterPreloader
+ * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
