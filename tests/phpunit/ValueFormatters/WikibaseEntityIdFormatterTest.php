@@ -8,8 +8,11 @@ use PPP\DataModel\JsonLdResourceNode;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleHeader;
+use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
+use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
@@ -54,6 +57,20 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 							'name' => 'Douglas adams portrait cropped.jpg',
 							'width' => 100,
 							'height' => 200
+						),
+						'@reverse' => (object) array(
+							'about'=> (object) array(
+								'@type' => 'Article',
+								'@id'=> 'http://en.wikipedia.org/wiki/Douglas_Adams',
+								'inLanguage'=> 'en',
+								'headline'=> 'Fooo barr baz gaaaaaaa...',
+								'author'=> (object) array(
+									'@type'=> 'Organization',
+									'@id' => 'http://www.wikidata.org/entity/Q52',
+									'name' => 'Wikipedia'
+								),
+								'license'=> 'http://creativecommons.org/licenses/by-sa/3.0/'
+							)
 						)
 					)
 				),
@@ -67,7 +84,8 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 						'@context' => 'http://schema.org',
 						'@type' => 'Thing',
 						'@id' => 'http://www.wikidata.org/entity/Q42',
-						'name' => (object) array('@value' => 'Дуглас Адамс', '@language' => 'ru')
+						'name' => (object) array('@value' => 'Дуглас Адамс', '@language' => 'ru'),
+						'@reverse' => new stdClass()
 					)
 				),
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'ru'))
@@ -79,7 +97,8 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 					(object) array(
 						'@context' => 'http://schema.org',
 						'@type' => 'Thing',
-						'@id' => 'http://www.wikidata.org/entity/Q42'
+						'@id' => 'http://www.wikidata.org/entity/Q42',
+						'@reverse' => new stdClass()
 					)
 				),
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'de'))
@@ -92,7 +111,8 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 						'@context' => 'http://schema.org',
 						'@type' => 'Thing',
 						'@id' => 'http://www.wikidata.org/entity/P214',
-						'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en')
+						'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
+						'@reverse' => new stdClass()
 					)
 				)
 			)
@@ -118,6 +138,14 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 		$entityCache->save($this->getQ42());
 		$entityCache->save($this->getP214());
 
+		$articleHeaderCache = new PerSiteLinkCache(new ArrayCache(), 'wparticlehead');
+		$articleHeaderCache->save(new MediawikiArticleHeader(
+			new SiteLink('enwiki', 'Douglas Adams'),
+			'Fooo barr baz gaaaaaaa...',
+			'en',
+			'http://en.wikipedia.org/wiki/Douglas_Adams'
+		));
+
 		$imageCache = new PerSiteLinkCache(new ArrayCache(), 'wpimg');
 		$imageCache->save(new MediawikiArticleImage(
 			new SiteLink('enwiki', 'Douglas Adams'),
@@ -131,6 +159,12 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 			new WikibaseEntityProvider(
 				$wikibaseFactory->newRevisionsGetter(),
 				$entityCache
+			),
+			new MediawikiArticleHeaderProvider(
+				array(
+					'enwiki' => new MediawikiApi('http://example.org')
+				),
+				$articleHeaderCache
 			),
 			new MediawikiArticleImageProvider(
 				array(

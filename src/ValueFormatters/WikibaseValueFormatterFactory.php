@@ -7,6 +7,8 @@ use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleHeader;
+use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
@@ -74,7 +76,8 @@ class WikibaseValueFormatterFactory {
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
 		return new WikibaseEntityIdFormatter(
 			$this->newWikibaseEntityProvider(),
-			$this->newMediawikiArcleImageProvider(),
+			$this->newMediawikiArticleHeaderProvider(),
+			$this->newMediawikiArticleImageProvider(),
 			$options
 		);
 	}
@@ -92,7 +95,18 @@ class WikibaseValueFormatterFactory {
 		);
 	}
 
-	private function newMediawikiArcleImageProvider() {
+	private function newMediawikiArticleHeaderProvider() {
+		return new MediawikiArticleHeaderProvider(
+			array(
+				'enwiki' => new MediawikiApi('http://en.wikipedia.org/w/api.php'),
+				'dewiki' => new MediawikiApi('http://de.wikipedia.org/w/api.php'),
+				'frwiki' => new MediawikiApi('http://fr.wikipedia.org/w/api.php')
+			),
+			new PerSiteLinkCache($this->cache, 'wparticlehead')
+		);
+	}
+
+	private function newMediawikiArticleImageProvider() {
 		return new MediawikiArticleImageProvider(
 			array(
 				'enwiki' => new MediawikiApi('http://en.wikipedia.org/w/api.php'),

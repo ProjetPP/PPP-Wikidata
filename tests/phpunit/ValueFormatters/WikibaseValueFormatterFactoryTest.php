@@ -18,6 +18,7 @@ use PPP\DataModel\JsonLdResourceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
+use stdClass;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -97,7 +98,8 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 					'@context' => 'http://schema.org',
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en')
+					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
+					'@reverse' => new stdClass()
 				)
 			),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new ItemId('Q42')))
@@ -112,7 +114,8 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 					'@context' => 'http://schema.org',
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/P214',
-					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en')
+					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
+					'@reverse' => new stdClass()
 				)
 			),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new PropertyId('P214')))

@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use OutOfBoundsException;
 use PPP\DataModel\JsonLdResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use stdClass;
 use ValueFormatters\FormatterOptions;
@@ -32,17 +33,30 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 	private $entityProvider;
 
 	/**
+	 * @var MediawikiArticleHeaderProvider
+	 */
+	private $articleHeaderProvider;
+
+	/**
 	 * @var MediawikiArticleImageProvider
 	 */
-	private $mediawikiArticleImageProvider;
+	private $articleImageProvider;
 
 	/**
 	 * @param WikibaseEntityProvider $entityProvider
+	 * @param MediawikiArticleHeaderProvider $articleHeaderProvider
+	 * @param MediawikiArticleImageProvider $articleImageProvider
 	 * @param FormatterOptions $options
 	 */
-	public function __construct(WikibaseEntityProvider $entityProvider, MediawikiArticleImageProvider $mediawikiArticleImageProvider, FormatterOptions $options) {
+	public function __construct(
+		WikibaseEntityProvider $entityProvider,
+		MediawikiArticleHeaderProvider $articleHeaderProvider,
+		MediawikiArticleImageProvider $articleImageProvider,
+		FormatterOptions $options
+	) {
 		$this->entityProvider = $entityProvider;
-		$this->mediawikiArticleImageProvider = $mediawikiArticleImageProvider;
+		$this->articleHeaderProvider = $articleHeaderProvider;
+		$this->articleImageProvider = $articleImageProvider;
 		parent::__construct($options);
 	}
 
@@ -61,6 +75,7 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		$resource->{'@context'} = 'http://schema.org';
 		$resource->{'@type'} = 'Thing';
 		$resource->{'@id'} = 'http://www.wikidata.org/entity/' . $value->getEntityId()->getSerialization(); //TODO: option
+		$resource->{'@reverse'} = new stdClass();
 
 		if($entity instanceof FingerprintProvider) {
 			$this->addFingerprintToResource($entity->getFingerprint(), $resource);
@@ -68,6 +83,7 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		}
 
 		if($entity instanceof Item) {
+			$this->addArticleToResource($entity->getSiteLinkList(), $resource);
 			$this->addImageToResource($entity->getSiteLinkList(), $resource);
 		}
 
@@ -119,19 +135,49 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 	 * @param SiteLinkList $siteLinkList
 	 * @param stdClass $resource
 	 */
-	private function addImageToResource(SiteLinkList $siteLinkList, stdClass $resource) {
+	private function addArticleToResource(SiteLinkList $siteLinkList, stdClass $resource) {
 		$wikiId = $this->getOption(ValueFormatter::OPT_LANG) . 'wiki';
 
-		if(!$this->mediawikiArticleImageProvider->isWikiIdSupported($wikiId)) {
+		if(!$this->articleHeaderProvider->isWikiIdSupported($wikiId)) {
 			return;
 		}
 
 		try {
-			$image = $this->mediawikiArticleImageProvider->getImageForSiteLink($siteLinkList->getBySiteId($wikiId));
+			$header = $this->articleHeaderProvider->getHeaderForSiteLink($siteLinkList->getBySiteId($wikiId));
+
+			$articleResource = new stdClass();
+			$articleResource->{'@type'} = 'Article';
+			$articleResource->{'@id'} = $header->getUrl();
+			$articleResource->inLanguage = $header->getLanguageCode();
+			$articleResource->headline = $header->getText();
+			$articleResource->license = 'http://creativecommons.org/licenses/by-sa/3.0/';
+			$articleResource->author = new stdClass();
+			$articleResource->author->{'@type'} = 'Organization';
+			$articleResource->author->{'@id'} = 'http://www.wikidata.org/entity/Q52';
+			$articleResource->author->name = 'Wikipedia';
+
+			$resource->{'@reverse'}->about = $articleResource;
+		} catch(OutOfBoundsException $e) {
+		}
+	}
+
+	/**
+	 * @param SiteLinkList $siteLinkList
+	 * @param stdClass $resource
+	 */
+	private function addImageToResource(SiteLinkList $siteLinkList, stdClass $resource) {
+		$wikiId = $this->getOption(ValueFormatter::OPT_LANG) . 'wiki';
+
+		if(!$this->articleImageProvider->isWikiIdSupported($wikiId)) {
+			return;
+		}
+
+		try {
+			$image = $this->articleImageProvider->getImageForSiteLink($siteLinkList->getBySiteId($wikiId));
 
 			$resource->image = new stdClass();
 			$resource->image->{'@type'} = 'ImageObject';
-			$resource->image->{'@id'} = 'http://commons.wikimedia.org/wiki/Image:' . str_replace(' ', '_', $image->getTitle());
+			$resource->image->{'@id'} = 'http://commons.wikimedia.org/wiki/Image:' . str_replace(' ', '_', $image->getTitle()); //TODO configure
 			$resource->image->contentUrl = $image->getUrl();
 			$resource->image->width = $image->getWidth();
 			$resource->image->height = $image->getHeight();
