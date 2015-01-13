@@ -9,7 +9,6 @@ use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
-use PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
 
 /**
