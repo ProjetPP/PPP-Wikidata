@@ -28,6 +28,9 @@ class MediawikiArticleHeader implements SiteLinkProvider {
 
 	/**
 	 * @param SiteLink $siteLink
+	 * @param string $text
+	 * @param string $languageCode
+	 * @param string $url
 	 */
 	public function __construct(SiteLink $siteLink, $text, $languageCode, $url) {
 		$this->siteLink = $siteLink;
@@ -43,14 +46,23 @@ class MediawikiArticleHeader implements SiteLinkProvider {
 		return $this->siteLink;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getText() {
 		return $this->text;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getLanguageCode() {
 		return $this->languageCode;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getUrl() {
 		return $this->url;
 	}
