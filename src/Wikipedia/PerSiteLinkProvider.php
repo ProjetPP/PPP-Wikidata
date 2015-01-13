@@ -59,7 +59,7 @@ abstract class PerSiteLinkProvider {
 		$titlesPerWiki = array();
 
 		foreach($titles as $title) {
-			if(!$this->cache->contains($title)) {
+			if(!$this->cache->contains($title) && $this->isWikiIdSupported($title->getSiteId())) {
 				$titlesPerWiki[$title->getSiteId()][] = $title->getPageName();
 			}
 		}

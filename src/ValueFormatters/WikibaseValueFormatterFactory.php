@@ -90,7 +90,14 @@ class WikibaseValueFormatterFactory {
 	}
 
 	public function newWikibaseEntityIdFormatterPreloader() {
-		return new WikibaseEntityIdFormatterPreloader($this->newWikibaseEntityProvider());
+		return new WikibaseEntityIdFormatterPreloader(
+			$this->newWikibaseEntityProvider(),
+			array(
+				$this->newMediawikiArticleHeaderProvider(),
+				$this->newMediawikiArticleImageProvider()
+			),
+			$this->languageCode
+		);
 	}
 
 	private function newWikibaseEntityProvider() {

@@ -123,7 +123,7 @@ class MediawikiArticleImageProviderTest extends \PHPUnit_Framework_TestCase {
 
 		$provider = new MediawikiArticleImageProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
 
-		$provider->loadFromSiteLinks(array(new SiteLink('enwiki', 'Bar')));
+		$provider->loadFromSiteLinks(array(new SiteLink('enwiki', 'Bar'), new SiteLink('dewiki', 'Bar')));
 		$this->assertEquals(
 			new MediawikiArticleImage(new SiteLink('enwiki', 'Bar'), 'http://test.org', 1, 1, 'foo'),
 			$provider->getImageForSiteLink(new SiteLink('enwiki', 'Bar'))
