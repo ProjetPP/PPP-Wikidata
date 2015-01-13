@@ -23,6 +23,7 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 			->with(
 				$this->equalTo('query'),
 				$this->equalTo(array(
+					'action' => 'query',
 					'titles' => 'Bar',
 					'prop' => 'extracts|info',
 					'inprop' => 'url',
@@ -93,6 +94,7 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 			->with(
 				$this->equalTo('query'),
 				$this->equalTo(array(
+					'action' => 'query',
 					'titles' => 'Bar',
 					'prop' => 'extracts|info',
 					'inprop' => 'url',
@@ -118,7 +120,7 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 
 		$provider = new MediawikiArticleHeaderProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
 
-		$provider->loadHeaders(array(new SiteLink('enwiki', 'Bar')));
+		$provider->loadFromSiteLinks(array(new SiteLink('enwiki', 'Bar')));
 		$this->assertEquals(
 			new MediawikiArticleHeader(new SiteLink('enwiki', 'Bar'), 'foo', 'en', 'http://en.wikipedia.org/wiki/Bar'),
 			$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'Bar'))
