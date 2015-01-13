@@ -5,17 +5,14 @@ namespace PPP\Wikidata\ValueFormatters;
 use InvalidArgumentException;
 use OutOfBoundsException;
 use PPP\DataModel\JsonLdResourceNode;
-use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
 use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
-use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\FingerprintProvider;
 use Wikibase\DataModel\Term\Term;
 
 /**
@@ -48,31 +45,23 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 			throw new InvalidArgumentException('$value should be a DataValue');
 		}
 
-		$fingerprint = $this->getFingerprintForEntityId($value->getEntityId());
+		$entity = $this->entityProvider->getEntityDocument($value->getEntityId());
+		$stringAlternative = $entity->getId()->getSerialization();
 
 		$resource = new stdClass();
 		$resource->{'@context'} = 'http://schema.org';
 		$resource->{'@type'} = 'Thing';
-		$resource->{'@id'} = 'http://www.wikidata.org/entity/' . $value->getEntityId()->getSerialization();
-		$this->addFingerprintToResource($fingerprint, $resource );
+		$resource->{'@id'} = 'http://www.wikidata.org/entity/' . $value->getEntityId()->getSerialization(); //TODO: option
+
+		if($entity instanceof FingerprintProvider) {
+			$this->addFingerprintToResource($entity->getFingerprint(), $resource);
+			$stringAlternative = $this->getLabelFromFingerprint($entity->getFingerprint());
+		}
 
 		return new JsonLdResourceNode(
-			$this->getLabelFromFingerprint($fingerprint),
+			$stringAlternative,
 			$resource
 		);
-	}
-
-	/**
-	 * @return Fingerprint
-	 */
-	private function getFingerprintForEntityId(EntityId $entityId) {
-		if($entityId instanceof ItemId) {
-			return $this->entityProvider->getItem($entityId)->getFingerprint();
-		} elseif($entityId instanceof PropertyId) {
-			return $this->entityProvider->getProperty($entityId)->getFingerprint();
-		} else {
-			throw new InvalidArgumentException('Unknown entity type:' .  $entityId->getEntityType());
-		}
 	}
 
 	private function getLabelFromFingerprint(Fingerprint $fingerprint) {
