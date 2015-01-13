@@ -6,7 +6,7 @@ use PPP\Wikidata\Wikipedia\MediawikiArticleHeader;
 use Wikibase\DataModel\SiteLink;
 
 /**
- * @covers PPP\Wikidata\MediawikiArticleHeader
+ * @covers PPP\Wikidata\Wikipedia\MediawikiArticleHeader
  *
  * @licence MIT
  * @author Thomas Pellissier Tanon

@@ -6,7 +6,7 @@ use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
 use Wikibase\DataModel\SiteLink;
 
 /**
- * @covers PPP\Wikidata\MediawikiArticleImage
+ * @covers PPP\Wikidata\Wikipedia\MediawikiArticleImage
  *
  * @licence MIT
  * @author Thomas Pellissier Tanon
