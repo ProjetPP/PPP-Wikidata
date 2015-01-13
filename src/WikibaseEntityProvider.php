@@ -5,6 +5,7 @@ namespace PPP\Wikidata;
 use OutOfBoundsException;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use Wikibase\Api\Service\RevisionsGetter;
+use Wikibase\DataModel\Entity\EntityDocument;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -69,7 +70,7 @@ class WikibaseEntityProvider {
 	 * @throws OutOfBoundsException
 	 */
 	public function getItem(ItemId $itemId) {
-		return $this->getEntity($itemId);
+		return $this->getEntityDocument($itemId);
 	}
 
 	/**
@@ -78,10 +79,14 @@ class WikibaseEntityProvider {
 	 * @throws OutOfBoundsException
 	 */
 	public function getProperty(PropertyId $propertyId) {
-		return $this->getEntity($propertyId);
+		return $this->getEntityDocument($propertyId);
 	}
 
-	private function getEntity(EntityId $entityId) {
+	/**
+	 * @param EntityId $entityId
+	 * @return EntityDocument
+	 */
+	public function getEntityDocument(EntityId $entityId) {
 		try {
 			return $this->cache->fetch($entityId);
 		} catch(OutOfBoundsException $e) {

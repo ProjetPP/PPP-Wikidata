@@ -21,7 +21,7 @@ use Wikibase\DataModel\PropertyContent;
  */
 class WikibaseEntityProviderTest extends \PHPUnit_Framework_TestCase {
 
-	public function testGetItem() {
+	public function testGetEntityDocument() {
 		$item = Item::newEmpty();
 		$item->setId(new ItemId('Q42'));
 
@@ -35,10 +35,10 @@ class WikibaseEntityProviderTest extends \PHPUnit_Framework_TestCase {
 
 		$provider = new WikibaseEntityProvider($revisionGetterMock, new WikibaseEntityCache(new ArrayCache()));
 
-		$this->assertEquals($item, $provider->getItem(new ItemId('Q42')));
+		$this->assertEquals($item, $provider->getEntityDocument(new ItemId('Q42')));
 	}
 
-	public function testGetItemWithException() {
+	public function testGetEntityDocumentWithException() {
 		$revisionGetterMock = $this->getMockBuilder('Wikibase\Api\Service\RevisionsGetter')
 			->disableOriginalConstructor()
 			->getMock();
@@ -50,10 +50,10 @@ class WikibaseEntityProviderTest extends \PHPUnit_Framework_TestCase {
 		$provider = new WikibaseEntityProvider($revisionGetterMock, new WikibaseEntityCache(new ArrayCache()));
 
 		$this->setExpectedException('\OutOfBoundsException');
-		$provider->getItem(new ItemId('Q42424242'));
+		$provider->getEntityDocument(new ItemId('Q42424242'));
 	}
 
-	public function testGetItemWithCache() {
+	public function testGetEntityDocumentWithCache() {
 		$item = Item::newEmpty();
 		$item->setId(new ItemId('Q42'));
 
@@ -68,10 +68,10 @@ class WikibaseEntityProviderTest extends \PHPUnit_Framework_TestCase {
 		$provider = new WikibaseEntityProvider($revisionGetterMock, new WikibaseEntityCache(new ArrayCache()));
 
 		$provider->getItem(new ItemId('Q42'));
-		$this->assertEquals($item, $provider->getItem(new ItemId('Q42')));
+		$this->assertEquals($item, $provider->getEntityDocument(new ItemId('Q42')));
 	}
 
-	public function testGetItemWithLoad() {
+	public function testGetEntityDocumentWithLoad() {
 		$item42 = Item::newEmpty();
 		$item42->setId(new ItemId('Q42'));
 		$item43 = Item::newEmpty();
@@ -92,7 +92,24 @@ class WikibaseEntityProviderTest extends \PHPUnit_Framework_TestCase {
 
 		$provider->loadEntities(array(new ItemId('Q42'), new ItemId('Q43')));
 		$provider->getItem(new ItemId('Q42'));
-		$this->assertEquals($item42, $provider->getItem(new ItemId('Q42')));
+		$this->assertEquals($item42, $provider->getEntityDocument(new ItemId('Q42')));
+	}
+
+	public function testGetItem() {
+		$item = Item::newEmpty();
+		$item->setId(new ItemId('Q42'));
+
+		$revisionGetterMock = $this->getMockBuilder('Wikibase\Api\Service\RevisionsGetter')
+			->disableOriginalConstructor()
+			->getMock();
+		$revisionGetterMock->expects($this->once())
+			->method('getRevisions')
+			->with($this->equalTo(array(new ItemId('Q42'))))
+			->will($this->returnValue(new Revisions(array(new Revision(new ItemContent($item))))));
+
+		$provider = new WikibaseEntityProvider($revisionGetterMock, new WikibaseEntityCache(new ArrayCache()));
+
+		$this->assertEquals($item, $provider->getItem(new ItemId('Q42')));
 	}
 
 	public function testGetProperty() {

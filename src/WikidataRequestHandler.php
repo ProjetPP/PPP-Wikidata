@@ -10,11 +10,8 @@ use PPP\Module\AbstractRequestHandler;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
-use PPP\Wikidata\DataModel\Deserializers\WikibaseEntityResourceNodeDeserializer;
-use PPP\Wikidata\DataModel\Serializers\WikibaseEntityResourceNodeSerializer;
 use PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
-use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use WikidataQueryApi\WikidataQueryApi;
 
 /**
@@ -31,6 +28,11 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	public $mediawikiApi;
 
 	/**
+	 * @var MediawikiApi[]
+	 */
+	private $sitesApi;
+
+	/**
 	 * @var WikidataQueryApi
 	 */
 	public $wikidataQueryApi;
@@ -40,8 +42,18 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	 */
 	public $cache;
 
-	public function __construct($mediawikiApiUrl, $wikidataQueryUrl, Cache $cache) {
+	/**
+	 * @param string $mediawikiApiUrl
+	 * @param string[] $sitesUrls
+	 * @param string $wikidataQueryUrl
+	 * @param Cache $cache
+	 */
+	public function __construct($mediawikiApiUrl, array $sitesUrls, $wikidataQueryUrl, Cache $cache) {
 		$this->mediawikiApi = new MediawikiApi($mediawikiApiUrl);
+		$this->sitesApi = array();
+		foreach($sitesUrls as $siteId => $url) {
+			$this->sitesApi[$siteId] = new MediawikiApi($url);
+		}
 		$this->wikidataQueryApi = new WikidataQueryApi($wikidataQueryUrl);
 		$this->cache = $cache;
 	}
@@ -82,28 +94,10 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	}
 
 	private function buildNodeFormatter($languageCode) {
-		$formatterFactory = new WikibaseValueFormatterFactory($languageCode, $this->mediawikiApi, $this->cache);
+		$formatterFactory = new WikibaseValueFormatterFactory($languageCode, $this->mediawikiApi, $this->sitesApi, $this->cache);
 		$simplifierFactory = new NodeSimplifierFactory(array(
-			new ResourceListNodeFormatter($formatterFactory->newWikibaseValueFormatter())
+			new ResourceListNodeFormatter($formatterFactory->newWikibaseValueFormatter(), $formatterFactory->newWikibaseEntityIdFormatterPreloader())
 		));
 		return $simplifierFactory->newNodeSimplifier();
-	}
-
-	/**
-	 * @see RequestHandler::getCustomResourceNodeSerializers
-	 */
-	public function getCustomResourceNodeSerializers() {
-		return array(
-			new WikibaseEntityResourceNodeSerializer()
-		);
-	}
-
-	/**
-	 * @see RequestHandler::getCustomResourceNodeDeserializers
-	 */
-	public function getCustomResourceNodeDeserializers() {
-		return array(
-			new WikibaseEntityResourceNodeDeserializer(new BasicEntityIdParser())
-		);
 	}
 }

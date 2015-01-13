@@ -14,10 +14,11 @@ use Doctrine\Common\Cache\ArrayCache;
 use GeoJson\Geometry\Point;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\GeoJsonResourceNode;
+use PPP\DataModel\JsonLdResourceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
-use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
+use stdClass;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -38,7 +39,7 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 		$entityCache->save($this->getQ42());
 		$entityCache->save($this->getP214());
 
-		return new WikibaseValueFormatterFactory('en', new MediawikiApi(''), $cache);
+		return new WikibaseValueFormatterFactory('en', new MediawikiApi(''), array(), $cache);
 	}
 
 	public function testFormatterFormatGlobeCoordinate() {
@@ -91,14 +92,53 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testFormatterFormatWikibaseItem() {
 		$this->assertEquals(
-			new WikibaseEntityResourceNode('Douglas Adams', new ItemId('Q42')),
+			new JsonLdResourceNode(
+				'Douglas Adams',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Thing',
+					'@id' => 'http://www.wikidata.org/entity/Q42',
+					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),'potentialAction' => array(
+						(object) array(
+							'@type' => 'ViewAction',
+							'name' => array(
+								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
+								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
+							),
+							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+							'target' => '//www.wikidata.org/entity/Q42'
+						)
+					),
+					'@reverse' => new stdClass()
+				)
+			),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new ItemId('Q42')))
 		);
 	}
 
 	public function testFormatterFormatWikibaseProperty() {
 		$this->assertEquals(
-			new WikibaseEntityResourceNode('VIAF identifier', new PropertyId('P214')),
+			new JsonLdResourceNode(
+				'VIAF identifier',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Thing',
+					'@id' => 'http://www.wikidata.org/entity/P214',
+					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
+					'potentialAction' => array(
+						(object) array(
+							'@type' => 'ViewAction',
+							'name' => array(
+								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
+								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
+							),
+							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+							'target' => '//www.wikidata.org/entity/P214'
+						)
+					),
+					'@reverse' => new stdClass()
+				)
+			),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new PropertyId('P214')))
 		);
 	}
@@ -117,5 +157,12 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 		$property->getFingerprint()->setLabel('en', 'VIAF identifier');
 
 		return $property;
+	}
+
+	public function testWikibaseEntityIdFormatterPreloader() {
+		$this->assertInstanceOf(
+			'PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader',
+			$this->newFactory()->newWikibaseEntityIdFormatterPreloader()
+		);
 	}
 }

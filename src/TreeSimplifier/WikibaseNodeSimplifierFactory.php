@@ -4,7 +4,6 @@ namespace PPP\Wikidata\TreeSimplifier;
 
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
-use PPP\DataModel\IntersectionNode;
 use PPP\Module\TreeSimplifier\IntersectionNodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\Cache\WikibaseEntityCache;

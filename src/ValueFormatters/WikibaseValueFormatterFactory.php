@@ -4,8 +4,11 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\PerSiteLinkCache;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\QuantityFormatter;
@@ -31,6 +34,11 @@ class WikibaseValueFormatterFactory {
 	private $api;
 
 	/**
+	 * @var MediawikiApi[]
+	 */
+	private $sitesApi;
+
+	/**
 	 * @var Cache
 	 */
 	private $cache;
@@ -38,11 +46,13 @@ class WikibaseValueFormatterFactory {
 	/**
 	 * @param $languageCode
 	 * @param MediawikiApi $api
+	 * @param MediawikiApi[] $sitesApi
 	 * @param Cache $cache
 	 */
-	public function __construct($languageCode, MediawikiApi $api, Cache $cache) {
+	public function __construct($languageCode, MediawikiApi $api, array $sitesApi, Cache $cache) {
 		$this->languageCode = $languageCode;
 		$this->api = $api;
+		$this->sitesApi = $sitesApi;
 		$this->cache = $cache;
 	}
 
@@ -70,11 +80,45 @@ class WikibaseValueFormatterFactory {
 	}
 
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
+		return new WikibaseEntityIdFormatter(
+			$this->newWikibaseEntityProvider(),
+			$this->newMediawikiArticleHeaderProvider(),
+			$this->newMediawikiArticleImageProvider(),
+			$options
+		);
+	}
+
+	public function newWikibaseEntityIdFormatterPreloader() {
+		return new WikibaseEntityIdFormatterPreloader(
+			$this->newWikibaseEntityProvider(),
+			array(
+				$this->newMediawikiArticleHeaderProvider(),
+				$this->newMediawikiArticleImageProvider()
+			),
+			$this->languageCode
+		);
+	}
+
+	private function newWikibaseEntityProvider() {
 		$wikibaseFactory = new WikibaseFactory($this->api);
-		$entityProvider = new WikibaseEntityProvider(
+
+		return new WikibaseEntityProvider(
 			$wikibaseFactory->newRevisionsGetter(),
 			new WikibaseEntityCache($this->cache)
 		);
-		return new WikibaseEntityIdFormatter($entityProvider, $options);
+	}
+
+	private function newMediawikiArticleHeaderProvider() {
+		return new MediawikiArticleHeaderProvider(
+			$this->sitesApi,
+			new PerSiteLinkCache($this->cache, 'wparticlehead')
+		);
+	}
+
+	private function newMediawikiArticleImageProvider() {
+		return new MediawikiArticleImageProvider(
+			$this->sitesApi,
+			new PerSiteLinkCache($this->cache, 'wpimg')
+		);
 	}
 }

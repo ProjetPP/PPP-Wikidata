@@ -23,10 +23,19 @@ class ResourceListNodeFormatterTest extends NodeSimplifierBaseTest {
 		$valueParserFactory = new WikibaseValueFormatterFactory(
 			'en',
 			new MediawikiApi('http://www.wikidata.org/w/api.php'),
+			array(
+				'enwiki' => new MediawikiApi('http://en.wikipedia.org/w/api.php'),
+			),
 			new ArrayCache()
 		);
 
-		return new ResourceListNodeFormatter($valueParserFactory->newWikibaseValueFormatter());
+		$entityIdFormatterPreloaderMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader')
+			->disableOriginalConstructor()
+			->getMock();
+		$entityIdFormatterPreloaderMock->expects($this->any())
+			->method('preload');
+
+		return new ResourceListNodeFormatter($valueParserFactory->newWikibaseValueFormatter(), $entityIdFormatterPreloaderMock);
 	}
 
 	public function simplifiableProvider() {
