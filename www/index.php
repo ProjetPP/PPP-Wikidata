@@ -24,6 +24,11 @@ if(class_exists('Memcached')) {
 
 $entryPoint = new ModuleEntryPoint(new WikidataRequestHandler(
 	'https://www.wikidata.org/w/api.php',
+	array(
+		'enwiki' => 'http://en.wikipedia.org/w/api.php',
+		'dewiki' => 'http://de.wikipedia.org/w/api.php',
+		'frwiki' => 'http://fr.wikipedia.org/w/api.php'
+	),
 	'https://wdq.wmflabs.org/api',
 	$cache
 ));

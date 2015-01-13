@@ -37,6 +37,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 	public function testBuildResponse(ModuleRequest $request, array $response) {
 		$requestHandler = new WikidataRequestHandler(
 			'https://www.wikidata.org/w/api.php',
+			array(
+				'enwiki' => 'http://en.wikipedia.org/w/api.php',
+				'dewiki' => 'http://de.wikipedia.org/w/api.php',
+				'frwiki' => 'http://fr.wikipedia.org/w/api.php'
+			),
 			'https://wdq.wmflabs.org/api',
 			self::$cache
 		);

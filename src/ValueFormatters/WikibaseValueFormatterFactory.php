@@ -35,6 +35,11 @@ class WikibaseValueFormatterFactory {
 	private $api;
 
 	/**
+	 * @var MediawikiApi[]
+	 */
+	private $sitesApi;
+
+	/**
 	 * @var Cache
 	 */
 	private $cache;
@@ -42,11 +47,13 @@ class WikibaseValueFormatterFactory {
 	/**
 	 * @param $languageCode
 	 * @param MediawikiApi $api
+	 * @param MediawikiApi[] $sitesApi
 	 * @param Cache $cache
 	 */
-	public function __construct($languageCode, MediawikiApi $api, Cache $cache) {
+	public function __construct($languageCode, MediawikiApi $api, array $sitesApi, Cache $cache) {
 		$this->languageCode = $languageCode;
 		$this->api = $api;
+		$this->sitesApi = $sitesApi;
 		$this->cache = $cache;
 	}
 
@@ -97,22 +104,14 @@ class WikibaseValueFormatterFactory {
 
 	private function newMediawikiArticleHeaderProvider() {
 		return new MediawikiArticleHeaderProvider(
-			array(
-				'enwiki' => new MediawikiApi('http://en.wikipedia.org/w/api.php'),
-				'dewiki' => new MediawikiApi('http://de.wikipedia.org/w/api.php'),
-				'frwiki' => new MediawikiApi('http://fr.wikipedia.org/w/api.php')
-			),
+			$this->sitesApi,
 			new PerSiteLinkCache($this->cache, 'wparticlehead')
 		);
 	}
 
 	private function newMediawikiArticleImageProvider() {
 		return new MediawikiArticleImageProvider(
-			array(
-				'enwiki' => new MediawikiApi('http://en.wikipedia.org/w/api.php'),
-				'dewiki' => new MediawikiApi('http://de.wikipedia.org/w/api.php'),
-				'frwiki' => new MediawikiApi('http://fr.wikipedia.org/w/api.php')
-			),
+			$this->sitesApi,
 			new PerSiteLinkCache($this->cache, 'wpimg')
 		);
 	}

@@ -57,6 +57,7 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		$this->entityProvider = $entityProvider;
 		$this->articleHeaderProvider = $articleHeaderProvider;
 		$this->articleImageProvider = $articleImageProvider;
+
 		parent::__construct($options);
 	}
 

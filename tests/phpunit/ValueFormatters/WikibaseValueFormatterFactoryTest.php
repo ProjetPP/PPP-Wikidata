@@ -39,7 +39,7 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 		$entityCache->save($this->getQ42());
 		$entityCache->save($this->getP214());
 
-		return new WikibaseValueFormatterFactory('en', new MediawikiApi(''), $cache);
+		return new WikibaseValueFormatterFactory('en', new MediawikiApi(''), array(), $cache);
 	}
 
 	public function testFormatterFormatGlobeCoordinate() {
