@@ -10,11 +10,8 @@ use PPP\Module\AbstractRequestHandler;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
-use PPP\Wikidata\DataModel\Deserializers\WikibaseEntityResourceNodeDeserializer;
-use PPP\Wikidata\DataModel\Serializers\WikibaseEntityResourceNodeSerializer;
 use PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory;
 use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
-use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use WikidataQueryApi\WikidataQueryApi;
 
 /**
@@ -87,23 +84,5 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 			new ResourceListNodeFormatter($formatterFactory->newWikibaseValueFormatter(), $formatterFactory->newWikibaseEntityIdFormatterPreloader())
 		));
 		return $simplifierFactory->newNodeSimplifier();
-	}
-
-	/**
-	 * @see RequestHandler::getCustomResourceNodeSerializers
-	 */
-	public function getCustomResourceNodeSerializers() {
-		return array(
-			new WikibaseEntityResourceNodeSerializer()
-		);
-	}
-
-	/**
-	 * @see RequestHandler::getCustomResourceNodeDeserializers
-	 */
-	public function getCustomResourceNodeDeserializers() {
-		return array(
-			new WikibaseEntityResourceNodeDeserializer(new BasicEntityIdParser())
-		);
 	}
 }
