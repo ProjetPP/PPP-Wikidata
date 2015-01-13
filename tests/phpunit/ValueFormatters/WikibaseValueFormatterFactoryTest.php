@@ -98,7 +98,17 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 					'@context' => 'http://schema.org',
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
+					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),'potentialAction' => array(
+						(object) array(
+							'@type' => 'ViewAction',
+							'name' => array(
+								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
+								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
+							),
+							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+							'target' => '//www.wikidata.org/entity/Q42'
+						)
+					),
 					'@reverse' => new stdClass()
 				)
 			),
@@ -115,6 +125,17 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/P214',
 					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
+					'potentialAction' => array(
+						(object) array(
+							'@type' => 'ViewAction',
+							'name' => array(
+								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
+								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
+							),
+							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+							'target' => '//www.wikidata.org/entity/P214'
+						)
+					),
 					'@reverse' => new stdClass()
 				)
 			),

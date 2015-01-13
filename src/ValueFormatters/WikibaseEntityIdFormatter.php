@@ -76,6 +76,13 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		$resource->{'@type'} = 'Thing';
 		$resource->{'@id'} = 'http://www.wikidata.org/entity/' . $value->getEntityId()->getSerialization(); //TODO: option
 		$resource->{'@reverse'} = new stdClass();
+		$resource->potentialAction = array(
+			$this->newViewAction(
+				array(new Term('en', 'View on Wikidata'), new Term('fr', 'Voir sur Wikidata')),
+				'//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+				'//www.wikidata.org/entity/' . $value->getEntityId()->getSerialization()
+			)
+		);
 
 		if($entity instanceof FingerprintProvider) {
 			$this->addFingerprintToResource($entity->getFingerprint(), $resource);
@@ -157,6 +164,11 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 			$articleResource->author->name = 'Wikipedia';
 
 			$resource->{'@reverse'}->about = $articleResource;
+			$resource->potentialAction[] = $this->newViewAction(
+				array(new Term('en', 'View on Wikipedia'), new Term('fr', 'Voir sur Wikipédia')),
+				'//upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/64px-Wikipedia-logo-v2.svg.png',
+				$header->getUrl()
+			);
 		} catch(OutOfBoundsException $e) {
 		}
 	}
@@ -184,5 +196,17 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 			$resource->image->name = $image->getTitle();
 		} catch(OutOfBoundsException $e) {
 		}
+	}
+
+	private function newViewAction(array $nameTerms, $image, $target) {
+		$actionResource = new stdClass();
+		$actionResource->{'@type'} = 'ViewAction';
+		$actionResource->name = array();
+		foreach($nameTerms as $term) {
+			$actionResource->name[] = $this->newResourceFromTerm($term);
+		}
+		$actionResource->image = $image;
+		$actionResource->target = $target;
+		return $actionResource;
 	}
 }

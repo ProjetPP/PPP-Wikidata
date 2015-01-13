@@ -50,6 +50,26 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 						'alternateName' => array(
 							(object) array('@value' => '42', '@language' => 'en')
 						),
+						'potentialAction' => array(
+							(object) array(
+								'@type' => 'ViewAction',
+								'name' => array(
+									(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
+									(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
+								),
+								'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+								'target' => '//www.wikidata.org/entity/Q42'
+							),
+							(object) array(
+								'@type' => 'ViewAction',
+								'name' => array(
+									(object) array('@value' => 'View on Wikipedia', '@language' => 'en'),
+									(object) array('@value' => 'Voir sur Wikipédia', '@language' => 'fr')
+								),
+								'image' => '//upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/64px-Wikipedia-logo-v2.svg.png',
+								'target' => 'http://en.wikipedia.org/wiki/Douglas_Adams'
+							)
+						),
 						'image' => (object) array(
 							'@type' => 'ImageObject',
 							'@id' => 'http://commons.wikimedia.org/wiki/Image:Douglas_adams_portrait_cropped.jpg',
@@ -85,6 +105,17 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 						'@type' => 'Thing',
 						'@id' => 'http://www.wikidata.org/entity/Q42',
 						'name' => (object) array('@value' => 'Дуглас Адамс', '@language' => 'ru'),
+						'potentialAction' => array(
+							(object) array(
+								'@type' => 'ViewAction',
+								'name' => array(
+									(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
+									(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
+								),
+								'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+								'target' => '//www.wikidata.org/entity/Q42'
+							)
+						),
 						'@reverse' => new stdClass()
 					)
 				),
@@ -98,6 +129,17 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 						'@context' => 'http://schema.org',
 						'@type' => 'Thing',
 						'@id' => 'http://www.wikidata.org/entity/Q42',
+						'potentialAction' => array(
+							(object) array(
+								'@type' => 'ViewAction',
+								'name' => array(
+									(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
+									(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
+								),
+								'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+								'target' => '//www.wikidata.org/entity/Q42'
+							)
+						),
 						'@reverse' => new stdClass()
 					)
 				),
@@ -112,6 +154,17 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 						'@type' => 'Thing',
 						'@id' => 'http://www.wikidata.org/entity/P214',
 						'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
+						'potentialAction' => array(
+							(object) array(
+								'@type' => 'ViewAction',
+								'name' => array(
+									(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
+									(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
+								),
+								'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+								'target' => '//www.wikidata.org/entity/P214'
+							)
+						),
 						'@reverse' => new stdClass()
 					)
 				)
