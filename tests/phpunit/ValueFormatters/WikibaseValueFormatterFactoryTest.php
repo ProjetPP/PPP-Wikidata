@@ -14,10 +14,10 @@ use Doctrine\Common\Cache\ArrayCache;
 use GeoJson\Geometry\Point;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\GeoJsonResourceNode;
+use PPP\DataModel\JsonLdResourceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
-use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -91,14 +91,30 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testFormatterFormatWikibaseItem() {
 		$this->assertEquals(
-			new WikibaseEntityResourceNode('Douglas Adams', new ItemId('Q42')),
+			new JsonLdResourceNode(
+				'Douglas Adams',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Thing',
+					'@id' => 'http://www.wikidata.org/entity/Q42',
+					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en')
+				)
+			),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new ItemId('Q42')))
 		);
 	}
 
 	public function testFormatterFormatWikibaseProperty() {
 		$this->assertEquals(
-			new WikibaseEntityResourceNode('VIAF identifier', new PropertyId('P214')),
+			new JsonLdResourceNode(
+				'VIAF identifier',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Thing',
+					'@id' => 'http://www.wikidata.org/entity/P214',
+					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en')
+				)
+			),
 			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new PropertyId('P214')))
 		);
 	}

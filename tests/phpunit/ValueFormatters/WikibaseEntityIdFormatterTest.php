@@ -4,8 +4,8 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\DataModel\JsonLdResourceNode;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
-use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
@@ -32,21 +32,57 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new EntityIdValue(new ItemId('Q42')),
-				new WikibaseEntityResourceNode('Douglas Adams', new ItemId('Q42'), 'Author')
+				new JsonLdResourceNode(
+					'Douglas Adams',
+					(object) array(
+						'@context' => 'http://schema.org',
+						'@type' => 'Thing',
+						'@id' => 'http://www.wikidata.org/entity/Q42',
+						'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
+						'description' => (object) array('@value' => 'Author', '@language' => 'en'),
+						'alternateName' => array(
+							(object) array('@value' => '42', '@language' => 'en')
+						)
+					)
+				),
+				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'en'))
 			),
 			array(
 				new EntityIdValue(new ItemId('Q42')),
-				new WikibaseEntityResourceNode('Дуглас Адамс', new ItemId('Q42')),
+				new JsonLdResourceNode(
+					'Дуглас Адамс',
+					(object) array(
+						'@context' => 'http://schema.org',
+						'@type' => 'Thing',
+						'@id' => 'http://www.wikidata.org/entity/Q42',
+						'name' => (object) array('@value' => 'Дуглас Адамс', '@language' => 'ru')
+					)
+				),
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'ru'))
 			),
 			array(
 				new EntityIdValue(new ItemId('Q42')),
-				new WikibaseEntityResourceNode('', new ItemId('Q42')),
+				new JsonLdResourceNode(
+					'',
+					(object) array(
+						'@context' => 'http://schema.org',
+						'@type' => 'Thing',
+						'@id' => 'http://www.wikidata.org/entity/Q42'
+					)
+				),
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'de'))
 			),
 			array(
 				new EntityIdValue(new PropertyId('P214')),
-				new WikibaseEntityResourceNode('VIAF identifier', new PropertyId('P214'))
+				new JsonLdResourceNode(
+					'VIAF identifier',
+					(object) array(
+						'@context' => 'http://schema.org',
+						'@type' => 'Thing',
+						'@id' => 'http://www.wikidata.org/entity/P214',
+						'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en')
+					)
+				)
 			)
 		);
 	}
@@ -84,6 +120,7 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 		$item->setId( new ItemId('Q42'));
 		$item->getFingerprint()->setLabel('en', 'Douglas Adams');
 		$item->getFingerprint()->setDescription('en', 'Author');
+		$item->getFingerprint()->setAliasGroup('en', array('42'));
 		$item->getFingerprint()->setLabel('ru', 'Дуглас Адамс');
 
 		return $item;

@@ -5,6 +5,7 @@ namespace PPP\Wikidata;
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\FirstNode;
 use PPP\DataModel\IntersectionNode;
+use PPP\DataModel\JsonLdResourceNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\SentenceNode;
@@ -15,8 +16,6 @@ use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
 use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
-use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
-use Wikibase\DataModel\Entity\ItemId;
 
 /**
  * @covers PPP\Wikidata\WikidataRequestHandler
@@ -41,7 +40,12 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			'https://wdq.wmflabs.org/api',
 			self::$cache
 		);
-		$this->assertEquals($response, $requestHandler->buildResponse($request));
+
+		$computedResponse = $requestHandler->buildResponse($request);
+		$this->assertEquals(count($response), count($computedResponse));
+		for($i = 0; $i < count($response); $i++) {
+			$this->assertTrue($response[$i]->equals($computedResponse[$i]));
+		}
 	}
 
 	public function requestAndResponseProvider() {
@@ -54,7 +58,9 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new MissingNode()
+					new MissingNode(),
+					array(),
+					array("aaaa")
 				))
 			),
 			array(
@@ -113,10 +119,12 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new ResourceListNode(array(new WikibaseEntityResourceNode(
+					new ResourceListNode(array(new JsonLdResourceNode(
 						'Douglas Adams',
-						new ItemId('Q42'),
-						'English writer and humorist'
+						(object) array(
+							'@context' => 'http://schema.org',
+							'@id' => 'http://www.wikidata.org/entity/Q42'
+						)
 					))),
 					array(
 						'relevance' => 1
@@ -135,10 +143,12 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'ru',
-					new ResourceListNode(array(new WikibaseEntityResourceNode(
+					new ResourceListNode(array(new JsonLdResourceNode(
 						'Дуглас Адамс',
-						new ItemId('Q42'),
-						'английский писатель, драматург и сценарист, автор серии книг «Автостопом по галактике».'
+						(object) array(
+							'@context' => 'http://schema.org',
+							'@id' => 'http://www.wikidata.org/entity/Q42'
+						)
 					))),
 					array(
 						'relevance' => 1
@@ -161,10 +171,12 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new ResourceListNode(array(new WikibaseEntityResourceNode(
+					new ResourceListNode(array(new JsonLdResourceNode(
 						'Cambridge',
-						new ItemId('Q350'),
-						'city and non-metropolitan district in England'
+						(object) array(
+							'@context' => 'http://schema.org',
+							'@id' => 'http://www.wikidata.org/entity/Q350'
+						)
 					))),
 					array(
 						'relevance' => 1
@@ -189,12 +201,20 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					new ModuleResponse(
 						'en',
 						new ResourceListNode(array(
-							new WikibaseEntityResourceNode(
+							new JsonLdResourceNode(
 								'Setnakhte',
-								new ItemId('Q312402'),
-								'first pharaoh of the 20th dynasty'
+								(object) array(
+									'@context' => 'http://schema.org',
+									'@id' => 'http://www.wikidata.org/entity/Q312402'
+								)
 							),
-							new WikibaseEntityResourceNode('Tiy-Merenese', new ItemId('Q1321008'))
+							new JsonLdResourceNode(
+								'Tiy-Merenese',
+								(object) array(
+									'@context' => 'http://schema.org',
+									'@id' => 'http://www.wikidata.org/entity/Q1321008'
+								)
+							)
 						)),
 						array(
 							'relevance' => 1
@@ -292,6 +312,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 							new MissingNode(),
 							new ResourceListNode(array(new StringResourceNode('occupation'))),
 							new ResourceListNode(array(new StringResourceNode('computer scientist')))
+						),
+						new TripleNode(
+							new MissingNode(),
+							new ResourceListNode(array(new StringResourceNode('sex'))),
+							new ResourceListNode(array(new StringResourceNode('female')))
 						)
 					)),
 					'a'
@@ -299,10 +324,13 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new ResourceListNode(array(
-						new WikibaseEntityResourceNode('Ada Lovelace', new ItemId('Q7259'), 'English mathematician, considered the first computer programmer'),
-						new WikibaseEntityResourceNode('Subhash Kak', new ItemId('Q92830'), ''),
-						new WikibaseEntityResourceNode('Piero Scaruffi', new ItemId('Q465428'), ''),
-						new WikibaseEntityResourceNode('', new ItemId('Q5963597'), '')
+						new JsonLdResourceNode(
+							'Ada Lovelace',
+							(object) array(
+								'@context' => 'http://schema.org',
+								'@id' => 'http://www.wikidata.org/entity/Q7259'
+							)
+						)
 					)),
 					array(
 						'relevance' => 1
@@ -324,10 +352,12 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new ResourceListNode(array(new WikibaseEntityResourceNode(
+					new ResourceListNode(array(new JsonLdResourceNode(
 						'Douglas Adams',
-						new ItemId('Q42'),
-						'English writer and humorist'
+						(object) array(
+							'@context' => 'http://schema.org',
+							'@id' => 'http://www.wikidata.org/entity/Q42'
+						)
 					))),
 					array(
 						'relevance' => 1
@@ -363,10 +393,12 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new ResourceListNode(array(new WikibaseEntityResourceNode(
+					new ResourceListNode(array(new JsonLdResourceNode(
 						'Douglas Adams',
-						new ItemId('Q42'),
-						'English writer and humorist'
+						(object) array(
+							'@context' => 'http://schema.org',
+							'@id' => 'http://www.wikidata.org/entity/Q42'
+						)
 					))),
 					array(
 						'relevance' => 1

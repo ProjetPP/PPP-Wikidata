@@ -4,8 +4,10 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use InvalidArgumentException;
 use OutOfBoundsException;
+use PPP\DataModel\JsonLdResourceNode;
 use PPP\Wikidata\DataModel\WikibaseEntityResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
+use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
@@ -14,6 +16,7 @@ use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\Term;
 
 /**
  * Returns the label of a given Wikibase entity id
@@ -46,10 +49,16 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		}
 
 		$fingerprint = $this->getFingerprintForEntityId($value->getEntityId());
-		return new WikibaseEntityResourceNode(
+
+		$resource = new stdClass();
+		$resource->{'@context'} = 'http://schema.org';
+		$resource->{'@type'} = 'Thing';
+		$resource->{'@id'} = 'http://www.wikidata.org/entity/' . $value->getEntityId()->getSerialization();
+		$this->addFingerprintToResource($fingerprint, $resource );
+
+		return new JsonLdResourceNode(
 			$this->getLabelFromFingerprint($fingerprint),
-			$value->getEntityId(),
-			$this->getDescriptionFromFingerprint($fingerprint)
+			$resource
 		);
 	}
 
@@ -74,11 +83,33 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		}
 	}
 
-	private function getDescriptionFromFingerprint(Fingerprint $fingerprint) {
+	private function addFingerprintToResource(Fingerprint $fingerprint, stdClass $resource) {
+		$languageCode = $this->getOption(ValueFormatter::OPT_LANG);
+
 		try {
-			return $fingerprint->getDescription($this->getOption(ValueFormatter::OPT_LANG))->getText();
+			$resource->name = $this->newResourceFromTerm($fingerprint->getLabel($languageCode));
 		} catch(OutOfBoundsException $e) {
-			return '';
 		}
+
+		try {
+			$resource->description = $this->newResourceFromTerm($fingerprint->getDescription($languageCode));
+		} catch(OutOfBoundsException $e) {
+		}
+
+		try {
+			$aliasGroup = $fingerprint->getAliasGroup($languageCode);
+			$resource->alternateName = array();
+			foreach($aliasGroup->getAliases() as $alias) {
+				$resource->alternateName[] = $this->newResourceFromTerm(new Term($aliasGroup->getLanguageCode(), $alias));
+			}
+		} catch(OutOfBoundsException $e) {
+		}
+	}
+
+	private function newResourceFromTerm(Term $term) {
+		$resource = new stdClass();
+		$resource->{'@language'} = $term->getLanguageCode();
+		$resource->{'@value'} = $term->getText();
+		return $resource;
 	}
 }
