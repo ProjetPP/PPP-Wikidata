@@ -11,6 +11,7 @@ use Wikibase\DataModel\SiteLink;
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
+ * TODO: test continue
  */
 class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 
@@ -32,7 +33,8 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 					'exsectionformat' => 'plain',
 					'explaintext' => true,
 					'exsentences' => 3,
-					'exlimit' => 1
+					'exlimit' => 20,
+					'continue' => ''
 				)))
 			->will($this->returnValue(array(
 				'query' => array(
@@ -103,7 +105,8 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 					'exsectionformat' => 'plain',
 					'explaintext' => true,
 					'exsentences' => 3,
-					'exlimit' => 1
+					'exlimit' => 20,
+					'continue' => ''
 				)))
 			->will($this->returnValue(array(
 				'query' => array(

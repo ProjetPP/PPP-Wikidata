@@ -77,7 +77,17 @@ abstract class PerSiteLinkProvider {
 		}
 
 		$request = $this->buildRequest($titles);
-		return $this->parseResult($wikiId, $titles, $this->getApiFromWikiId($wikiId)->getAction($request['action'], $request));
+		$api = $this->getApiFromWikiId($wikiId);
+		$finalResults = array();
+		$result = array('continue' => '');
+		do {
+			$request['continue'] = $result['continue'];
+			$result =  $api->getAction($request['action'], $request);
+			$finalResults = array_merge($finalResults, $this->parseResult($wikiId, $titles, $result));
+
+		} while(array_key_exists('continue', $result));
+
+		return $finalResults;
 	}
 
 	/**

@@ -29,7 +29,7 @@ class MediawikiArticleHeaderProvider extends PerSiteLinkProvider {
 			'exsectionformat' => 'plain',
 			'explaintext' => true,
 			'exsentences' => 3,
-			'exlimit' => count($titles)
+			'exlimit' => 20
 		);
 	}
 
