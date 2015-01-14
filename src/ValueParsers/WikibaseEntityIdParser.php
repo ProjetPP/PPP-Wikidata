@@ -148,7 +148,7 @@ class WikibaseEntityIdParser extends StringValueParser {
 			return $a === $b;
 		} else {
 			//checks if the strings have less than 3 character different and more than 80% percent of characters similar
-			return similar_text($a, $b, $percentage) - strlen($a) < 3 &&
+			return strlen($b) - similar_text($a, $b, $percentage) < 3 &&
 				$percentage > 80;
 		}
 	}
