@@ -82,6 +82,14 @@ class WikibaseValueFormatterFactory {
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
 		return new WikibaseEntityIdFormatter(
 			$this->newWikibaseEntityProvider(),
+			$this->newWikibaseEntityJsonLdFormatter($options),
+			$options
+		);
+	}
+
+	private function newWikibaseEntityJsonLdFormatter(FormatterOptions $options) {
+		return new WikibaseEntityJsonLdFormatter(
+			$this->newWikibaseEntityProvider(),
 			$this->newMediawikiArticleHeaderProvider(),
 			$this->newMediawikiArticleImageProvider(),
 			$options
