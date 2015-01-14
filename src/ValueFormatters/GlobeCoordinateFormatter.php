@@ -3,9 +3,9 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\Geo\Values\GlobeCoordinateValue;
-use GeoJson\Geometry\Point;
 use InvalidArgumentException;
-use PPP\DataModel\GeoJsonResourceNode;
+use PPP\DataModel\JsonLdResourceNode;
+use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
@@ -25,9 +25,9 @@ class GlobeCoordinateFormatter extends ValueFormatterBase {
 			throw new InvalidArgumentException('DataValue is not a GlobeCoordinateValue.');
 		}
 
-		return new GeoJsonResourceNode(
+		return new JsonLdResourceNode(
 			$this->toString($value),
-			$this->toGeoJson($value)
+			$this->toJsonLd($value)
 		);
 	}
 
@@ -39,11 +39,17 @@ class GlobeCoordinateFormatter extends ValueFormatterBase {
 		return $formatter->format($value);
 	}
 
-	private function toGeoJson(GlobeCoordinateValue $value) {
-		return new Point(array(
-			$this->roundDegrees($value->getLongitude(), $value->getPrecision()),
-			$this->roundDegrees($value->getLatitude(), $value->getPrecision())
-		));
+	/**
+	 * @param GlobeCoordinateValue $value
+	 */
+	private function toJsonLd(GlobeCoordinateValue $value) {
+		$resource = new stdClass();
+		$resource->{'@context'} = 'http://schema.org';
+		$resource->{'@type'} = 'GeoCoordinates';
+		$resource->latitude = $this->roundDegrees($value->getLatitude(), $value->getPrecision());
+		$resource->longitude = $this->roundDegrees($value->getLongitude(), $value->getPrecision());
+
+		return $resource;
 	}
 
 	/**
