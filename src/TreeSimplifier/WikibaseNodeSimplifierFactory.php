@@ -45,7 +45,7 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	}
 
 	private function newMeaninglessPredicateTripleNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
-		return new MeaninglessPredicateTripleNodeSimplifier($this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode));
+		return new SpecificTripleNodeSimplifier($this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode));
 	}
 
 	private function newMissingObjectTripleNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
