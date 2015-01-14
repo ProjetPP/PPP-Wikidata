@@ -17,7 +17,7 @@ use ValueFormatters\ValueFormatterBase;
  *
  * @todo write nice formatters for each type
  */
-class ToStringFormatter extends ValueFormatterBase {
+class ToStringFormatter extends ValueFormatterBase implements DataValueFormatter {
 
 	/**
 	 * @var ValueFormatter

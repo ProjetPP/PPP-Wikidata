@@ -16,6 +16,7 @@ use PPP\DataModel\JsonLdResourceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
+use PPP\Wikidata\WikibaseResourceNode;
 use stdClass;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
@@ -24,12 +25,12 @@ use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory
+ * @covers PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
+class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	private function newFactory() {
 		$cache = new ArrayCache();
@@ -37,7 +38,7 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 		$entityCache->save($this->getQ42());
 		$entityCache->save($this->getP214());
 
-		return new WikibaseValueFormatterFactory('en', new MediawikiApi(''), array(), $cache);
+		return new WikibaseResourceNodeFormatterFactory('en', new MediawikiApi(''), array(), $cache);
 	}
 
 	public function testFormatterFormatGlobeCoordinate() {
@@ -51,8 +52,8 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 					'longitude' => 42.0
 				)
 			),
-			$this->newFactory()->newWikibaseValueFormatter()->format(
-				new GlobeCoordinateValue(new LatLongValue(42, 42), 1)
+			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
+				new WikibaseResourceNode('', new GlobeCoordinateValue(new LatLongValue(42, 42), 1))
 			)
 		);
 	}
@@ -60,15 +61,17 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 	public function testFormatterFormatMonolingualText() {
 		$this->assertEquals(
 			new StringResourceNode('foo', 'en'),
-			$this->newFactory()->newWikibaseValueFormatter()->format(new MonolingualTextValue('en', 'foo'))
+			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
+				new WikibaseResourceNode('', new MonolingualTextValue('en', 'foo'))
+			)
 		);
 	}
 
 	public function testFormatterFormatQuantity() {
 		$this->assertEquals(
 			new StringResourceNode('491268±1'),
-			$this->newFactory()->newWikibaseValueFormatter()->format(
-				new QuantityValue(new DecimalValue('+491268'), '1', new DecimalValue('+491268'), new DecimalValue('+491267'))
+			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
+				new WikibaseResourceNode('', new QuantityValue(new DecimalValue('+491268'), '1', new DecimalValue('+491268'), new DecimalValue('+491267')))
 			)
 		);
 	}
@@ -76,15 +79,17 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 	public function testFormatterFormatString() {
 		$this->assertEquals(
 			new StringResourceNode('foo'),
-			$this->newFactory()->newWikibaseValueFormatter()->format(new StringValue('foo'))
+			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
+				new WikibaseResourceNode('', new StringValue('foo'))
+			)
 		);
 	}
 
 	public function testFormatterFormatTime() {
 		$this->assertEquals(
 			new TimeResourceNode('1952-03-11'),
-			$this->newFactory()->newWikibaseValueFormatter()->format(
-				new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, '')
+			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
+				new WikibaseResourceNode('', new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, ''))
 			)
 		);
 	}
@@ -92,7 +97,9 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 	public function testFormatterFormatUnknown() {
 		$this->assertEquals(
 			new StringResourceNode('foo'),
-			$this->newFactory()->newWikibaseValueFormatter()->format(new UnknownValue('foo'))
+			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
+				new WikibaseResourceNode('', new UnknownValue('foo'))
+			)
 		);
 	}
 
@@ -118,7 +125,9 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 					'@reverse' => new stdClass()
 				)
 			),
-			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new ItemId('Q42')))
+			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
+				new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))
+			)
 		);
 	}
 
@@ -145,7 +154,9 @@ class WikibaseValueFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 					'@reverse' => new stdClass()
 				)
 			),
-			$this->newFactory()->newWikibaseValueFormatter()->format(new EntityIdValue(new PropertyId('P214')))
+			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
+				new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214')))
+			)
 		);
 	}
 

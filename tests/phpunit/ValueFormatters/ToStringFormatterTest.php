@@ -5,7 +5,6 @@ namespace PPP\Wikidata\ValueFormatters;
 use DataValues\StringValue;
 use PPP\DataModel\StringResourceNode;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\StringFormatter;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
@@ -25,7 +24,7 @@ class ToStringFormatterTest extends ValueFormatterTestBase {
 				new StringValue('foo'),
 				new StringResourceNode('foo'),
 				null,
-				new ToStringFormatter(new StringFormatter(new FormatterOptions()))
+				new ToStringFormatter(new \ValueFormatters\StringFormatter(new FormatterOptions()))
 			),
 		);
 	}

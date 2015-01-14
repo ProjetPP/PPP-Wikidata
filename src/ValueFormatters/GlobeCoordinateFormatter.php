@@ -15,7 +15,7 @@ use ValueFormatters\ValueFormatterBase;
  * @author Thomas Pellissier Tanon
  * @todo support globes
  */
-class GlobeCoordinateFormatter extends ValueFormatterBase {
+class GlobeCoordinateFormatter extends ValueFormatterBase implements DataValueFormatter {
 
 	/**
 	 * @see ValueFormatter::format

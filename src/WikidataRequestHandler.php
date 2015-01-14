@@ -11,7 +11,7 @@ use PPP\Module\DataModel\ModuleRequest;
 use PPP\Module\DataModel\ModuleResponse;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory;
-use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
+use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory;
 use WikidataQueryApi\WikidataQueryApi;
 
 /**
@@ -94,9 +94,9 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	}
 
 	private function buildNodeFormatter($languageCode) {
-		$formatterFactory = new WikibaseValueFormatterFactory($languageCode, $this->mediawikiApi, $this->sitesApi, $this->cache);
+		$formatterFactory = new WikibaseResourceNodeFormatterFactory($languageCode, $this->mediawikiApi, $this->sitesApi, $this->cache);
 		$simplifierFactory = new NodeSimplifierFactory(array(
-			new ResourceListNodeFormatter($formatterFactory->newWikibaseValueFormatter(), $formatterFactory->newWikibaseEntityIdFormatterPreloader())
+			new ResourceListNodeFormatter($formatterFactory->newWikibaseResourceNodeFormatter(), $formatterFactory->newWikibaseEntityIdFormatterPreloader())
 		));
 		return $simplifierFactory->newNodeSimplifier();
 	}

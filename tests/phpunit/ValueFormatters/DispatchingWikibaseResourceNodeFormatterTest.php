@@ -4,16 +4,17 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\StringValue;
 use PPP\DataModel\StringResourceNode;
+use PPP\Wikidata\WikibaseResourceNode;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\WikibaseValueFormatter
+ * @covers PPP\Wikidata\ValueFormatters\DispatchingWikibaseResourceNodeFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseValueFormatterTest extends ValueFormatterTestBase {
+class DispatchingWikibaseResourceNodeFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
@@ -21,10 +22,10 @@ class WikibaseValueFormatterTest extends ValueFormatterTestBase {
 	public function validProvider() {
 		return array(
 			array(
-				new StringValue('foo'),
+				new WikibaseResourceNode('', new StringValue('foo')),
 				new StringResourceNode('foo'),
 				null,
-				new WikibaseValueFormatter(array(
+				new DispatchingWikibaseResourceNodeFormatter(array(
 					'string' => new StringFormatter(new FormatterOptions())
 				))
 			),

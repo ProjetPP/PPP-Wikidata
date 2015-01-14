@@ -25,7 +25,7 @@ use Wikibase\DataModel\Term\Term;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseEntityIdFormatter extends ValueFormatterBase {
+class WikibaseEntityIdFormatter extends ValueFormatterBase implements DataValueFormatter {
 
 	/**
 	 * @var WikibaseEntityProvider
