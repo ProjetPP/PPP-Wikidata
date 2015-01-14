@@ -77,7 +77,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new TripleNode(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))))),
 					new MissingNode(),
-						new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702'))))
+					new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702'))))
 				)
 			),
 		);
@@ -125,11 +125,18 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		$list[] = array(
 			new TripleNode(
 				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42'))))),
-					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
 				new MissingNode()
 			),
 			new ResourceListNode(array(
-				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702'))))
+				new ResourceListNode(array(
+					new WikibaseResourceNode(
+						'',
+						new StringValue('113230702'),
+						new ItemId('Q42'),
+						new PropertyId('P214')
+					)
+				))
 			)),
 			$douglasAdamItem,
 			new PropertyId('P214')

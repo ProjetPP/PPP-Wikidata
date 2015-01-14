@@ -25,7 +25,7 @@ use Wikibase\DataModel\Term\Term;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseEntityIdFormatter extends ValueFormatterBase {
+class WikibaseEntityIdFormatter extends ValueFormatterBase implements DataValueFormatter {
 
 	/**
 	 * @var WikibaseEntityProvider
@@ -33,30 +33,22 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 	private $entityProvider;
 
 	/**
-	 * @var MediawikiArticleHeaderProvider
+	 * @var WikibaseEntityIdJsonLdFormatter
 	 */
-	private $articleHeaderProvider;
-
-	/**
-	 * @var MediawikiArticleImageProvider
-	 */
-	private $articleImageProvider;
+	private $entityJsonLdFormatter;
 
 	/**
 	 * @param WikibaseEntityProvider $entityProvider
-	 * @param MediawikiArticleHeaderProvider $articleHeaderProvider
-	 * @param MediawikiArticleImageProvider $articleImageProvider
+	 * @param WikibaseEntityIdJsonLdFormatter $entityJsonLdFormatter
 	 * @param FormatterOptions $options
 	 */
 	public function __construct(
 		WikibaseEntityProvider $entityProvider,
-		MediawikiArticleHeaderProvider $articleHeaderProvider,
-		MediawikiArticleImageProvider $articleImageProvider,
+		WikibaseEntityIdJsonLdFormatter $entityJsonLdFormatter,
 		FormatterOptions $options
 	) {
 		$this->entityProvider = $entityProvider;
-		$this->articleHeaderProvider = $articleHeaderProvider;
-		$this->articleImageProvider = $articleImageProvider;
+		$this->entityJsonLdFormatter = $entityJsonLdFormatter;
 
 		parent::__construct($options);
 	}
@@ -70,34 +62,18 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		}
 
 		$entity = $this->entityProvider->getEntityDocument($value->getEntityId());
+
 		$stringAlternative = $entity->getId()->getSerialization();
-
-		$resource = new stdClass();
-		$resource->{'@context'} = 'http://schema.org';
-		$resource->{'@type'} = 'Thing';
-		$resource->{'@id'} = 'http://www.wikidata.org/entity/' . $value->getEntityId()->getSerialization(); //TODO: option
-		$resource->{'@reverse'} = new stdClass();
-		$resource->potentialAction = array(
-			$this->newViewAction(
-				array(new Term('en', 'View on Wikidata'), new Term('fr', 'Voir sur Wikidata')),
-				'//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-				'//www.wikidata.org/entity/' . $value->getEntityId()->getSerialization()
-			)
-		);
-
 		if($entity instanceof FingerprintProvider) {
-			$this->addFingerprintToResource($entity->getFingerprint(), $resource);
 			$stringAlternative = $this->getLabelFromFingerprint($entity->getFingerprint());
 		}
 
-		if($entity instanceof Item) {
-			$this->addArticleToResource($entity->getSiteLinkList(), $resource);
-			$this->addImageToResource($entity->getSiteLinkList(), $resource);
-		}
+		$jsonLd = $this->entityJsonLdFormatter->format($entity->getId());
+		$jsonLd->{'@context'} = 'http://schema.org';
 
 		return new JsonLdResourceNode(
 			$stringAlternative,
-			$resource
+			$jsonLd
 		);
 	}
 
@@ -107,107 +83,5 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase {
 		} catch(OutOfBoundsException $e) {
 			return '';
 		}
-	}
-
-	private function addFingerprintToResource(Fingerprint $fingerprint, stdClass $resource) {
-		$languageCode = $this->getOption(ValueFormatter::OPT_LANG);
-
-		try {
-			$resource->name = $this->newResourceFromTerm($fingerprint->getLabel($languageCode));
-		} catch(OutOfBoundsException $e) {
-		}
-
-		try {
-			$resource->description = $this->newResourceFromTerm($fingerprint->getDescription($languageCode));
-		} catch(OutOfBoundsException $e) {
-		}
-
-		try {
-			$aliasGroup = $fingerprint->getAliasGroup($languageCode);
-			$resource->alternateName = array();
-			foreach($aliasGroup->getAliases() as $alias) {
-				$resource->alternateName[] = $this->newResourceFromTerm(new Term($aliasGroup->getLanguageCode(), $alias));
-			}
-		} catch(OutOfBoundsException $e) {
-		}
-	}
-
-	private function newResourceFromTerm(Term $term) {
-		$resource = new stdClass();
-		$resource->{'@language'} = $term->getLanguageCode();
-		$resource->{'@value'} = $term->getText();
-		return $resource;
-	}
-
-	/**
-	 * @param SiteLinkList $siteLinkList
-	 * @param stdClass $resource
-	 */
-	private function addArticleToResource(SiteLinkList $siteLinkList, stdClass $resource) {
-		$wikiId = $this->getOption(ValueFormatter::OPT_LANG) . 'wiki';
-
-		if(!$this->articleHeaderProvider->isWikiIdSupported($wikiId)) {
-			return;
-		}
-
-		try {
-			$header = $this->articleHeaderProvider->getHeaderForSiteLink($siteLinkList->getBySiteId($wikiId));
-
-			$articleResource = new stdClass();
-			$articleResource->{'@type'} = 'Article';
-			$articleResource->{'@id'} = $header->getUrl();
-			$articleResource->inLanguage = $header->getLanguageCode();
-			$articleResource->headline = $header->getText();
-			$articleResource->license = 'http://creativecommons.org/licenses/by-sa/3.0/';
-			$articleResource->author = new stdClass();
-			$articleResource->author->{'@type'} = 'Organization';
-			$articleResource->author->{'@id'} = 'http://www.wikidata.org/entity/Q52';
-			$articleResource->author->name = 'Wikipedia';
-
-			$resource->{'@reverse'}->about = $articleResource;
-			$resource->potentialAction[] = $this->newViewAction(
-				array(new Term('en', 'View on Wikipedia'), new Term('fr', 'Voir sur Wikipédia')),
-				'//upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/64px-Wikipedia-logo-v2.svg.png',
-				$header->getUrl()
-			);
-		} catch(OutOfBoundsException $e) {
-		}
-	}
-
-	/**
-	 * @param SiteLinkList $siteLinkList
-	 * @param stdClass $resource
-	 */
-	private function addImageToResource(SiteLinkList $siteLinkList, stdClass $resource) {
-		$wikiId = $this->getOption(ValueFormatter::OPT_LANG) . 'wiki';
-
-		if(!$this->articleImageProvider->isWikiIdSupported($wikiId)) {
-			return;
-		}
-
-		try {
-			$image = $this->articleImageProvider->getImageForSiteLink($siteLinkList->getBySiteId($wikiId));
-
-			$resource->image = new stdClass();
-			$resource->image->{'@type'} = 'ImageObject';
-			$resource->image->{'@id'} = 'http://commons.wikimedia.org/wiki/Image:' . str_replace(' ', '_', $image->getTitle()); //TODO configure
-			$resource->image->contentUrl = $image->getUrl();
-			$resource->image->width = $image->getWidth();
-			$resource->image->height = $image->getHeight();
-			$resource->image->name = $image->getTitle();
-		} catch(OutOfBoundsException $e) {
-		}
-	}
-
-	private function newViewAction(array $nameTerms, $image, $target) {
-		$actionResource = new stdClass();
-		$actionResource->{'@type'} = 'ViewAction';
-		$actionResource->name = array();
-		foreach($nameTerms as $term) {
-			$actionResource->name[] = $this->newResourceFromTerm($term);
-		}
-		$actionResource->image = $image;
-		$actionResource->target = $target;
-		return $actionResource;
 	}
 }

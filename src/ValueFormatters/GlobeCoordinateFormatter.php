@@ -3,9 +3,10 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\Geo\Values\GlobeCoordinateValue;
-use GeoJson\Geometry\Point;
 use InvalidArgumentException;
-use PPP\DataModel\GeoJsonResourceNode;
+use PPP\DataModel\JsonLdResourceNode;
+use PPP\Wikidata\WikibaseResourceNode;
+use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
@@ -15,19 +16,37 @@ use ValueFormatters\ValueFormatterBase;
  * @author Thomas Pellissier Tanon
  * @todo support globes
  */
-class GlobeCoordinateFormatter extends ValueFormatterBase {
+class GlobeCoordinateFormatter extends ValueFormatterBase implements WikibaseResourceNodeFormatter {
+
+	/**
+	 * @var WikibaseEntityIdJsonLdFormatter
+	 */
+	private $entityJsonLdFormatter;
+
+	/**
+	 * @param WikibaseEntityIdJsonLdFormatter $entityJsonLdFormatter
+	 * @param FormatterOptions $options
+	 */
+	public function __construct(
+		WikibaseEntityIdJsonLdFormatter $entityJsonLdFormatter,
+		FormatterOptions $options
+	) {
+		$this->entityJsonLdFormatter = $entityJsonLdFormatter;
+
+		parent::__construct($options);
+	}
 
 	/**
 	 * @see ValueFormatter::format
 	 */
 	public function format($value) {
-		if(!($value instanceof GlobeCoordinateValue)) {
-			throw new InvalidArgumentException('DataValue is not a GlobeCoordinateValue.');
+		if(!($value instanceof WikibaseResourceNode && $value->getDataValue() instanceof GlobeCoordinateValue)) {
+			throw new InvalidArgumentException('$value is not a GlobeCoordinateValue.');
 		}
 
-		return new GeoJsonResourceNode(
-			$this->toString($value),
-			$this->toGeoJson($value)
+		return new JsonLdResourceNode(
+			$this->toString($value->getDataValue()),
+			$this->toJsonLd($value)
 		);
 	}
 
@@ -39,11 +58,22 @@ class GlobeCoordinateFormatter extends ValueFormatterBase {
 		return $formatter->format($value);
 	}
 
-	private function toGeoJson(GlobeCoordinateValue $value) {
-		return new Point(array(
-			$this->roundDegrees($value->getLongitude(), $value->getPrecision()),
-			$this->roundDegrees($value->getLatitude(), $value->getPrecision())
-		));
+	private function toJsonLd(WikibaseResourceNode $node) {
+		$value = $node->getDataValue();
+
+		$resource = new stdClass();
+		$resource->{'@context'} = 'http://schema.org';
+		$resource->{'@type'} = 'GeoCoordinates';
+		$resource->latitude = $this->roundDegrees($value->getLatitude(), $value->getPrecision());
+		$resource->longitude = $this->roundDegrees($value->getLongitude(), $value->getPrecision());
+
+		$fromSubject = $node->getFromSubject();
+		if($fromSubject !== null) {
+			$resource->{'@reverse'} = new stdClass();
+			$resource->{'@reverse'}->geo = $this->entityJsonLdFormatter->format($fromSubject);
+		}
+
+		return $resource;
 	}
 
 	/**

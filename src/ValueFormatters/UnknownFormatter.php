@@ -11,7 +11,7 @@ use ValueFormatters\ValueFormatterBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class UnknownFormatter extends ValueFormatterBase {
+class UnknownFormatter extends ValueFormatterBase implements DataValueFormatter {
 
 	/**
 	 * @see ValueFormatter::format

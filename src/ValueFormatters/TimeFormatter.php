@@ -13,7 +13,7 @@ use ValueParsers\TimeParser;
  * @author Thomas Pellissier Tanon
  * @todo Move ISO formatting to data-value/Time
  */
-class TimeFormatter extends ValueFormatterBase {
+class TimeFormatter extends ValueFormatterBase implements DataValueFormatter {
 
 	private static $CALENDAR_NAMES = array(
 		TimeParser::CALENDAR_GREGORIAN => 'gregorian',

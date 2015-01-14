@@ -9,7 +9,7 @@ use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
-use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
+use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory;
 
 /**
  * @covers PPP\Wikidata\ResourceListNodeFormatter
@@ -20,7 +20,7 @@ use PPP\Wikidata\ValueFormatters\WikibaseValueFormatterFactory;
 class ResourceListNodeFormatterTest extends NodeSimplifierBaseTest {
 
 	protected function buildSimplifier() {
-		$valueParserFactory = new WikibaseValueFormatterFactory(
+		$valueParserFactory = new WikibaseResourceNodeFormatterFactory(
 			'en',
 			new MediawikiApi('http://www.wikidata.org/w/api.php'),
 			array(
@@ -35,7 +35,7 @@ class ResourceListNodeFormatterTest extends NodeSimplifierBaseTest {
 		$entityIdFormatterPreloaderMock->expects($this->any())
 			->method('preload');
 
-		return new ResourceListNodeFormatter($valueParserFactory->newWikibaseValueFormatter(), $entityIdFormatterPreloaderMock);
+		return new ResourceListNodeFormatter($valueParserFactory->newWikibaseResourceNodeFormatter(), $entityIdFormatterPreloaderMock);
 	}
 
 	public function simplifiableProvider() {

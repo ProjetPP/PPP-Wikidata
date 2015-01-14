@@ -21,7 +21,7 @@ use Wikibase\Api\WikibaseFactory;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseValueFormatterFactory {
+class WikibaseResourceNodeFormatterFactory {
 
 	/**
 	 * @var string language code
@@ -57,13 +57,13 @@ class WikibaseValueFormatterFactory {
 	}
 
 	/**
-	 * @return WikibaseValueFormatter
+	 * @return WikibaseResourceNodeFormatter
 	 */
-	public function newWikibaseValueFormatter() {
+	public function newWikibaseResourceNodeFormatter() {
 		$options = $this->newFormatterOptions();
 
-		return new WikibaseValueFormatter(array(
-			'globecoordinate' => new GlobeCoordinateFormatter($options),
+		return new DispatchingWikibaseResourceNodeFormatter(array(
+			'globecoordinate' => new GlobeCoordinateFormatter($this->newWikibaseEntityIdJsonLdFormatter($options), $options),
 			'monolingualtext' => new MonolingualTextFormatter($options),
 			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
 			'string' => new StringFormatter($options),
@@ -81,6 +81,14 @@ class WikibaseValueFormatterFactory {
 
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
 		return new WikibaseEntityIdFormatter(
+			$this->newWikibaseEntityProvider(),
+			$this->newWikibaseEntityIdJsonLdFormatter($options),
+			$options
+		);
+	}
+
+	private function newWikibaseEntityIdJsonLdFormatter(FormatterOptions $options) {
+		return new WikibaseEntityIdJsonLdFormatter(
 			$this->newWikibaseEntityProvider(),
 			$this->newMediawikiArticleHeaderProvider(),
 			$this->newMediawikiArticleImageProvider(),

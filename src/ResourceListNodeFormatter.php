@@ -7,7 +7,7 @@ use PPP\DataModel\AbstractNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader;
-use PPP\Wikidata\ValueFormatters\WikibaseValueFormatter;
+use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatter;
 
 /**
  * Formats ResourceListNodes
@@ -18,7 +18,7 @@ use PPP\Wikidata\ValueFormatters\WikibaseValueFormatter;
 class ResourceListNodeFormatter implements NodeSimplifier {
 
 	/**
-	 * @var WikibaseValueFormatter
+	 * @var WikibaseResourceNodeFormatter
 	 */
 	private $valueFormatter;
 
@@ -28,10 +28,10 @@ class ResourceListNodeFormatter implements NodeSimplifier {
 	private $entityIdFormatterPreloader;
 
 	/**
-	 * @param WikibaseValueFormatter $valueFormatter
+	 * @param WikibaseResourceNodeFormatter $valueFormatter
 	 * @param WikibaseEntityIdFormatterPreloader $entityIdFormatterPreloader
 	 */
-	public function __construct(WikibaseValueFormatter $valueFormatter, WikibaseEntityIdFormatterPreloader $entityIdFormatterPreloader) {
+	public function __construct(WikibaseResourceNodeFormatter $valueFormatter, WikibaseEntityIdFormatterPreloader $entityIdFormatterPreloader) {
 		$this->valueFormatter = $valueFormatter;
 		$this->entityIdFormatterPreloader = $entityIdFormatterPreloader;
 	}
@@ -62,7 +62,7 @@ class ResourceListNodeFormatter implements NodeSimplifier {
 		/** @var WikibaseResourceNode $resource */
 		foreach($node as $resource) {
 			if($resource instanceof WikibaseResourceNode) {
-				$resources[] = $this->valueFormatter->format($resource->getDataValue());
+				$resources[] = $this->valueFormatter->format($resource);
 			} else {
 				$resources[] = $resource;
 			}
