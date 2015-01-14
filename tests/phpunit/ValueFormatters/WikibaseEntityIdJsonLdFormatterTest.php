@@ -23,12 +23,12 @@ use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\SiteLink;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityJsonLdFormatter
+ * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityIdJsonLdFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseEntityJsonLdFormatterTest extends ValueFormatterTestBase {
+class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
@@ -36,9 +36,8 @@ class WikibaseEntityJsonLdFormatterTest extends ValueFormatterTestBase {
 	public function validProvider() {
 		return array(
 			array(
-				$this->getQ42(),
+				new ItemId('Q42'),
 				(object) array(
-					'@context' => 'http://schema.org',
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
 					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
@@ -92,9 +91,8 @@ class WikibaseEntityJsonLdFormatterTest extends ValueFormatterTestBase {
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'en'))
 			),
 			array(
-				$this->getQ42(),
+				new ItemId('Q42'),
 				(object) array(
-					'@context' => 'http://schema.org',
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
 					'name' => (object) array('@value' => 'Дуглас Адамс', '@language' => 'ru'),
@@ -114,9 +112,8 @@ class WikibaseEntityJsonLdFormatterTest extends ValueFormatterTestBase {
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'ru'))
 			),
 			array(
-				$this->getQ42(),
+				new ItemId('Q42'),
 				(object) array(
-					'@context' => 'http://schema.org',
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
 					'potentialAction' => array(
@@ -135,9 +132,8 @@ class WikibaseEntityJsonLdFormatterTest extends ValueFormatterTestBase {
 				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'de'))
 			),
 			array(
-				$this->getP214(),
+				new PropertyId('P214'),
 				(object) array(
-					'@context' => 'http://schema.org',
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/P214',
 					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
@@ -162,7 +158,7 @@ class WikibaseEntityJsonLdFormatterTest extends ValueFormatterTestBase {
 	 * @see ValueFormatterTestBase::getFormatterClass
 	 */
 	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\WikibaseEntityJsonLdFormatter';
+		return 'PPP\Wikidata\ValueFormatters\WikibaseEntityIdJsonLdFormatter';
 	}
 
 

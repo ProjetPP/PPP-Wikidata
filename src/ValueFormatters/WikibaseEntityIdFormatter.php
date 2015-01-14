@@ -33,18 +33,18 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase implements DataValueF
 	private $entityProvider;
 
 	/**
-	 * @var WikibaseEntityJsonLdFormatter
+	 * @var WikibaseEntityIdJsonLdFormatter
 	 */
 	private $entityJsonLdFormatter;
 
 	/**
 	 * @param WikibaseEntityProvider $entityProvider
-	 * @param WikibaseEntityJsonLdFormatter $entityJsonLdFormatter
+	 * @param WikibaseEntityIdJsonLdFormatter $entityJsonLdFormatter
 	 * @param FormatterOptions $options
 	 */
 	public function __construct(
 		WikibaseEntityProvider $entityProvider,
-		WikibaseEntityJsonLdFormatter $entityJsonLdFormatter,
+		WikibaseEntityIdJsonLdFormatter $entityJsonLdFormatter,
 		FormatterOptions $options
 	) {
 		$this->entityProvider = $entityProvider;
@@ -68,9 +68,12 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase implements DataValueF
 			$stringAlternative = $this->getLabelFromFingerprint($entity->getFingerprint());
 		}
 
+		$jsonLd = $this->entityJsonLdFormatter->format($entity->getId());
+		$jsonLd->{'@context'} = 'http://schema.org';
+
 		return new JsonLdResourceNode(
 			$stringAlternative,
-			$this->entityJsonLdFormatter->format($entity)
+			$jsonLd
 		);
 	}
 

@@ -82,13 +82,13 @@ class WikibaseResourceNodeFormatterFactory {
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
 		return new WikibaseEntityIdFormatter(
 			$this->newWikibaseEntityProvider(),
-			$this->newWikibaseEntityJsonLdFormatter($options),
+			$this->newWikibaseEntityIdJsonLdFormatter($options),
 			$options
 		);
 	}
 
-	private function newWikibaseEntityJsonLdFormatter(FormatterOptions $options) {
-		return new WikibaseEntityJsonLdFormatter(
+	private function newWikibaseEntityIdJsonLdFormatter(FormatterOptions $options) {
+		return new WikibaseEntityIdJsonLdFormatter(
 			$this->newWikibaseEntityProvider(),
 			$this->newMediawikiArticleHeaderProvider(),
 			$this->newMediawikiArticleImageProvider(),

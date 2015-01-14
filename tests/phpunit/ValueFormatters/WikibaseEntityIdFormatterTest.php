@@ -82,7 +82,7 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 		$entityCache->save($this->getQ42());
 		$entityCache->save($this->getP214());
 
-		$entityJsonLdFormatterMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\WikibaseEntityJsonLdFormatter')
+		$entityJsonLdFormatterMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\WikibaseEntityIdJsonLdFormatter')
 			->disableOriginalConstructor()
 			->getMock();
 		$entityJsonLdFormatterMock->expects($this->once())

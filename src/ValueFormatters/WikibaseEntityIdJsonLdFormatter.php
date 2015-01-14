@@ -12,6 +12,7 @@ use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
 use Wikibase\DataModel\Entity\EntityDocument;
+use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\SiteLinkList;
 use Wikibase\DataModel\Term\Fingerprint;
@@ -24,7 +25,7 @@ use Wikibase\DataModel\Term\Term;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseEntityJsonLdFormatter extends ValueFormatterBase {
+class WikibaseEntityIdJsonLdFormatter extends ValueFormatterBase {
 
 	/**
 	 * @var WikibaseEntityProvider
@@ -63,21 +64,22 @@ class WikibaseEntityJsonLdFormatter extends ValueFormatterBase {
 	/**
 	 * @see ValueFormatter::format
 	 */
-	public function format($entity) {
-		if(!($entity instanceof EntityDocument)) {
+	public function format($entityId) {
+		if(!($entityId instanceof EntityId)) {
 			throw new InvalidArgumentException('$value should be an EntityId');
 		}
 
+		$entity = $this->entityProvider->getEntityDocument($entityId);
+
 		$resource = new stdClass();
-		$resource->{'@context'} = 'http://schema.org';
 		$resource->{'@type'} = 'Thing';
-		$resource->{'@id'} = 'http://www.wikidata.org/entity/' . $entity->getId()->getSerialization(); //TODO: option
+		$resource->{'@id'} = 'http://www.wikidata.org/entity/' . $entityId->getSerialization(); //TODO: option
 		$resource->{'@reverse'} = new stdClass();
 		$resource->potentialAction = array(
 			$this->newViewAction(
 				array(new Term('en', 'View on Wikidata'), new Term('fr', 'Voir sur Wikidata')),
 				'//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-				'//www.wikidata.org/entity/' . $entity->getId()->getSerialization()
+				'//www.wikidata.org/entity/' . $entityId->getSerialization()
 			)
 		);
 
