@@ -63,7 +63,7 @@ class WikibaseResourceNodeFormatterFactory {
 		$options = $this->newFormatterOptions();
 
 		return new DispatchingWikibaseResourceNodeFormatter(array(
-			'globecoordinate' => new GlobeCoordinateFormatter($options),
+			'globecoordinate' => new GlobeCoordinateFormatter($this->newWikibaseEntityIdJsonLdFormatter($options), $options),
 			'monolingualtext' => new MonolingualTextFormatter($options),
 			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
 			'string' => new StringFormatter($options),
