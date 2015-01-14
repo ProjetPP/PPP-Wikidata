@@ -345,6 +345,30 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			array(
 				new ModuleRequest(
 					'en',
+					new TripleNode(
+						new ResourceListNode(array(new StringResourceNode('Nicolas Sarkozy'))),
+						new ResourceListNode(array(new StringResourceNode('daughter'))),
+						new MissingNode()
+					),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new ResourceListNode(array(new JsonLdResourceNode(
+						'Giulia Sarkozy',
+						(object) array(
+							'@context' => 'http://schema.org',
+							'@id' => 'http://www.wikidata.org/entity/Q16338096'
+						)
+					))),
+					array(
+						'relevance' => 1
+					)
+				))
+			),
+			array(
+				new ModuleRequest(
+					'en',
 					new IntersectionNode(array(
 						new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 						new TripleNode(
