@@ -49,7 +49,11 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 				)
 			),
 			array(
-				'Douglas Noel Ada',
+				'Douglas Noel',
+				array()
+			),
+			array(
+				'Douglas Noel A',
 				array(new EntityIdValue(new ItemId('Q42')))
 			),
 			array(
