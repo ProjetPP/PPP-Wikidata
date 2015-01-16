@@ -18,7 +18,7 @@
 		"php": ">=5.3.0",
 		"addwiki/wikibase-api": "~0.4",
 		"addwiki/guzzle-mediawiki-client": "~0.1",
-		"doctrine/cache": "dev-master",
+		"doctrine/cache": "~1.4",
 		"ppp/data-model": "*",
 		"ppp/wikidataquery-api": "~1.1",
 		"ppp/libmodule": "*"
