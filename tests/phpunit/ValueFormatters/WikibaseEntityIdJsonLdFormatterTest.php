@@ -52,8 +52,8 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
 								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
 							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-							'target' => '//www.wikidata.org/entity/Q42'
+							'image' => 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+							'target' => 'https://www.wikidata.org/entity/Q42'
 						),
 						(object) array(
 							'@type' => 'ViewAction',
@@ -61,14 +61,14 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 								(object) array('@value' => 'View on Wikipedia', '@language' => 'en'),
 								(object) array('@value' => 'Voir sur Wikipédia', '@language' => 'fr')
 							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/64px-Wikipedia-logo-v2.svg.png',
+							'image' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/64px-Wikipedia-logo-v2.svg.png',
 							'target' => 'http://en.wikipedia.org/wiki/Douglas_Adams'
 						)
 					),
 					'image' => (object) array(
 						'@type' => 'ImageObject',
 						'@id' => 'http://commons.wikimedia.org/wiki/Image:Douglas_adams_portrait_cropped.jpg',
-						'contentUrl' => '//upload.wikimedia.org/wikipedia/commons/c/c0/Douglas_adams_portrait_cropped.jpg',
+						'contentUrl' => 'https://upload.wikimedia.org/wikipedia/commons/c/c0/Douglas_adams_portrait_cropped.jpg',
 						'name' => 'Douglas adams portrait cropped.jpg',
 						'width' => 100,
 						'height' => 200
@@ -103,8 +103,8 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
 								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
 							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-							'target' => '//www.wikidata.org/entity/Q42'
+							'image' => 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+							'target' => 'https://www.wikidata.org/entity/Q42'
 						)
 					),
 					'@reverse' => new stdClass()
@@ -123,8 +123,8 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
 								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
 							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-							'target' => '//www.wikidata.org/entity/Q42'
+							'image' => 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+							'target' => 'https://www.wikidata.org/entity/Q42'
 						)
 					),
 					'@reverse' => new stdClass()
@@ -144,8 +144,8 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
 								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
 							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-							'target' => '//www.wikidata.org/entity/P214'
+							'image' => 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+							'target' => 'https://www.wikidata.org/entity/P214'
 						)
 					),
 					'@reverse' => new stdClass()
@@ -184,7 +184,7 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 		$imageCache = new PerSiteLinkCache(new ArrayCache(), 'wpimg');
 		$imageCache->save(new MediawikiArticleImage(
 			new SiteLink('enwiki', 'Douglas Adams'),
-			'//upload.wikimedia.org/wikipedia/commons/c/c0/Douglas_adams_portrait_cropped.jpg',
+			'https://upload.wikimedia.org/wikipedia/commons/c/c0/Douglas_adams_portrait_cropped.jpg',
 			100,
 			200,
 			'Douglas adams portrait cropped.jpg'
