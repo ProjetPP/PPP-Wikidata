@@ -118,8 +118,8 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
 								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
 							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-							'target' => '//www.wikidata.org/entity/Q42'
+							'image' => 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+							'target' => 'https://www.wikidata.org/entity/Q42'
 						)
 					),
 					'@reverse' => new stdClass()
@@ -147,8 +147,8 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
 								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
 							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-							'target' => '//www.wikidata.org/entity/P214'
+							'image' => 'https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+							'target' => 'https://www.wikidata.org/entity/P214'
 						)
 					),
 					'@reverse' => new stdClass()

@@ -78,8 +78,8 @@ class WikibaseEntityIdJsonLdFormatter extends ValueFormatterBase {
 		$resource->potentialAction = array(
 			$this->newViewAction(
 				array(new Term('en', 'View on Wikidata'), new Term('fr', 'Voir sur Wikidata')),
-				'//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-				'//www.wikidata.org/entity/' . $entityId->getSerialization()
+				'https://upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+				'https://www.wikidata.org/entity/' . $entityId->getSerialization()
 			)
 		);
 
@@ -149,7 +149,7 @@ class WikibaseEntityIdJsonLdFormatter extends ValueFormatterBase {
 			$resource->{'@reverse'}->about = $articleResource;
 			$resource->potentialAction[] = $this->newViewAction(
 				array(new Term('en', 'View on Wikipedia'), new Term('fr', 'Voir sur Wikipédia')),
-				'//upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/64px-Wikipedia-logo-v2.svg.png',
+				'https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/64px-Wikipedia-logo-v2.svg.png',
 				$header->getUrl()
 			);
 		} catch(OutOfBoundsException $e) {
