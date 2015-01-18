@@ -51,10 +51,15 @@ class WikibaseValueParserFactory {
 	 */
 	public function newWikibaseValueParser() {
 		return new WikibaseValueParser(array(
+			'commonsMedia' => new StringParser(),
+			'globe-coordinate' => new GlobeCoordinateParser(),
+			//TODO 'quantity' => ,
+			'monolingualtext' => new MonolingualTextParser(),
 			'string' => new StringParser(),
+			//TODO 'time' => ,
+			'url' => new StringParser(),
 			'wikibase-item' => $this->newWikibaseEntityParser('item'),
-			'wikibase-property' => $this->newWikibaseEntityParser('property'),
-			'globecoordinate' => new GlobeCoordinateParser()
+			'wikibase-property' => $this->newWikibaseEntityParser('property')
 		));
 	}
 

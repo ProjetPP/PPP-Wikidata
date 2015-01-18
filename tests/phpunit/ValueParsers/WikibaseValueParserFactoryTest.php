@@ -4,6 +4,7 @@ namespace PPP\Wikidata\ValueParsers;
 
 use DataValues\GlobeCoordinateValue;
 use DataValues\LatLongValue;
+use DataValues\MonolingualTextValue;
 use DataValues\StringValue;
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
@@ -29,10 +30,38 @@ class WikibaseValueParserFactoryTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
+	public function testParserParseCommonsMedia() {
+		$this->assertEquals(
+			array(new StringValue('Foo.jpg')),
+			$this->newFactory()->newWikibaseValueParser()->parse('Foo.jpg', 'commonsMedia')
+		);
+	}
+
+	public function testParserParseGlobeCoordinate() {
+		$this->assertEquals(
+			array(new GlobeCoordinateValue(new LatLongValue(42, 42), 1)),
+			$this->newFactory()->newWikibaseValueParser()->parse('42°N, 42°E', 'globe-coordinate')
+		);
+	}
+
+	public function testParserParseMonolingualText() {
+		$this->assertEquals(
+			array(new MonolingualTextValue('en', 'Foo')),
+			$this->newFactory()->newWikibaseValueParser()->parse('Foo', 'monolingualtext')
+		);
+	}
+
 	public function testParserParseString() {
 		$this->assertEquals(
 			array(new StringValue('foo')),
 			$this->newFactory()->newWikibaseValueParser()->parse('foo', 'string')
+		);
+	}
+
+	public function testParserParseUrl() {
+		$this->assertEquals(
+			array(new StringValue('http://exemple.org')),
+			$this->newFactory()->newWikibaseValueParser()->parse('http://exemple.org', 'url')
 		);
 	}
 
@@ -47,13 +76,6 @@ class WikibaseValueParserFactoryTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(
 			array(new EntityIdValue(new PropertyId('P569'))),
 			$this->newFactory()->newWikibaseValueParser()->parse('Date de naissance', 'wikibase-property')
-		);
-	}
-
-	public function testParserParseGlobeCoordinate() {
-		$this->assertEquals(
-			array(new GlobeCoordinateValue(new LatLongValue(42, 42), 1)),
-			$this->newFactory()->newWikibaseValueParser()->parse('42°N, 42°E', 'globecoordinate')
 		);
 	}
 }
