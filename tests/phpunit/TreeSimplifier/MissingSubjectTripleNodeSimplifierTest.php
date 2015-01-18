@@ -165,13 +165,36 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new OrQuery(array(new AroundQuery(
 					new PropertyId('P625'),
 					new LatLongValue(45.75972, 4.8422),
-					0.027769999999999996
+					0.027777777777777776
 				))),
 				array(
 					new ItemId('Q456')
 				),
 				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P625'))))),
-				new ResourceListNode(array(new WikibaseResourceNode('', new GlobeCoordinateValue(new LatLongValue(45.75972, 4.8422), 0.0002777)))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new GlobeCoordinateValue(new LatLongValue(45.75972, 4.8422), 0)))),
+				array(
+					Property::newFromType('globecoordinate')
+				)
+			),
+			array(
+				new TripleNode(
+					new MissingNode(),
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P625'))))),
+					new ResourceListNode(array(new WikibaseResourceNode('', new GlobeCoordinateValue(new LatLongValue(45.75972, 4.8422), 0))))
+				),
+				new ResourceListNode(array(
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q456'))))),
+				)),
+				new OrQuery(array(new AroundQuery(
+					new PropertyId('P625'),
+					new LatLongValue(45.75972, 4.8422),
+					0.027777777777777776
+				))),
+				array(
+					new ItemId('Q456')
+				),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P625'))))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new GlobeCoordinateValue(new LatLongValue(45.75972, 4.8422), 0)))),
 				array(
 					Property::newFromType('globecoordinate')
 				)
