@@ -47,10 +47,25 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 		);
 
 		$computedResponse = $requestHandler->buildResponse($request);
-		$this->assertEquals(count($response), count($computedResponse));
-		for($i = 0; $i < count($response); $i++) {
-			$this->assertTrue($response[$i]->equals($computedResponse[$i]));
+		if($this->cleverEquals($computedResponse, $response)) {
+			$this->assertTrue(true);
+		} else {
+			$this->assertEquals($response, $computedResponse);
 		}
+	}
+
+	private function cleverEquals($a, $b) {
+		if(count($a) !== count($b)) {
+			return false;
+		}
+
+		for($i = 0; $i < count($a); $i++) {
+			if(!$a[$i]->equals($b[$i])) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public function requestAndResponseProvider() {
@@ -412,6 +427,43 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						new ResourceListNode(array(new StringResourceNode('113230702'))),
 						new StringResourceNode('default')
 					))
+				))
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new TripleNode(
+						new MissingNode(),
+						new ResourceListNode(array(new StringResourceNode('location'))),
+						new TripleNode(
+							new ResourceListNode(array(new StringResourceNode('ENS Lyon'))),
+							new ResourceListNode(array(new StringResourceNode('location'))),
+							new MissingNode()
+						)
+					),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new ResourceListNode(array(
+						new JsonLdResourceNode(
+							'ENS Lyon',
+							(object) array(
+								'@context' => 'http://schema.org',
+								'@id' => 'http://www.wikidata.org/entity/Q10159'
+							)
+						),
+						new JsonLdResourceNode(
+							'ENS Lyon',
+							(object) array(
+								'@context' => 'http://schema.org',
+								'@id' => 'http://www.wikidata.org/entity/Q3214458'
+							)
+						)
+					)),
+					array(
+						'relevance' => 1
+					)
 				))
 			),
 			array(

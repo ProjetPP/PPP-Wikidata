@@ -196,7 +196,11 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	private function buildQueryForValue(PropertyId $propertyId, DataValue $value) {
 		switch($value->getType()) {
 			case 'globecoordinate':
-				return new AroundQuery($propertyId, $value->getLatLong(), $value->getPrecision() * 100);
+				return new AroundQuery(
+					$propertyId,
+					$value->getLatLong(),
+					$this->getRadiusFromGeoCoordinatesPrecision($value->getPrecision())
+				);
 			case 'quantity':
 				return new QuantityQuery($propertyId, $value->getAmount());
 			case 'string':
@@ -208,6 +212,14 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 			default:
 				throw new NodeSimplifierException('The data type ' . $value->getType() . ' is not supported.');
 		}
+	}
+
+	private function getRadiusFromGeoCoordinatesPrecision($precision) {
+		if($precision <= 0) {
+			$precision = 1 / 3600;
+		}
+
+		return $precision * 100;
 	}
 
 	private function formatQueryResult(array $subjectIds) {
