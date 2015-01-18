@@ -161,9 +161,9 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 		foreach($this->bagsPropertiesPerType($propertyNodes) as $objectType => $propertyNodes) {
 			$objectNodes = $this->resourceListNodeParser->parse($object, $objectType);
 
-			foreach($propertyNodes as $property) {
-				foreach($objectNodes as $object) {
-					$queryParameters[] = $this->buildQueryForObject($property, $object);
+			foreach($propertyNodes as $propertyNode) {
+				foreach($objectNodes as $objectNode) {
+					$queryParameters[] = $this->buildQueryForObject($propertyNode, $objectNode);
 				}
 			}
 		}
