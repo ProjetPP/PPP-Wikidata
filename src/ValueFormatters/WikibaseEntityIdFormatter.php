@@ -5,13 +5,13 @@ namespace PPP\Wikidata\ValueFormatters;
 use InvalidArgumentException;
 use OutOfBoundsException;
 use PPP\DataModel\JsonLdResourceNode;
-use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Term\Fingerprint;
 use Wikibase\DataModel\Term\FingerprintProvider;
+use Wikibase\EntityStore\EntityStore;
 
 /**
  * Returns the label of a given Wikibase entity id
@@ -22,9 +22,9 @@ use Wikibase\DataModel\Term\FingerprintProvider;
 class WikibaseEntityIdFormatter extends ValueFormatterBase implements DataValueFormatter {
 
 	/**
-	 * @var WikibaseEntityProvider
+	 * @var EntityStore
 	 */
-	private $entityProvider;
+	private $entityStore;
 
 	/**
 	 * @var WikibaseEntityIdJsonLdFormatter
@@ -32,16 +32,16 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase implements DataValueF
 	private $entityJsonLdFormatter;
 
 	/**
-	 * @param WikibaseEntityProvider $entityProvider
+	 * @param EntityStore $entityStore
 	 * @param WikibaseEntityIdJsonLdFormatter $entityJsonLdFormatter
 	 * @param FormatterOptions $options
 	 */
 	public function __construct(
-		WikibaseEntityProvider $entityProvider,
+		EntityStore $entityStore,
 		WikibaseEntityIdJsonLdFormatter $entityJsonLdFormatter,
 		FormatterOptions $options
 	) {
-		$this->entityProvider = $entityProvider;
+		$this->entityStore = $entityStore;
 		$this->entityJsonLdFormatter = $entityJsonLdFormatter;
 
 		parent::__construct($options);
@@ -55,7 +55,7 @@ class WikibaseEntityIdFormatter extends ValueFormatterBase implements DataValueF
 			throw new InvalidArgumentException('$value should be a DataValue');
 		}
 
-		$entity = $this->entityProvider->getEntityDocument($value->getEntityId());
+		$entity = $this->entityStore->getEntityDocumentLookup()->getEntityDocumentForId($value->getEntityId());
 
 		$stringAlternative = $entity->getId()->getSerialization();
 		if($entity instanceof FingerprintProvider) {

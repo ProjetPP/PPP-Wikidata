@@ -5,15 +5,14 @@ namespace PPP\Wikidata\ValueFormatters;
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
-use PPP\Wikidata\Cache\WikibaseEntityCache;
-use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\QuantityFormatter;
 use ValueFormatters\ValueFormatter;
-use Wikibase\Api\WikibaseFactory;
+use Wikibase\EntityStore\Api\ApiEntityStore;
+use Wikibase\EntityStore\Cache\CachedEntityStore;
 
 /**
  * Build a parser for Wikibase value
@@ -81,7 +80,7 @@ class WikibaseResourceNodeFormatterFactory {
 
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
 		return new WikibaseEntityIdFormatter(
-			$this->newWikibaseEntityProvider(),
+			$this->newEntityStore(),
 			$this->newWikibaseEntityIdJsonLdFormatter($options),
 			$options
 		);
@@ -89,7 +88,7 @@ class WikibaseResourceNodeFormatterFactory {
 
 	private function newWikibaseEntityIdJsonLdFormatter(FormatterOptions $options) {
 		return new WikibaseEntityIdJsonLdFormatter(
-			$this->newWikibaseEntityProvider(),
+			$this->newEntityStore(),
 			$this->newMediawikiArticleHeaderProvider(),
 			$this->newMediawikiArticleImageProvider(),
 			$options
@@ -98,7 +97,7 @@ class WikibaseResourceNodeFormatterFactory {
 
 	public function newWikibaseEntityIdFormatterPreloader() {
 		return new WikibaseEntityIdFormatterPreloader(
-			$this->newWikibaseEntityProvider(),
+			$this->newEntityStore(),
 			array(
 				$this->newMediawikiArticleHeaderProvider(),
 				$this->newMediawikiArticleImageProvider()
@@ -107,13 +106,9 @@ class WikibaseResourceNodeFormatterFactory {
 		);
 	}
 
-	private function newWikibaseEntityProvider() {
-		$wikibaseFactory = new WikibaseFactory($this->api);
+	private function newEntityStore() {
+		return new CachedEntityStore(new ApiEntityStore($this->api), $this->cache);
 
-		return new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionsGetter(),
-			new WikibaseEntityCache($this->cache)
-		);
 	}
 
 	private function newMediawikiArticleHeaderProvider() {

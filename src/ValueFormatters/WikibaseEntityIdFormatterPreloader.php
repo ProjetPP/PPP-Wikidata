@@ -4,11 +4,11 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use OutOfBoundsException;
 use PPP\DataModel\ResourceListNode;
-use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use PPP\Wikidata\Wikipedia\PerSiteLinkProvider;
 use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Entity\Item;
+use Wikibase\EntityStore\EntityStore;
 
 /**
  * Preload data for formatting of groups of EntityIdValue
@@ -19,9 +19,9 @@ use Wikibase\DataModel\Entity\ItemId;
 class WikibaseEntityIdFormatterPreloader {
 
 	/**
-	 * @var WikibaseEntityProvider
+	 * @var EntityStore
 	 */
-	private $entityProvider;
+	private $entityStore;
 
 	/**
 	 * @var PerSiteLinkProvider[]
@@ -34,20 +34,18 @@ class WikibaseEntityIdFormatterPreloader {
 	private $languageCode;
 
 	/**
-	 * @param WikibaseEntityProvider $entityProvider
+	 * @param EntityStore $entityStore
 	 * @param PerSiteLinkProvider[] $perSiteLinkProviders
 	 * @param $languageCode
 	 */
-	public function __construct(WikibaseEntityProvider $entityProvider, array $perSiteLinkProviders, $languageCode) {
-		$this->entityProvider = $entityProvider;
+	public function __construct(EntityStore $entityStore, array $perSiteLinkProviders, $languageCode) {
+		$this->entityStore = $entityStore;
 		$this->perSiteLinkProviders = $perSiteLinkProviders;
 		$this->languageCode = $languageCode;
 	}
 
 	public function preload(ResourceListNode $resourceList) {
 		$entityIds = $this->findEntityIds($resourceList);
-
-		$this->entityProvider->loadEntities($entityIds);
 
 		$siteLinks = $this->findSiteLinksFromEntityIds($entityIds);
 		foreach($this->perSiteLinkProviders as $provider) {
@@ -70,12 +68,11 @@ class WikibaseEntityIdFormatterPreloader {
 	private function findSiteLinksFromEntityIds(array $entityIds) {
 		$siteLinks = array();
 
-		foreach($entityIds as $entityId) {
-			if($entityId instanceof ItemId) {
-				$item = $this->entityProvider->getItem($entityId);
-
-				try{
-					$siteLinks[] = $item->getSiteLinkList()->getBySiteId($this->languageCode . 'wiki');
+		$entities = $this->entityStore->getEntityDocumentLookup()->getEntityDocumentsForIds($entityIds);
+		foreach($entities as $entity) {
+			if($entity instanceof Item) {
+				try {
+					$siteLinks[] = $entity->getSiteLinkList()->getBySiteId($this->languageCode . 'wiki');
 				} catch(OutOfBoundsException $e) {
 				}
 			}

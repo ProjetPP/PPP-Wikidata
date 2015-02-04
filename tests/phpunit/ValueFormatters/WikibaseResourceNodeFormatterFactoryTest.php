@@ -15,7 +15,6 @@ use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\JsonLdResourceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
-use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseResourceNode;
 use stdClass;
 use Wikibase\DataModel\Entity\EntityIdValue;
@@ -23,6 +22,7 @@ use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\EntityStore\Cache\EntityDocumentCache;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory
@@ -34,7 +34,7 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 
 	private function newFactory() {
 		$cache = new ArrayCache();
-		$entityCache = new WikibaseEntityCache($cache);
+		$entityCache = new EntityDocumentCache($cache);
 		$entityCache->save($this->getQ42());
 		$entityCache->save($this->getP214());
 

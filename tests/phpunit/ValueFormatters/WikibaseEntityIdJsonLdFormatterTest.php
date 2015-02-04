@@ -5,8 +5,6 @@ namespace PPP\Wikidata\ValueFormatters;
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
-use PPP\Wikidata\Cache\WikibaseEntityCache;
-use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleHeader;
 use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
@@ -21,6 +19,7 @@ use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\SiteLink;
+use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityIdJsonLdFormatter
@@ -169,10 +168,6 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 		$class = $this->getFormatterClass();
 		$wikibaseFactory = new WikibaseFactory(new MediawikiApi(''));
 
-		$entityCache = new WikibaseEntityCache(new ArrayCache());
-		$entityCache->save($this->getQ42());
-		$entityCache->save($this->getP214());
-
 		$articleHeaderCache = new PerSiteLinkCache(new ArrayCache(), 'wparticlehead');
 		$articleHeaderCache->save(new MediawikiArticleHeader(
 			new SiteLink('enwiki', 'Douglas Adams'),
@@ -191,10 +186,7 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 		));
 
 		return new $class(
-			new WikibaseEntityProvider(
-				$wikibaseFactory->newRevisionsGetter(),
-				$entityCache
-			),
+			new InMemoryEntityStore(array($this->getQ42(), $this->getP214())),
 			new MediawikiArticleHeaderProvider(
 				array(
 					'enwiki' => new MediawikiApi('http://example.org')

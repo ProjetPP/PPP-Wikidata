@@ -2,11 +2,8 @@
 
 namespace PPP\Wikidata\ValueFormatters;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\JsonLdResourceNode;
-use PPP\Wikidata\Cache\WikibaseEntityCache;
-use PPP\Wikidata\WikibaseEntityProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
@@ -16,6 +13,7 @@ use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatter
@@ -71,10 +69,6 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 		$class = $this->getFormatterClass();
 		$wikibaseFactory = new WikibaseFactory(new MediawikiApi(''));
 
-		$entityCache = new WikibaseEntityCache(new ArrayCache());
-		$entityCache->save($this->getQ42());
-		$entityCache->save($this->getP214());
-
 		$entityJsonLdFormatterMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\WikibaseEntityIdJsonLdFormatter')
 			->disableOriginalConstructor()
 			->getMock();
@@ -83,10 +77,7 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 			->will($this->returnValue((object) array('@context' => 'http://schema.org')));
 
 		return new $class(
-			new WikibaseEntityProvider(
-				$wikibaseFactory->newRevisionsGetter(),
-				$entityCache
-			),
+			new InMemoryEntityStore(array($this->getQ42(), $this->getP214())),
 			$entityJsonLdFormatterMock,
 			$options
 		);
