@@ -3,15 +3,18 @@ language: php
 php:
   - 5.3
   - 5.6
-  - hhvm
 
 sudo: false
 
-before_script:
-  - composer self-update
-  - composer install --prefer-source
+services:
+  - mongodb
+
+install:
+  - echo "extension = mongo.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - travis_retry composer install --prefer-source
 
 script:
+  - composer validate
   - phpunit --coverage-clover=coverage.clover
 
 after_script:
