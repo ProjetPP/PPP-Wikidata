@@ -9,7 +9,10 @@ use PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Entity\Property;
+use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\SiteLink;
+use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader
@@ -20,19 +23,8 @@ use Wikibase\DataModel\SiteLink;
 class WikibaseEntityIdFormatterPreloaderTest extends \PHPUnit_Framework_TestCase {
 
 	public function testPreload() {
-		$item = Item::newEmpty();
+		$item = new Item(new ItemId('Q1'));
 		$item->getSiteLinkList()->addNewSiteLink('enwiki', 'Foo');
-
-		$entityProviderMock = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
-			->disableOriginalConstructor()
-			->getMock();
-		$entityProviderMock->expects($this->once())
-			->method('loadEntities')
-			->with($this->equalTo(array(new ItemId('Q1'))));
-		$entityProviderMock->expects($this->once())
-			->method('getItem')
-			->with($this->equalTo(new ItemId('Q1')))
-			->will($this->returnValue($item));
 
 		$perSiteLinkProviderMock = $this->getMockBuilder('PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider')
 			->disableOriginalConstructor()
@@ -42,12 +34,17 @@ class WikibaseEntityIdFormatterPreloaderTest extends \PHPUnit_Framework_TestCase
 			->with($this->equalTo(array(new SiteLink('enwiki', 'Foo'))))
 			->will($this->returnValue(null));
 
-		$entityIdFormatterPreloader = new WikibaseEntityIdFormatterPreloader($entityProviderMock, array($perSiteLinkProviderMock), 'en');
+		$entityIdFormatterPreloader = new WikibaseEntityIdFormatterPreloader(
+			new InMemoryEntityStore(array($item, new Property(new PropertyId('P1'), null, 'string'))),
+			array($perSiteLinkProviderMock),
+			'en'
+		);
 
 		$entityIdFormatterPreloader->preload(new ResourceListNode(array(
 			new BooleanResourceNode('1'),
 			new WikibaseResourceNode('', new StringValue('a')),
-			new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q1')))
+			new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q1'))),
+			new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P1')))
 		)));
 	}
 }

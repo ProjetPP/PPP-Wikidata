@@ -10,12 +10,12 @@ use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
-use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Snak\SnakList;
 use Wikibase\DataModel\Statement\Statement;
+use Wikibase\EntityStore\EntityStore;
 
 /**
  * Simplifies cases like [Q42, Q43] ∩ (?, instanceof, human) without requests to WikidataQuery: just check that the items
@@ -32,9 +32,9 @@ class IntersectionWithFilterNodeSimplifier implements NodeSimplifier {
 	private $intersectionNodeSimplifier;
 
 	/**
-	 * @var WikibaseEntityProvider
+	 * @var EntityStore
 	 */
-	private $entityProvider;
+	private $entityStore;
 
 	/**
 	 * @var ResourceListNodeParser
@@ -43,12 +43,12 @@ class IntersectionWithFilterNodeSimplifier implements NodeSimplifier {
 
 	/**
 	 * @param NodeSimplifier $intersectionNodeSimplifier
-	 * @param WikibaseEntityProvider $entityProvider
+	 * @param EntityStore $entityStore
 	 * @param ResourceListNodeParser $resourceListNodeParser
 	 */
-	public function __construct(NodeSimplifier $intersectionNodeSimplifier, WikibaseEntityProvider $entityProvider, ResourceListNodeParser $resourceListNodeParser) {
+	public function __construct(NodeSimplifier $intersectionNodeSimplifier, EntityStore $entityStore, ResourceListNodeParser $resourceListNodeParser) {
 		$this->intersectionNodeSimplifier = $intersectionNodeSimplifier;
-		$this->entityProvider = $entityProvider;
+		$this->entityStore = $entityStore;
 		$this->resourceListNodeParser = $resourceListNodeParser;
 	}
 
@@ -122,7 +122,7 @@ class IntersectionWithFilterNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function isOneOfSnakInItem(ItemId $itemId, SnakList $snaks) {
-		$item = $this->entityProvider->getItem($itemId);
+		$item = $this->entityStore->getItemLookup()->getItemForId($itemId);
 
 		/** @var Statement $statement */
 		foreach($item->getStatements() as $statement) {
@@ -156,7 +156,9 @@ class IntersectionWithFilterNodeSimplifier implements NodeSimplifier {
 
 		/** @var WikibaseResourceNode $propertyNode */
 		foreach($propertyNodes as $propertyNode) {
-			$objectType = $this->entityProvider->getProperty($propertyNode->getDataValue()->getEntityId())->getDataTypeId();
+			$objectType = $this->entityStore->getPropertyLookup()->getPropertyForId(
+				$propertyNode->getDataValue()->getEntityId()
+			)->getDataTypeId();
 			$propertyNodesPerType[$objectType][] = $propertyNode;
 		}
 

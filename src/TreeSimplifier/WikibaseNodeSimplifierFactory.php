@@ -2,15 +2,11 @@
 
 namespace PPP\Wikidata\TreeSimplifier;
 
-use Doctrine\Common\Cache\Cache;
-use Mediawiki\Api\MediawikiApi;
 use PPP\Module\TreeSimplifier\IntersectionNodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
-use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
-use PPP\Wikidata\WikibaseEntityProvider;
-use Wikibase\Api\WikibaseFactory;
+use Wikibase\EntityStore\EntityStore;
 use WikidataQueryApi\WikidataQueryApi;
 use WikidataQueryApi\WikidataQueryFactory;
 
@@ -25,64 +21,55 @@ use WikidataQueryApi\WikidataQueryFactory;
 class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 
 	/**
-	 * @param MediawikiApi $mediawikiApi
+	 * @param EntityStore $entityStore
 	 * @param WikidataQueryApi $wikidataQueryApi
-	 * @param Cache $cache
 	 * @param string $languageCode
 	 */
-	public function __construct(MediawikiApi $mediawikiApi, WikidataQueryApi $wikidataQueryApi, Cache $cache, $languageCode) {
+	public function __construct(EntityStore $entityStore, WikidataQueryApi $wikidataQueryApi, $languageCode) {
 		parent::__construct(array(
-			$this->newSentenceNodeSimplifier($mediawikiApi, $cache, $languageCode),
-			$this->newMeaninglessPredicateTripleNodeSimplifier($mediawikiApi, $cache, $languageCode),
-			$this->newMissingObjectTripleNodeSimplifier($mediawikiApi, $cache, $languageCode),
-			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi, $mediawikiApi, $cache, $languageCode),
-			$this->newIntersectionWithFilterNodeSimplifier($mediawikiApi, $cache, $languageCode)
+			$this->newSentenceNodeSimplifier($entityStore, $languageCode),
+			$this->newMeaninglessPredicateTripleNodeSimplifier($entityStore, $languageCode),
+			$this->newMissingObjectTripleNodeSimplifier($entityStore, $languageCode),
+			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi, $entityStore, $languageCode),
+			$this->newIntersectionWithFilterNodeSimplifier($entityStore, $languageCode)
 		));
 	}
 
-	private function newSentenceNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
-		return new SentenceNodeSimplifier($this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode));
+	private function newSentenceNodeSimplifier(EntityStore $entityStore, $languageCode) {
+		return new SentenceNodeSimplifier($this->newResourceListNodeParser($entityStore, $languageCode));
 	}
 
-	private function newMeaninglessPredicateTripleNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
-		return new SpecificTripleNodeSimplifier($this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode));
+	private function newMeaninglessPredicateTripleNodeSimplifier(EntityStore $entityStore, $languageCode) {
+		return new SpecificTripleNodeSimplifier($this->newResourceListNodeParser($entityStore, $languageCode));
 	}
 
-	private function newMissingObjectTripleNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
+	private function newMissingObjectTripleNodeSimplifier(EntityStore $entityStore, $languageCode) {
 		return new MissingObjectTripleNodeSimplifier(
-			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode),
-			$this->newEntityProvider($mediawikiApi, $cache)
+			$this->newResourceListNodeParser($entityStore, $languageCode),
+			$entityStore
 		);
 	}
 
-	private function newMissingSubjectTripleNodeSimplifier(WikidataQueryApi $wikidataQueryApi, MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
+	private function newMissingSubjectTripleNodeSimplifier(WikidataQueryApi $wikidataQueryApi, EntityStore $entityStore, $languageCode) {
 		$wikidataQueryFactory = new WikidataQueryFactory($wikidataQueryApi);
 		return new MissingSubjectTripleNodeSimplifier(
 			$this,
 			$wikidataQueryFactory->newSimpleQueryService(),
-			$this->newEntityProvider($mediawikiApi, $cache),
-			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode)
+			$entityStore,
+			$this->newResourceListNodeParser($entityStore, $languageCode)
 		);
 	}
 
-	private function newIntersectionWithFilterNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
+	private function newIntersectionWithFilterNodeSimplifier(EntityStore $entityStore, $languageCode) {
 		return new IntersectionWithFilterNodeSimplifier(
 			new IntersectionNodeSimplifier($this),
-			$this->newEntityProvider($mediawikiApi, $cache),
-			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode)
+			$entityStore,
+			$this->newResourceListNodeParser($entityStore, $languageCode)
 		);
 	}
 
-	private function newEntityProvider(MediawikiApi $mediawikiApi, Cache $cache) {
-		$wikibaseFactory = new WikibaseFactory($mediawikiApi);
-		return new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionsGetter(),
-			new WikibaseEntityCache($cache)
-		);
-	}
-
-	private function newResourceListNodeParser(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
-		$parserFactory = new WikibaseValueParserFactory($languageCode, $mediawikiApi, $cache);
+	private function newResourceListNodeParser(EntityStore $entityStore, $languageCode) {
+		$parserFactory = new WikibaseValueParserFactory($languageCode, $entityStore);
 		return new ResourceListNodeParser($parserFactory->newWikibaseValueParser());
 	}
 }

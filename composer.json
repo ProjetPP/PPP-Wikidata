@@ -5,7 +5,7 @@
 		"ppp"
 	],
 	"homepage": "https://github.com/ProjetPP/PPP-Wikidata",
-	"license": "GPLv2+",
+	"license": "GPL-2.0+",
 	"authors": [
 		{
 			"name": "Projet Pensées Profondes",
@@ -16,9 +16,10 @@
 	"prefer-stable": true,
 	"require": {
 		"php": ">=5.3.0",
-		"addwiki/wikibase-api": "~0.4",
-		"addwiki/guzzle-mediawiki-client": "~0.1",
+		"addwiki/mediawiki-api": "~0.3",
+		"addwiki/mediawiki-api-base": "0.1",
 		"doctrine/cache": "~1.4",
+		"ppp/wikibase-entity-store": "*",
 		"ppp/data-model": "*",
 		"ppp/wikidataquery-api": "~1.1",
 		"ppp/libmodule": "*"

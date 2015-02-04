@@ -4,20 +4,19 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use InvalidArgumentException;
 use OutOfBoundsException;
-use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
-use Wikibase\DataModel\Entity\EntityDocument;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\SiteLinkList;
 use Wikibase\DataModel\Term\Fingerprint;
 use Wikibase\DataModel\Term\FingerprintProvider;
 use Wikibase\DataModel\Term\Term;
+use Wikibase\EntityStore\EntityStore;
 
 /**
  * Returns the label of a given Wikibase entity id
@@ -28,9 +27,9 @@ use Wikibase\DataModel\Term\Term;
 class WikibaseEntityIdJsonLdFormatter extends ValueFormatterBase {
 
 	/**
-	 * @var WikibaseEntityProvider
+	 * @var EntityStore
 	 */
-	private $entityProvider;
+	private $entityStore;
 
 	/**
 	 * @var MediawikiArticleHeaderProvider
@@ -43,18 +42,18 @@ class WikibaseEntityIdJsonLdFormatter extends ValueFormatterBase {
 	private $articleImageProvider;
 
 	/**
-	 * @param WikibaseEntityProvider $entityProvider
+	 * @param EntityStore $entityStore
 	 * @param MediawikiArticleHeaderProvider $articleHeaderProvider
 	 * @param MediawikiArticleImageProvider $articleImageProvider
 	 * @param FormatterOptions $options
 	 */
 	public function __construct(
-		WikibaseEntityProvider $entityProvider,
+		EntityStore $entityStore,
 		MediawikiArticleHeaderProvider $articleHeaderProvider,
 		MediawikiArticleImageProvider $articleImageProvider,
 		FormatterOptions $options
 	) {
-		$this->entityProvider = $entityProvider;
+		$this->entityStore = $entityStore;
 		$this->articleHeaderProvider = $articleHeaderProvider;
 		$this->articleImageProvider = $articleImageProvider;
 
@@ -69,7 +68,7 @@ class WikibaseEntityIdJsonLdFormatter extends ValueFormatterBase {
 			throw new InvalidArgumentException('$value should be an EntityId');
 		}
 
-		$entity = $this->entityProvider->getEntityDocument($entityId);
+		$entity = $this->entityStore->getEntityDocumentLookup()->getEntityDocumentForId($entityId);
 
 		$resource = new stdClass();
 		$resource->{'@type'} = 'Thing';

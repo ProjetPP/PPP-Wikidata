@@ -2,7 +2,6 @@
 
 namespace PPP\Wikidata\TreeSimplifier;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
@@ -12,6 +11,7 @@ use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\EntityStore\Api\ApiEntityStore;
 
 /**
  * @covers PPP\Wikidata\TreeSimplifier\SentenceNodeSimplifier
@@ -24,8 +24,7 @@ class SentenceNodeSimplifierTest extends NodeSimplifierBaseTest {
 	protected function buildSimplifier() {
 		$valueParserFactory = new WikibaseValueParserFactory(
 			'en',
-			new MediawikiApi('http://www‡.wikidata.org/w/api.php'),
-			new ArrayCache()
+			new ApiEntityStore(new MediawikiApi('http://www‡.wikidata.org/w/api.php'))
 		);
 
 		return new SentenceNodeSimplifier(new ResourceListNodeParser($valueParserFactory->newWikibaseValueParser()));

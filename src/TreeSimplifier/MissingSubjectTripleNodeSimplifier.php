@@ -15,10 +15,10 @@ use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierException;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
-use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\EntityStore\EntityStore;
 use WikidataQueryApi\Query\AbstractQuery;
 use WikidataQueryApi\Query\AndQuery;
 use WikidataQueryApi\Query\AroundQuery;
@@ -48,9 +48,9 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	private $simpleQueryService;
 
 	/**
-	 * @var WikibaseEntityProvider
+	 * @var EntityStore
 	 */
-	private $entityProvider;
+	private $entityStore;
 
 	/**
 	 * @var ResourceListNodeParser
@@ -60,13 +60,13 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	/**
 	 * @param NodeSimplifierFactory $nodeSimplifierFactory
 	 * @param SimpleQueryService $simpleQueryService
-	 * @param WikibaseEntityProvider $entityProvider
+	 * @param EntityStore $entityStore
 	 * @param ResourceListNodeParser $resourceListNodeParser
 	 */
-	public function __construct(NodeSimplifierFactory $nodeSimplifierFactory, SimpleQueryService $simpleQueryService, WikibaseEntityProvider $entityProvider, ResourceListNodeParser $resourceListNodeParser) {
+	public function __construct(NodeSimplifierFactory $nodeSimplifierFactory, SimpleQueryService $simpleQueryService, EntityStore $entityStore, ResourceListNodeParser $resourceListNodeParser) {
 		$this->nodeSimplifierFactory = $nodeSimplifierFactory;
 		$this->simpleQueryService = $simpleQueryService;
-		$this->entityProvider = $entityProvider;
+		$this->entityStore = $entityStore;
 		$this->resourceListNodeParser = $resourceListNodeParser;
 	}
 
@@ -115,8 +115,6 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 		}
 
 		$entityIds = $this->simpleQueryService->doQuery($query);
-
-		$this->entityProvider->loadEntities($entityIds);
 
 		return $this->formatQueryResult($entityIds);
 	}
@@ -176,7 +174,9 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 
 		/** @var WikibaseResourceNode $propertyNode */
 		foreach($propertyNodes as $propertyNode) {
-			$objectType = $this->entityProvider->getProperty($propertyNode->getDataValue()->getEntityId())->getDataTypeId();
+			$objectType = $this->entityStore->getPropertyLookup()->getPropertyForId(
+				$propertyNode->getDataValue()->getEntityId()
+			)->getDataTypeId();
 			$propertyNodesPerType[$objectType][] = $propertyNode;
 		}
 

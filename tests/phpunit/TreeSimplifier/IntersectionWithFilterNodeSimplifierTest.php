@@ -16,6 +16,7 @@ use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
+use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
 
 /**
  * @covers PPP\Wikidata\TreeSimplifier\IntersectionWithFilterNodeSimplifierTest
@@ -27,14 +28,12 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 
 	public function buildSimplifier() {
 		$intersectionNodeSimplifierMock = $this->getMock('PPP\Module\TreeSimplifier\NodeSimplifier');
-		$entityProviderMock = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
-			->disableOriginalConstructor()
-			->getMock();
+		$entityStoreMock = $this->getMock('Wikibase\EntityStore\EntityStore');
 		$resourceListNodeParserMock = $this->getMockBuilder('PPP\Wikidata\ValueParsers\ResourceListNodeParser')
 			->disableOriginalConstructor()
 			->getMock();
 
-		return new IntersectionWithFilterNodeSimplifier($intersectionNodeSimplifierMock, $entityProviderMock, $resourceListNodeParserMock);
+		return new IntersectionWithFilterNodeSimplifier($intersectionNodeSimplifierMock, $entityStoreMock, $resourceListNodeParserMock);
 	}
 
 	public function simplifiableProvider() {
@@ -63,22 +62,12 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 	/**
 	 * @dataProvider simplifiedTripleProvider
 	 */
-	public function testSimplify(IntersectionNode $intersectionNode, AbstractNode $responseNode, IntersectionNode $recursiveCall = null, AbstractNode $recusiveResult = null, ResourceListNode $parsedBaseList, ResourceListNode $parsedPredicates, ResourceListNode $parsedObjects, array $items, array $properties) {
+	public function testSimplify(IntersectionNode $intersectionNode, AbstractNode $responseNode, IntersectionNode $recursiveCall = null, AbstractNode $recusiveResult = null, ResourceListNode $parsedBaseList, ResourceListNode $parsedPredicates, ResourceListNode $parsedObjects, array $entities) {
 		$intersectionNodeSimplifierMock = $this->getMock('PPP\Module\TreeSimplifier\NodeSimplifier');
 		$intersectionNodeSimplifierMock->expects($this->any())
 			->method('simplify')
 			->with($this->equalTo($recursiveCall))
 			->will($this->returnValue($recusiveResult));
-
-		$entityProviderMock = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
-			->disableOriginalConstructor()
-			->getMock();
-		$entityProviderMock->expects($this->any())
-			->method('getItem')
-			->will(call_user_func_array(array($this, 'onConsecutiveCalls'), $items));
-		$entityProviderMock->expects($this->any())
-			->method('getProperty')
-			->will(call_user_func_array(array($this, 'onConsecutiveCalls'), $properties));
 
 		$resourceListNodeParserMock = $this->getMockBuilder('PPP\Wikidata\ValueParsers\ResourceListNodeParser')
 			->disableOriginalConstructor()
@@ -91,7 +80,11 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 				$parsedObjects
 			));
 
-		$simplifier = new IntersectionWithFilterNodeSimplifier($intersectionNodeSimplifierMock, $entityProviderMock, $resourceListNodeParserMock);
+		$simplifier = new IntersectionWithFilterNodeSimplifier(
+			$intersectionNodeSimplifierMock,
+			new InMemoryEntityStore($entities),
+			$resourceListNodeParserMock
+		);
 
 		$this->assertEquals(
 			$responseNode,
@@ -100,7 +93,7 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 	}
 
 	public function simplifiedTripleProvider() {
-		$q42 = Item::newEmpty();
+		$q42 = new Item(new ItemId('Q42'));
 		$q42->getStatements()->addNewStatement(new PropertyValueSnak(new PropertyId('P214'), new StringValue('113230702')));
 
 		return array(
@@ -112,7 +105,6 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(),
 				new ResourceListNode(),
 				new ResourceListNode(),
-				array(),
 				array()
 			),
 			array(
@@ -131,7 +123,6 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(),
 				new ResourceListNode(),
 				new ResourceListNode(),
-				array(),
 				array()
 			),
 			array(
@@ -156,7 +147,6 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(),
 				new ResourceListNode(),
 				new ResourceListNode(),
-				array(),
 				array()
 			),
 			array(
@@ -188,10 +178,8 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702')))),
 				array(
 					$q42,
-					Item::newEmpty()
-				),
-				array(
-					Property::newFromType('string')
+					new Item(new ItemId('Q43')),
+					new Property(new PropertyId('P214'), null, 'string')
 				)
 			),
 			array(
@@ -223,10 +211,8 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702')))),
 				array(
 					$q42,
-					Item::newEmpty()
-				),
-				array(
-					Property::newFromType('string')
+					new Item(new ItemId('Q43')),
+					new Property(new PropertyId('P214'), null, 'string')
 				)
 			),
 		);

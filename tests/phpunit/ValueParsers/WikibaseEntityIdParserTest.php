@@ -2,17 +2,13 @@
 
 namespace PPP\Wikidata\ValueParsers;
 
-use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
-use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\Cache\WikibaseEntityIdParserCache;
-use PPP\Wikidata\WikibaseEntityProvider;
 use ValueParsers\Test\ValueParserTestBase;
 use ValueParsers\ValueParser;
-use Wikibase\Api\WikibaseFactory;
-use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\EntityStore\Api\ApiEntityStore;
 
 /**
  * @covers PPP\Wikidata\ValueParsers\WikibaseEntityIdParser
@@ -49,14 +45,6 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 				)
 			),
 			array(
-				'Douglas Noel',
-				array()
-			),
-			array(
-				'Douglas Noel A',
-				array(new EntityIdValue(new ItemId('Q42')))
-			),
-			array(
 				'',
 				array()
 			),
@@ -89,15 +77,9 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	 * @see ValueParserTestBase::getInstance
 	 */
 	protected function getInstance() {
-		$api = new MediawikiApi('http://www.wikidata.org/w/api.php');
-		$wikibaseFactory = new WikibaseFactory($api);
-
 		$class = $this->getParserClass();
 		return new $class(
-			$api,
-			new BasicEntityIdParser(),
-			new WikibaseEntityIdParserCache(new ArrayCache()),
-			new WikibaseEntityProvider($wikibaseFactory->newRevisionsGetter(), new WikibaseEntityCache(new ArrayCache())),
+			new ApiEntityStore(new MediawikiApi('http://www.wikidata.org/w/api.php')),
 			$this->newParserOptions()
 		);
 	}

@@ -3,13 +3,13 @@
 namespace PPP\Wikidata;
 
 use DataValues\StringValue;
-use Doctrine\Common\Cache\ArrayCache;
-use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
-use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory;
+use PPP\Wikidata\ValueFormatters\DispatchingWikibaseResourceNodeFormatter;
+use PPP\Wikidata\ValueFormatters\StringFormatter;
+use ValueFormatters\FormatterOptions;
 
 /**
  * @covers PPP\Wikidata\ResourceListNodeFormatter
@@ -20,22 +20,18 @@ use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory;
 class ResourceListNodeFormatterTest extends NodeSimplifierBaseTest {
 
 	protected function buildSimplifier() {
-		$valueParserFactory = new WikibaseResourceNodeFormatterFactory(
-			'en',
-			new MediawikiApi('http://www.wikidata.org/w/api.php'),
-			array(
-				'enwiki' => new MediawikiApi('http://en.wikipedia.org/w/api.php'),
-			),
-			new ArrayCache()
-		);
-
 		$entityIdFormatterPreloaderMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader')
 			->disableOriginalConstructor()
 			->getMock();
 		$entityIdFormatterPreloaderMock->expects($this->any())
 			->method('preload');
 
-		return new ResourceListNodeFormatter($valueParserFactory->newWikibaseResourceNodeFormatter(), $entityIdFormatterPreloaderMock);
+		return new ResourceListNodeFormatter(
+			new DispatchingWikibaseResourceNodeFormatter(array(
+				'string' => new StringFormatter(new FormatterOptions())
+			)),
+			$entityIdFormatterPreloaderMock
+		);
 	}
 
 	public function simplifiableProvider() {

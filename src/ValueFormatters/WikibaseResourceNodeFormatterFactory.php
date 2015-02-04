@@ -5,15 +5,13 @@ namespace PPP\Wikidata\ValueFormatters;
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
-use PPP\Wikidata\Cache\WikibaseEntityCache;
-use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\QuantityFormatter;
 use ValueFormatters\ValueFormatter;
-use Wikibase\Api\WikibaseFactory;
+use Wikibase\EntityStore\EntityStore;
 
 /**
  * Build a parser for Wikibase value
@@ -29,9 +27,9 @@ class WikibaseResourceNodeFormatterFactory {
 	private $languageCode;
 
 	/**
-	 * @var MediawikiApi
+	 * @var EntityStore
 	 */
-	private $api;
+	private $entityStore;
 
 	/**
 	 * @var MediawikiApi[]
@@ -45,13 +43,13 @@ class WikibaseResourceNodeFormatterFactory {
 
 	/**
 	 * @param $languageCode
-	 * @param MediawikiApi $api
+	 * @param EntityStore $entityStore
 	 * @param MediawikiApi[] $sitesApi
 	 * @param Cache $cache
 	 */
-	public function __construct($languageCode, MediawikiApi $api, array $sitesApi, Cache $cache) {
+	public function __construct($languageCode, EntityStore $entityStore, array $sitesApi, Cache $cache) {
 		$this->languageCode = $languageCode;
-		$this->api = $api;
+		$this->entityStore = $entityStore;
 		$this->sitesApi = $sitesApi;
 		$this->cache = $cache;
 	}
@@ -81,7 +79,7 @@ class WikibaseResourceNodeFormatterFactory {
 
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
 		return new WikibaseEntityIdFormatter(
-			$this->newWikibaseEntityProvider(),
+			$this->entityStore,
 			$this->newWikibaseEntityIdJsonLdFormatter($options),
 			$options
 		);
@@ -89,7 +87,7 @@ class WikibaseResourceNodeFormatterFactory {
 
 	private function newWikibaseEntityIdJsonLdFormatter(FormatterOptions $options) {
 		return new WikibaseEntityIdJsonLdFormatter(
-			$this->newWikibaseEntityProvider(),
+			$this->entityStore,
 			$this->newMediawikiArticleHeaderProvider(),
 			$this->newMediawikiArticleImageProvider(),
 			$options
@@ -98,21 +96,12 @@ class WikibaseResourceNodeFormatterFactory {
 
 	public function newWikibaseEntityIdFormatterPreloader() {
 		return new WikibaseEntityIdFormatterPreloader(
-			$this->newWikibaseEntityProvider(),
+			$this->entityStore,
 			array(
 				$this->newMediawikiArticleHeaderProvider(),
 				$this->newMediawikiArticleImageProvider()
 			),
 			$this->languageCode
-		);
-	}
-
-	private function newWikibaseEntityProvider() {
-		$wikibaseFactory = new WikibaseFactory($this->api);
-
-		return new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionsGetter(),
-			new WikibaseEntityCache($this->cache)
 		);
 	}
 
