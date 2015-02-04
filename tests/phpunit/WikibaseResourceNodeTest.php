@@ -6,7 +6,6 @@ use DataValues\BooleanValue;
 use DataValues\StringValue;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceNode;
-use PPP\DataModel\TripleNode;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
 

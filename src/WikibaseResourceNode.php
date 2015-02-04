@@ -4,7 +4,6 @@ namespace PPP\Wikidata;
 
 use DataValues\DataValue;
 use PPP\DataModel\ResourceNode;
-use PPP\DataModel\TripleNode;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\PropertyId;
 

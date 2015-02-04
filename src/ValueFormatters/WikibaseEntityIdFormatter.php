@@ -6,18 +6,12 @@ use InvalidArgumentException;
 use OutOfBoundsException;
 use PPP\DataModel\JsonLdResourceNode;
 use PPP\Wikidata\WikibaseEntityProvider;
-use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
-use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
-use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
 use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\Item;
-use Wikibase\DataModel\SiteLinkList;
 use Wikibase\DataModel\Term\Fingerprint;
 use Wikibase\DataModel\Term\FingerprintProvider;
-use Wikibase\DataModel\Term\Term;
 
 /**
  * Returns the label of a given Wikibase entity id

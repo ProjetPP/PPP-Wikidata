@@ -3,15 +3,9 @@
 namespace PPP\Wikidata\ValueParsers;
 
 use DataValues\Geo\Parsers\GlobeCoordinateParser;
-use Doctrine\Common\Cache\Cache;
-use Mediawiki\Api\MediawikiApi;
-use PPP\Wikidata\Cache\WikibaseEntityCache;
-use PPP\Wikidata\Cache\WikibaseEntityIdParserCache;
-use PPP\Wikidata\WikibaseEntityProvider;
 use ValueParsers\ParserOptions;
 use ValueParsers\ValueParser;
-use Wikibase\Api\WikibaseFactory;
-use Wikibase\DataModel\Entity\BasicEntityIdParser;
+use Wikibase\EntityStore\EntityStore;
 
 /**
  * Build a parser for Wikibase value
@@ -27,23 +21,17 @@ class WikibaseValueParserFactory {
 	private $languageCode;
 
 	/**
-	 * @var MediawikiApi
+	 * @var EntityStore
 	 */
-	private $api;
-
-	/**
-	 * @var Cache
-	 */
-	private $cache;
+	private $entityStore;
 
 	/**
 	 * @param $languageCode
-	 * @param MediawikiApi $api
+	 * @param EntityStore $entityStore
 	 */
-	public function __construct($languageCode, MediawikiApi $api, Cache $cache) {
+	public function __construct($languageCode, EntityStore $entityStore) {
 		$this->languageCode = $languageCode;
-		$this->api = $api;
-		$this->cache = $cache;
+		$this->entityStore = $entityStore;
 	}
 
 	/**
@@ -68,12 +56,9 @@ class WikibaseValueParserFactory {
 			ValueParser::OPT_LANG => $this->languageCode,
 			WikibaseEntityIdParser::OPT_ENTITY_TYPE => $type
 		));
-		$wikibaseFactory = new WikibaseFactory($this->api);
+
 		return new WikibaseEntityIdParser(
-			$this->api,
-			new BasicEntityIdParser(),
-			new WikibaseEntityIdParserCache($this->cache),
-			new WikibaseEntityProvider($wikibaseFactory->newRevisionsGetter(), new WikibaseEntityCache($this->cache)),
+			$this->entityStore,
 			$parserOptions
 		);
 	}

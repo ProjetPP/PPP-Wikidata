@@ -11,6 +11,8 @@ use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
 use PPP\Wikidata\WikibaseEntityProvider;
 use Wikibase\Api\WikibaseFactory;
+use Wikibase\EntityStore\Api\ApiEntityStore;
+use Wikibase\EntityStore\Cache\CachedEntityStore;
 use WikidataQueryApi\WikidataQueryApi;
 use WikidataQueryApi\WikidataQueryFactory;
 
@@ -82,7 +84,7 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	}
 
 	private function newResourceListNodeParser(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
-		$parserFactory = new WikibaseValueParserFactory($languageCode, $mediawikiApi, $cache);
+		$parserFactory = new WikibaseValueParserFactory($languageCode, new CachedEntityStore(new ApiEntityStore($mediawikiApi), $cache));
 		return new ResourceListNodeParser($parserFactory->newWikibaseValueParser());
 	}
 }

@@ -5,14 +5,8 @@ namespace PPP\Wikidata\ValueFormatters;
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\JsonLdResourceNode;
-use PPP\Wikidata\Cache\PerSiteLinkCache;
 use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\WikibaseEntityProvider;
-use PPP\Wikidata\Wikipedia\MediawikiArticleHeader;
-use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
-use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
-use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
-use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
@@ -22,7 +16,6 @@ use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\DataModel\SiteLink;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatter

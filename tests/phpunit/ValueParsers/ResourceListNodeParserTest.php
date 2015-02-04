@@ -3,7 +3,6 @@
 namespace PPP\Wikidata\ValueParsers;
 
 use DataValues\StringValue;
-use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
@@ -11,6 +10,7 @@ use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\EntityStore\Api\ApiEntityStore;
 
 /**
  * @covers PPP\Wikidata\ValueParsers\ResourceListNodeParser
@@ -28,8 +28,7 @@ class ResourceListNodeParserTest extends \PHPUnit_Framework_TestCase {
 	public function testParse(ResourceListNode $inputNode, $type, ResourceListNode $expectedNode) {
 		$valueParserFactory = new WikibaseValueParserFactory(
 			'en',
-			new MediawikiApi('http://www.wikidata.org/w/api.php'),
-			new ArrayCache()
+			new ApiEntityStore(new MediawikiApi('http://www.wikidata.org/w/api.php'))
 		);
 		$resourceListNodeParser = new ResourceListNodeParser($valueParserFactory->newWikibaseValueParser());
 

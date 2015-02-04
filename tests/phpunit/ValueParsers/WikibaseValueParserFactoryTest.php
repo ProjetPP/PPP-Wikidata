@@ -6,11 +6,11 @@ use DataValues\GlobeCoordinateValue;
 use DataValues\LatLongValue;
 use DataValues\MonolingualTextValue;
 use DataValues\StringValue;
-use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\EntityStore\Api\ApiEntityStore;
 
 /**
  * @covers PPP\Wikidata\ValueParsers\WikibaseValueParserFactory
@@ -25,8 +25,7 @@ class WikibaseValueParserFactoryTest extends \PHPUnit_Framework_TestCase {
 	private function newFactory() {
 		return new WikibaseValueParserFactory(
 			'fr',
-			new MediawikiApi('http://www.wikidata.org/w/api.php'),
-			new ArrayCache()
+			new ApiEntityStore(new MediawikiApi('http://www.wikidata.org/w/api.php'))
 		);
 	}
 
