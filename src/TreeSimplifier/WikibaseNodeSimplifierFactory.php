@@ -6,11 +6,8 @@ use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Module\TreeSimplifier\IntersectionNodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
-use PPP\Wikidata\Cache\WikibaseEntityCache;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
-use PPP\Wikidata\WikibaseEntityProvider;
-use Wikibase\Api\WikibaseFactory;
 use Wikibase\EntityStore\Api\ApiEntityStore;
 use Wikibase\EntityStore\Cache\CachedEntityStore;
 use WikidataQueryApi\WikidataQueryApi;
@@ -53,7 +50,7 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	private function newMissingObjectTripleNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
 		return new MissingObjectTripleNodeSimplifier(
 			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode),
-			$this->newEntityProvider($mediawikiApi, $cache)
+			$this->newEntityStore($mediawikiApi, $cache)
 		);
 	}
 
@@ -62,7 +59,7 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 		return new MissingSubjectTripleNodeSimplifier(
 			$this,
 			$wikidataQueryFactory->newSimpleQueryService(),
-			$this->newEntityProvider($mediawikiApi, $cache),
+			$this->newEntityStore($mediawikiApi, $cache),
 			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode)
 		);
 	}
@@ -70,17 +67,13 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	private function newIntersectionWithFilterNodeSimplifier(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {
 		return new IntersectionWithFilterNodeSimplifier(
 			new IntersectionNodeSimplifier($this),
-			$this->newEntityProvider($mediawikiApi, $cache),
+			$this->newEntityStore($mediawikiApi, $cache),
 			$this->newResourceListNodeParser($mediawikiApi, $cache, $languageCode)
 		);
 	}
 
-	private function newEntityProvider(MediawikiApi $mediawikiApi, Cache $cache) {
-		$wikibaseFactory = new WikibaseFactory($mediawikiApi);
-		return new WikibaseEntityProvider(
-			$wikibaseFactory->newRevisionsGetter(),
-			new WikibaseEntityCache($cache)
-		);
+	private function newEntityStore(MediawikiApi $mediawikiApi, Cache $cache) {
+		return new CachedEntityStore(new ApiEntityStore($mediawikiApi), $cache);
 	}
 
 	private function newResourceListNodeParser(MediawikiApi $mediawikiApi, Cache $cache, $languageCode) {

@@ -17,6 +17,7 @@ use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\PropertySomeValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Statement\Statement;
+use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
 
 /**
  * @covers PPP\Wikidata\TreeSimplifier\MissingObjectTripleNodeSimplifier
@@ -30,10 +31,8 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		$resourceListNodeParserMock = $this->getMockBuilder('PPP\Wikidata\ValueParsers\ResourceListNodeParser')
 			->disableOriginalConstructor()
 			->getMock();
-		$entityProvider = $this->getMockBuilder( 'PPP\Wikidata\WikibaseEntityProvider' )
-			->disableOriginalConstructor()
-			->getMock();
-		return new MissingObjectTripleNodeSimplifier($resourceListNodeParserMock, $entityProvider);
+		$entityStoreMock = $this->getMock('Wikibase\EntityStore\EntityStore');
+		return new MissingObjectTripleNodeSimplifier($resourceListNodeParserMock, $entityStoreMock);
 	}
 
 	/**
@@ -96,15 +95,11 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue($item->getId())))),
 				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue($propertyId))))
 			));
-		$entityProvider = $this->getMockBuilder('PPP\Wikidata\WikibaseEntityProvider')
-			->disableOriginalConstructor()
-			->getMock();
-		$entityProvider->expects($this->once())
-			->method('getItem')
-			->with($this->equalTo(new ItemId('Q42')))
-			->will($this->returnValue($item));
 
-		$simplifier = new MissingObjectTripleNodeSimplifier($resourceListNodeParserMock, $entityProvider);
+		$simplifier = new MissingObjectTripleNodeSimplifier(
+			$resourceListNodeParserMock,
+			new InMemoryEntityStore(array($item))
+		);
 		$this->assertEquals(
 			$responseNodes,
 			$simplifier->simplify($queryNode)

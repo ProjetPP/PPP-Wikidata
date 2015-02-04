@@ -10,7 +10,6 @@ use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
-use PPP\Wikidata\WikibaseEntityProvider;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\EntityIdValue;
@@ -21,6 +20,7 @@ use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Snak\Snak;
 use Wikibase\DataModel\Statement\BestStatementsFinder;
 use Wikibase\DataModel\Statement\Statement;
+use Wikibase\EntityStore\EntityStore;
 
 /**
  * Simplifies a triple node when the object is missing.
@@ -36,17 +36,17 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	private $resourceListNodeParser;
 
 	/**
-	 * @var WikibaseEntityProvider
+	 * @var EntityStore
 	 */
-	private $entityProvider;
+	private $entityStore;
 
 	/**
 	 * @param ResourceListNodeParser $resourceListNodeParser
-	 * @param WikibaseEntityProvider $entityProvider
+	 * @param EntityStore $entityStore
 	 */
-	public function __construct(ResourceListNodeParser $resourceListNodeParser, WikibaseEntityProvider $entityProvider) {
+	public function __construct(ResourceListNodeParser $resourceListNodeParser, EntityStore $entityStore) {
 		$this->resourceListNodeParser = $resourceListNodeParser;
-		$this->entityProvider = $entityProvider;
+		$this->entityStore = $entityStore;
 	}
 
 	/**
@@ -95,7 +95,7 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 		/** @var PropertyId $propertyId */
 		$propertyId = $predicate->getDataValue()->getEntityId();
 
-		$item = $this->entityProvider->getItem($itemId);
+		$item = $this->entityStore->getItemLookup()->getItemForId($itemId);
 		$snaks = $this->getSnaksForProperty($item, $propertyId);
 		return $this->snaksToNodes($snaks, $itemId, $propertyId);
 	}
@@ -132,8 +132,6 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 				$entityIds[] = $value->getEntityId();
 			}
 		}
-
-		$this->entityProvider->loadEntities($entityIds);
 	}
 
 	private function snaksToNodes(array $snaks, EntityId $fromSubject, PropertyId $fromProperty) {
