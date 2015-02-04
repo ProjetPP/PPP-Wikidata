@@ -11,7 +11,6 @@ use DataValues\StringValue;
 use DataValues\TimeValue;
 use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
-use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\JsonLdResourceNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TimeResourceNode;
@@ -22,7 +21,7 @@ use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\EntityStore\Cache\EntityDocumentCache;
+use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory
@@ -33,12 +32,12 @@ use Wikibase\EntityStore\Cache\EntityDocumentCache;
 class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	private function newFactory() {
-		$cache = new ArrayCache();
-		$entityCache = new EntityDocumentCache($cache);
-		$entityCache->save($this->getQ42());
-		$entityCache->save($this->getP214());
+		$entityStore = new InMemoryEntityStore(array(
+			$this->getQ42(),
+			$this->getP214()
+		));
 
-		return new WikibaseResourceNodeFormatterFactory('en', new MediawikiApi(''), array(), $cache);
+		return new WikibaseResourceNodeFormatterFactory('en', $entityStore, array(), new ArrayCache());
 	}
 
 	public function testFormatterFormatGlobeCoordinate() {

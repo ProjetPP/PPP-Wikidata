@@ -2,8 +2,6 @@
 
 namespace PPP\Wikidata\TreeSimplifier;
 
-use Doctrine\Common\Cache\ArrayCache;
-
 /**
  * @covers PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory
  *
@@ -13,13 +11,11 @@ use Doctrine\Common\Cache\ArrayCache;
 class WikibaseNodeSimplifierFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testNewSentenceTreeSimplifier() {
-		$mediawikiApiMock = $this->getMockBuilder('Mediawiki\Api\MediawikiApi')
-			->disableOriginalConstructor()
-			->getMock();
+		$entityStoreMock = $this->getMock('Wikibase\EntityStore\EntityStore');
 		$wikidataQueryApiMock = $this->getMockBuilder('WikidataQueryApi\WikidataQueryApi')
 			->disableOriginalConstructor()
 			->getMock();
-		$factory = new WikibaseNodeSimplifierFactory($mediawikiApiMock, $wikidataQueryApiMock, new ArrayCache(), 'en');
+		$factory = new WikibaseNodeSimplifierFactory($entityStoreMock, $wikidataQueryApiMock, 'en');
 
 		$this->assertInstanceOf(
 			'PPP\Module\TreeSimplifier\NodeSimplifier',

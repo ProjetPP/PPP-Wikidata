@@ -11,8 +11,7 @@ use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\QuantityFormatter;
 use ValueFormatters\ValueFormatter;
-use Wikibase\EntityStore\Api\ApiEntityStore;
-use Wikibase\EntityStore\Cache\CachedEntityStore;
+use Wikibase\EntityStore\EntityStore;
 
 /**
  * Build a parser for Wikibase value
@@ -28,9 +27,9 @@ class WikibaseResourceNodeFormatterFactory {
 	private $languageCode;
 
 	/**
-	 * @var MediawikiApi
+	 * @var EntityStore
 	 */
-	private $api;
+	private $entityStore;
 
 	/**
 	 * @var MediawikiApi[]
@@ -44,13 +43,13 @@ class WikibaseResourceNodeFormatterFactory {
 
 	/**
 	 * @param $languageCode
-	 * @param MediawikiApi $api
+	 * @param EntityStore $entityStore
 	 * @param MediawikiApi[] $sitesApi
 	 * @param Cache $cache
 	 */
-	public function __construct($languageCode, MediawikiApi $api, array $sitesApi, Cache $cache) {
+	public function __construct($languageCode, EntityStore $entityStore, array $sitesApi, Cache $cache) {
 		$this->languageCode = $languageCode;
-		$this->api = $api;
+		$this->entityStore = $entityStore;
 		$this->sitesApi = $sitesApi;
 		$this->cache = $cache;
 	}
@@ -80,7 +79,7 @@ class WikibaseResourceNodeFormatterFactory {
 
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {
 		return new WikibaseEntityIdFormatter(
-			$this->newEntityStore(),
+			$this->entityStore,
 			$this->newWikibaseEntityIdJsonLdFormatter($options),
 			$options
 		);
@@ -88,7 +87,7 @@ class WikibaseResourceNodeFormatterFactory {
 
 	private function newWikibaseEntityIdJsonLdFormatter(FormatterOptions $options) {
 		return new WikibaseEntityIdJsonLdFormatter(
-			$this->newEntityStore(),
+			$this->entityStore,
 			$this->newMediawikiArticleHeaderProvider(),
 			$this->newMediawikiArticleImageProvider(),
 			$options
@@ -97,18 +96,13 @@ class WikibaseResourceNodeFormatterFactory {
 
 	public function newWikibaseEntityIdFormatterPreloader() {
 		return new WikibaseEntityIdFormatterPreloader(
-			$this->newEntityStore(),
+			$this->entityStore,
 			array(
 				$this->newMediawikiArticleHeaderProvider(),
 				$this->newMediawikiArticleImageProvider()
 			),
 			$this->languageCode
 		);
-	}
-
-	private function newEntityStore() {
-		return new CachedEntityStore(new ApiEntityStore($this->api), $this->cache);
-
 	}
 
 	private function newMediawikiArticleHeaderProvider() {

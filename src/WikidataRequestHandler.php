@@ -12,6 +12,9 @@ use PPP\Module\DataModel\ModuleResponse;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory;
 use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory;
+use Wikibase\EntityStore\Api\ApiEntityStore;
+use Wikibase\EntityStore\Cache\CachedEntityStore;
+use Wikibase\EntityStore\EntityStore;
 use WikidataQueryApi\WikidataQueryApi;
 
 /**
@@ -23,9 +26,9 @@ use WikidataQueryApi\WikidataQueryApi;
 class WikidataRequestHandler extends AbstractRequestHandler {
 
 	/**
-	 * @var MediawikiApi
+	 * @var EntityStore
 	 */
-	public $mediawikiApi;
+	public $entityStore;
 
 	/**
 	 * @var MediawikiApi[]
@@ -49,7 +52,7 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	 * @param Cache $cache
 	 */
 	public function __construct($mediawikiApiUrl, array $sitesUrls, $wikidataQueryUrl, Cache $cache) {
-		$this->mediawikiApi = new MediawikiApi($mediawikiApiUrl);
+		$this->entityStore = new CachedEntityStore(new ApiEntityStore(new MediawikiApi($mediawikiApiUrl)), $cache);
 		$this->sitesApi = array();
 		foreach($sitesUrls as $siteId => $url) {
 			$this->sitesApi[$siteId] = new MediawikiApi($url);
@@ -57,6 +60,7 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		$this->wikidataQueryApi = new WikidataQueryApi($wikidataQueryUrl);
 		$this->cache = $cache;
 	}
+
 	/**
 	 * @see RequestHandler::buildResponse
 	 */
@@ -89,12 +93,16 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	}
 
 	private function buildTreeSimplifier($languageCode) {
-		$factory = new WikibaseNodeSimplifierFactory($this->mediawikiApi, $this->wikidataQueryApi, $this->cache, $languageCode);
+		$factory = new WikibaseNodeSimplifierFactory(
+			$this->entityStore,
+			$this->wikidataQueryApi,
+			$languageCode
+		);
 		return $factory->newNodeSimplifier();
 	}
 
 	private function buildNodeFormatter($languageCode) {
-		$formatterFactory = new WikibaseResourceNodeFormatterFactory($languageCode, $this->mediawikiApi, $this->sitesApi, $this->cache);
+		$formatterFactory = new WikibaseResourceNodeFormatterFactory($languageCode, $this->entityStore, $this->sitesApi, $this->cache);
 		$simplifierFactory = new NodeSimplifierFactory(array(
 			new ResourceListNodeFormatter($formatterFactory->newWikibaseResourceNodeFormatter(), $formatterFactory->newWikibaseEntityIdFormatterPreloader())
 		));
