@@ -25,28 +25,29 @@ use PPP\Module\DataModel\ModuleResponse;
  */
 class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 
-	private static $cache;
+	public static function getRequestHandler() {
+		static $requestHandler = null;
 
-	public static function setUpBeforeClass() {
-		self::$cache = new ArrayCache();
+		if($requestHandler === null) {
+			$requestHandler = new WikidataRequestHandler(
+				__DIR__ . '/../../default-config.json',
+				array(
+					'enwiki' => 'http://en.wikipedia.org/w/api.php',
+					'dewiki' => 'http://de.wikipedia.org/w/api.php',
+					'frwiki' => 'http://fr.wikipedia.org/w/api.php'
+				),
+				'https://wdq.wmflabs.org/api'
+			);
+		}
+
+		return $requestHandler;
 	}
 
 	/**
 	 * @dataProvider requestAndResponseProvider
 	 */
 	public function testBuildResponse(ModuleRequest $request, array $response) {
-		$requestHandler = new WikidataRequestHandler(
-			'https://www.wikidata.org/w/api.php',
-			array(
-				'enwiki' => 'http://en.wikipedia.org/w/api.php',
-				'dewiki' => 'http://de.wikipedia.org/w/api.php',
-				'frwiki' => 'http://fr.wikipedia.org/w/api.php'
-			),
-			'https://wdq.wmflabs.org/api',
-			self::$cache
-		);
-
-		$computedResponse = $requestHandler->buildResponse($request);
+		$computedResponse = $this->getRequestHandler()->buildResponse($request);
 		if($this->cleverEquals($computedResponse, $response)) {
 			$this->assertTrue(true);
 		} else {

@@ -1,0 +1,9 @@
+{
+  "backend": "api",
+  "api": {
+    "url": "http://www.wikidata.org/w/api.php"
+  },
+  "cache": {
+    "array": true
+  }
+}
