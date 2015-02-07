@@ -14,6 +14,7 @@ use PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory;
 use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory;
 use Wikibase\EntityStore\Api\ApiEntityStore;
 use Wikibase\EntityStore\Cache\CachedEntityStore;
+use Wikibase\EntityStore\Config\EntityStoreFromConfigurationBuilder;
 use Wikibase\EntityStore\EntityStore;
 use WikidataQueryApi\WikidataQueryApi;
 
@@ -46,19 +47,20 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	public $cache;
 
 	/**
-	 * @param string $mediawikiApiUrl
+	 * @param $configFileName
 	 * @param string[] $sitesUrls
 	 * @param string $wikidataQueryUrl
-	 * @param Cache $cache
 	 */
-	public function __construct($mediawikiApiUrl, array $sitesUrls, $wikidataQueryUrl, Cache $cache) {
-		$this->entityStore = new CachedEntityStore(new ApiEntityStore(new MediawikiApi($mediawikiApiUrl)), $cache);
+	public function __construct($configFileName, array $sitesUrls, $wikidataQueryUrl) {
+		$configurationBuilder = new EntityStoreFromConfigurationBuilder();
+		$this->entityStore = $configurationBuilder->buildEntityStore($configFileName);
+		$this->cache = $configurationBuilder->buildCache($configFileName);
+
 		$this->sitesApi = array();
 		foreach($sitesUrls as $siteId => $url) {
 			$this->sitesApi[$siteId] = new MediawikiApi($url);
 		}
 		$this->wikidataQueryApi = new WikidataQueryApi($wikidataQueryUrl);
-		$this->cache = $cache;
 	}
 
 	/**
