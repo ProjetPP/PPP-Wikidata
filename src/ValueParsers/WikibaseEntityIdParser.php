@@ -8,6 +8,7 @@ use ValueParsers\StringValueParser;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
+use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Statement\Statement;
@@ -64,7 +65,11 @@ class WikibaseEntityIdParser extends StringValueParser {
 		$entityType = $this->getOption(self::OPT_ENTITY_TYPE);
 		switch($entityType) {
 			case 'item':
-				return $this->filterItemIds($this->entityStore->getItemIdForTermLookup()->getItemIdsForTerm($term));
+				return $this->sortItemIds(
+					$this->filterItemIds(
+						$this->entityStore->getItemIdForTermLookup()->getItemIdsForTerm($term)
+					)
+				);
 			case 'property':
 				return $this->entityStore->getPropertyIdForTermLookup()->getPropertyIdsForTerm($term);
 			default:
@@ -108,5 +113,17 @@ class WikibaseEntityIdParser extends StringValueParser {
 		}
 
 		return $values;
+	}
+
+
+	private function sortItemIds(array $itemIds) {
+		usort(
+			$itemIds,
+			function(ItemId $a, ItemId $b) {
+				return $a->getNumericId() - $b->getNumericId();
+			}
+		);
+
+		return $itemIds;
 	}
 }
