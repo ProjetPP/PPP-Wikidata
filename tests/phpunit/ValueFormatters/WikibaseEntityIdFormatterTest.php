@@ -2,12 +2,10 @@
 
 namespace PPP\Wikidata\ValueFormatters;
 
-use Mediawiki\Api\MediawikiApi;
 use PPP\DataModel\JsonLdResourceNode;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
-use Wikibase\Api\WikibaseFactory;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -67,7 +65,6 @@ class WikibaseEntityIdFormatterTest extends ValueFormatterTestBase {
 	 */
 	protected function getInstance(FormatterOptions $options) {
 		$class = $this->getFormatterClass();
-		$wikibaseFactory = new WikibaseFactory(new MediawikiApi(''));
 
 		$entityJsonLdFormatterMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\WikibaseEntityIdJsonLdFormatter')
 			->disableOriginalConstructor()

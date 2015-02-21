@@ -13,7 +13,6 @@ use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
-use Wikibase\Api\WikibaseFactory;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
@@ -166,7 +165,6 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 	 */
 	protected function getInstance(FormatterOptions $options) {
 		$class = $this->getFormatterClass();
-		$wikibaseFactory = new WikibaseFactory(new MediawikiApi(''));
 
 		$articleHeaderCache = new PerSiteLinkCache(new ArrayCache(), 'wparticlehead');
 		$articleHeaderCache->save(new MediawikiArticleHeader(

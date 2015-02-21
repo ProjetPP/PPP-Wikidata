@@ -16,8 +16,7 @@
 	"prefer-stable": true,
 	"require": {
 		"php": ">=5.3.0",
-		"addwiki/mediawiki-api": "~0.3",
-		"addwiki/mediawiki-api-base": "0.1",
+		"addwiki/mediawiki-api-base": "~0.2",
 		"doctrine/cache": "~1.4",
 		"ppp/wikibase-entity-store": "*",
 		"ppp/data-model": "*",

@@ -12,8 +12,6 @@ use PPP\Module\DataModel\ModuleResponse;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory;
 use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory;
-use Wikibase\EntityStore\Api\ApiEntityStore;
-use Wikibase\EntityStore\Cache\CachedEntityStore;
 use Wikibase\EntityStore\Config\EntityStoreFromConfigurationBuilder;
 use Wikibase\EntityStore\EntityStore;
 use WikidataQueryApi\WikidataQueryApi;
