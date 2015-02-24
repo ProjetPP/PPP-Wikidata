@@ -7,8 +7,6 @@ use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
 use Wikibase\EntityStore\EntityStore;
-use WikidataQueryApi\WikidataQueryApi;
-use WikidataQueryApi\WikidataQueryFactory;
 
 /**
  * Build a SentenceTreeSimplifier
@@ -22,15 +20,14 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 
 	/**
 	 * @param EntityStore $entityStore
-	 * @param WikidataQueryApi $wikidataQueryApi
 	 * @param string $languageCode
 	 */
-	public function __construct(EntityStore $entityStore, WikidataQueryApi $wikidataQueryApi, $languageCode) {
+	public function __construct(EntityStore $entityStore, $languageCode) {
 		parent::__construct(array(
 			$this->newSentenceNodeSimplifier($entityStore, $languageCode),
 			$this->newMeaninglessPredicateTripleNodeSimplifier($entityStore, $languageCode),
 			$this->newMissingObjectTripleNodeSimplifier($entityStore, $languageCode),
-			$this->newMissingSubjectTripleNodeSimplifier($wikidataQueryApi, $entityStore, $languageCode),
+			$this->newMissingSubjectTripleNodeSimplifier($entityStore, $languageCode),
 			$this->newIntersectionWithFilterNodeSimplifier($entityStore, $languageCode)
 		));
 	}
@@ -50,11 +47,9 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 		);
 	}
 
-	private function newMissingSubjectTripleNodeSimplifier(WikidataQueryApi $wikidataQueryApi, EntityStore $entityStore, $languageCode) {
-		$wikidataQueryFactory = new WikidataQueryFactory($wikidataQueryApi);
+	private function newMissingSubjectTripleNodeSimplifier(EntityStore $entityStore, $languageCode) {
 		return new MissingSubjectTripleNodeSimplifier(
 			$this,
-			$wikidataQueryFactory->newSimpleQueryService(),
 			$entityStore,
 			$this->newResourceListNodeParser($entityStore, $languageCode)
 		);

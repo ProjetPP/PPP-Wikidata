@@ -14,7 +14,6 @@ use PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory;
 use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory;
 use Wikibase\EntityStore\Config\EntityStoreFromConfigurationBuilder;
 use Wikibase\EntityStore\EntityStore;
-use WikidataQueryApi\WikidataQueryApi;
 
 /**
  * Module entry point.
@@ -35,11 +34,6 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	private $sitesApi;
 
 	/**
-	 * @var WikidataQueryApi
-	 */
-	public $wikidataQueryApi;
-
-	/**
 	 * @var Cache
 	 */
 	public $cache;
@@ -47,9 +41,8 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	/**
 	 * @param $configFileName
 	 * @param string[] $sitesUrls
-	 * @param string $wikidataQueryUrl
 	 */
-	public function __construct($configFileName, array $sitesUrls, $wikidataQueryUrl) {
+	public function __construct($configFileName, array $sitesUrls) {
 		$configurationBuilder = new EntityStoreFromConfigurationBuilder();
 		$this->entityStore = $configurationBuilder->buildEntityStore($configFileName);
 		$this->cache = $configurationBuilder->buildCache($configFileName);
@@ -58,7 +51,6 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		foreach($sitesUrls as $siteId => $url) {
 			$this->sitesApi[$siteId] = new MediawikiApi($url);
 		}
-		$this->wikidataQueryApi = new WikidataQueryApi($wikidataQueryUrl);
 	}
 
 	/**
@@ -95,7 +87,6 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	private function buildTreeSimplifier($languageCode) {
 		$factory = new WikibaseNodeSimplifierFactory(
 			$this->entityStore,
-			$this->wikidataQueryApi,
 			$languageCode
 		);
 		return $factory->newNodeSimplifier();

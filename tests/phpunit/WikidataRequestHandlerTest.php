@@ -34,8 +34,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'enwiki' => 'http://en.wikipedia.org/w/api.php',
 					'dewiki' => 'http://de.wikipedia.org/w/api.php',
 					'frwiki' => 'http://fr.wikipedia.org/w/api.php'
-				),
-				'https://wdq.wmflabs.org/api'
+				)
 			);
 		}
 
@@ -429,7 +428,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					))
 				))
 			),
-			array(
+			/*array( TODO: Implement support of goecoordinates queries
 				new ModuleRequest(
 					'en',
 					new TripleNode(
@@ -465,7 +464,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						'relevance' => 1
 					)
 				))
-			),
+			),*/
 			array(
 				new ModuleRequest(
 					'en',
