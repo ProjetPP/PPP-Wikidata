@@ -160,7 +160,7 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 	}
 
 	private function getQ42() {
-		$item = Item::newEmpty();
+		$item = new Item();
 		$item->setId( new ItemId('Q42'));
 		$item->getFingerprint()->setLabel('en', 'Douglas Adams');
 

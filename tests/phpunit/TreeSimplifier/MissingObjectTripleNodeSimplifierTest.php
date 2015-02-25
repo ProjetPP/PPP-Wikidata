@@ -110,7 +110,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		$list = array();
 
 		//Value
-		$douglasAdamItem = Item::newEmpty();
+		$douglasAdamItem = new Item();
 		$douglasAdamItem->setId(new ItemId('Q42'));
 		$birthPlaceStatement = new Statement(new Claim(
 			new PropertyValueSnak(new PropertyId('P214'), new StringValue('113230702'))
@@ -138,7 +138,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		);
 
 		//SomeValue
-		$douglasAdamItem = Item::newEmpty();
+		$douglasAdamItem = new Item();
 		$douglasAdamItem->setId(new ItemId('Q42'));
 		$birthPlaceStatement = new Statement(new Claim(new PropertySomeValueSnak(new PropertyId('P19'))));
 		$birthPlaceStatement->setGuid('42');
@@ -155,7 +155,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		);
 
 		//No result
-		$douglasAdamItem = Item::newEmpty();
+		$douglasAdamItem = new Item();
 		$douglasAdamItem->setId(new ItemId('Q42'));
 		$list[] = array(
 			new TripleNode(
@@ -169,7 +169,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		);
 
 		//Parsing
-		$douglasAdamItem = Item::newEmpty();
+		$douglasAdamItem = new Item();
 		$douglasAdamItem->setId(new ItemId('Q42'));
 		$list[] = array(
 			new TripleNode(
