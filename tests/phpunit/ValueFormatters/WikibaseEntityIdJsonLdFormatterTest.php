@@ -202,7 +202,7 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 	}
 
 	private function getQ42() {
-		$item = Item::newEmpty();
+		$item = new Item();
 		$item->setId( new ItemId('Q42'));
 		$item->getFingerprint()->setLabel('en', 'Douglas Adams');
 		$item->getFingerprint()->setDescription('en', 'Author');
