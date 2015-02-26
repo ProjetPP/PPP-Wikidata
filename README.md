@@ -1,9 +1,9 @@
 # PPP Wikidata
 
-[![Build Status](https://scrutinizer-ci.com/g/ProjetPP/PPP-Wikidata/badges/build.png?b=master)](https://scrutinizer-ci.com/g/ProjetPP/PPP-Wikidata/build-status/master)
+[![Build Status](https://travis-ci.org/ProjetPP/PPP-Wikidata.svg?branch=master)](https://travis-ci.org/ProjetPP/PPP-Wikidata)
 [![Code Coverage](https://scrutinizer-ci.com/g/ProjetPP/PPP-Wikidata/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ProjetPP/PPP-Wikidata/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ProjetPP/PPP-Wikidata/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ProjetPP/PPP-Wikidata/?branch=master)
-[![Dependency Status](https://www.versioneye.com/user/projects/5482b61c3f594e77e900000e/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5482b61c3f594e77e900000e)
+[![Dependency Status](https://www.versioneye.com/php/ppp:wikidata/dev-master/badge.svg)](https://www.versioneye.com/php/ppp:wikidata/dev-master)
 
 
 On [Packagist](https://packagist.org/packages/ppp/data-model):
