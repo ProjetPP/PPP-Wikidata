@@ -7,7 +7,6 @@ use Ask\Language\Description\Disjunction;
 use Ask\Language\Description\SomeProperty;
 use Ask\Language\Description\ValueDescription;
 use Ask\Language\Option\QueryOptions;
-use DataValues\DataValue;
 use InvalidArgumentException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\IntersectionNode;
@@ -21,7 +20,6 @@ use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\EntityStore\EntityStore;
 
 /**
@@ -150,13 +148,16 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 			$objectNodes = $this->resourceListNodeParser->parse($object, $objectType);
 
 			foreach($propertyNodes as $propertyNode) {
-				foreach($objectNodes as $objectNode) {
-					$queryParameters[] = $this->buildQueryForObject($propertyNode, $objectNode);
-				}
+				$queryParameters[] = $this->buildQueryForProperty($propertyNode, $objectNodes);
 			}
 		}
 
-		return new Disjunction($queryParameters);
+		switch(count($queryParameters)) {
+			case 1:
+				return reset($queryParameters);
+			default:
+				return new Disjunction($queryParameters);
+		}
 	}
 
 	private function bagsPropertiesPerType($propertyNodes) {
@@ -173,18 +174,27 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 		return $propertyNodesPerType;
 	}
 
-	private function buildQueryForObject(WikibaseResourceNode $predicate, WikibaseResourceNode $object) {
-		return $this->buildQueryForPropertyValue(
-			$predicate->getDataValue()->getEntityId(),
-			$object->getDataValue()
+	private function buildQueryForProperty(WikibaseResourceNode $predicate, ResourceListNode $objectList) {
+		return new SomeProperty(
+			new EntityIdValue($predicate->getDataValue()->getEntityId()),
+			$this->buildValueDescriptionsForObjects($objectList)
 		);
 	}
 
-	private function buildQueryForPropertyValue(PropertyId $propertyId, DataValue $value) {
-		return new SomeProperty(
-			new EntityIdValue($propertyId),
-			new ValueDescription($value)
-		);
+	private function buildValueDescriptionsForObjects(ResourceListNode $objectList) {
+		$valueDescriptions = array();
+
+		/** @var WikibaseResourceNode $object */
+		foreach($objectList as $object) {
+			$valueDescriptions[] = new ValueDescription($object->getDataValue());
+		}
+
+		switch(count($valueDescriptions)) {
+			case 1:
+				return reset($valueDescriptions);
+			default:
+				return new Disjunction($valueDescriptions);
+		}
 	}
 
 	private function formatQueryResult(array $subjectIds) {

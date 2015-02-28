@@ -153,15 +153,73 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
 				)),
-				new Disjunction(array(
-					new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('113230702')))
-				)),
+				new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('113230702'))),
 				array(
 					new ItemId('Q42')
 				),
 				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
 				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702')))),
 				array(
+					new Property(new PropertyId('P214'), null, 'string')
+				)
+			),
+			array(
+				new TripleNode(
+					new MissingNode(),
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+					new ResourceListNode(array(
+						new WikibaseResourceNode('', new StringValue('113230702')),
+						new WikibaseResourceNode('', new StringValue('113230700'))
+					))
+				),
+				new ResourceListNode(array(
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
+				)),
+				new SomeProperty(
+					new EntityIdValue(new PropertyId('P214')),
+					new Disjunction(array(
+						new ValueDescription(new StringValue('113230702')),
+						new ValueDescription(new StringValue('113230700'))
+					))
+				),
+				array(
+					new ItemId('Q42')
+				),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+				new ResourceListNode(array(
+					new WikibaseResourceNode('', new StringValue('113230702')),
+					new WikibaseResourceNode('', new StringValue('113230700'))
+				)),
+				array(
+					new Property(new PropertyId('P214'), null, 'string')
+				)
+			),
+			array(
+				new TripleNode(
+					new MissingNode(),
+					new ResourceListNode(array(
+						new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P213'))),
+						new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214')))
+					)),
+					new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702'))))
+				),
+				new ResourceListNode(array(
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
+				)),
+				new Disjunction(array(
+					new SomeProperty(new EntityIdValue(new PropertyId('P213')), new ValueDescription(new StringValue('113230702'))),
+					new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('113230702')))
+				)),
+				array(
+					new ItemId('Q42')
+				),
+				new ResourceListNode(array(
+					new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P213'))),
+					new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214')))
+				)),
+				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702')))),
+				array(
+					new Property(new PropertyId('P213'), null, 'string'),
 					new Property(new PropertyId('P214'), null, 'string')
 				)
 			),
@@ -208,9 +266,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q456')))))
 				)),
 				new Conjunction(array(new Disjunction(array(
-					new Disjunction(array(
-						new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('491268')))
-					))
+					new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('491268')))
 				)))),
 				array(
 					new ItemId('Q456')
@@ -233,9 +289,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
 				)),
-				new Disjunction(array(
-					new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('113230702')))
-				)),
+				new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('113230702'))),
 				array(
 					new ItemId('Q42')
 				),
