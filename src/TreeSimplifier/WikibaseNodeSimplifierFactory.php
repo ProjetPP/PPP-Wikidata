@@ -57,7 +57,7 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 
 	private function newIntersectionWithFilterNodeSimplifier(EntityStore $entityStore, $languageCode) {
 		return new IntersectionWithFilterNodeSimplifier(
-			new IntersectionNodeSimplifier($this),
+			$this,
 			$entityStore,
 			$this->newResourceListNodeParser($entityStore, $languageCode)
 		);
