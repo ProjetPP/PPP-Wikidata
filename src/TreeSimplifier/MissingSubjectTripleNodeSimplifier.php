@@ -15,6 +15,7 @@ use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
+use PPP\Module\TreeSimplifier\NodeSimplifierException;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseResourceNode;
@@ -87,14 +88,6 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	 * @see NodeSimplifier::doSimplification
 	 */
 	public function simplify(AbstractNode $node) {
-		if(!$this->isSimplifierFor($node)) {
-			throw new InvalidArgumentException('MissingSubjectTripleNodeSimplifier can only simplify union and intersection of TripleNodes with missing subject');
-		}
-
-		return $this->doSimplification($node);
-	}
-
-	private function doSimplification(AbstractNode $node) {
 		try {
 			$query = $this->buildQueryForNode($node);
 		} catch(EmptyQueryException $e) {
@@ -155,11 +148,15 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function buildQueryForTriple(TripleNode $triple) {
+		if(!($triple->getSubject()->equals(new MissingNode()))) {
+			throw new InvalidArgumentException('Triple whose subject is not missing given.');
+		}
+
 		$simplifier = $this->nodeSimplifierFactory->newNodeSimplifier();
 		$predicate = $simplifier->simplify($triple->getPredicate());
 		$object = $simplifier->simplify($triple->getObject());
 		if(!($predicate instanceof ResourceListNode && $object instanceof ResourceListNode)) {
-			throw new InvalidArgumentException('Invalid triple');
+			throw new NodeSimplifierException('Invalid triple');
 		}
 
 		$propertyNodes = $this->resourceListNodeParser->parse($predicate, 'wikibase-property');
