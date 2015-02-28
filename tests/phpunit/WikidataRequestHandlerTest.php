@@ -428,6 +428,43 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					))
 				))
 			),
+			array(
+				new ModuleRequest(
+					'en',
+					new TripleNode(
+						new MissingNode(),
+						new ResourceListNode(array(new StringResourceNode('instance of'))),
+						new ResourceListNode(array(new StringResourceNode('azertyyuiopqdf')))
+					),
+					'a'
+				),
+				array()
+			),
+			array(
+				new ModuleRequest(
+					'en',
+					new UnionNode(array(
+						new TripleNode(
+							new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+							new ResourceListNode(array(new StringResourceNode('VIAF'))),
+							new MissingNode()
+						),
+						new TripleNode(
+							new MissingNode(),
+							new ResourceListNode(array(new StringResourceNode('VIAF of'))),
+							new ResourceListNode(array(new StringResourceNode('Douglas Adams')))
+						)
+					)),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new ResourceListNode(array(new StringResourceNode('113230702'))),
+					array(
+						'relevance' => 1
+					)
+				))
+			),
 			/*array( TODO: Implement support of goecoordinates queries
 				new ModuleRequest(
 					'en',
