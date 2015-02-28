@@ -11,7 +11,6 @@ use InvalidArgumentException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\MissingNode;
-use PPP\DataModel\OperatorNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
@@ -98,8 +97,8 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	private function doSimplification(AbstractNode $node) {
 		try {
 			$query = $this->buildQueryForNode($node);
-		} catch(InvalidArgumentException $e) {
-			return $node;
+		} catch(EmptyQueryException $e) {
+			return new ResourceListNode();
 		}
 
 		$entityIds = $this->entityStore->getItemIdForQueryLookup()->getItemIdsForQuery($query, new QueryOptions(self::QUERY_LIMIT, 0));
@@ -108,28 +107,50 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function buildQueryForNode(AbstractNode $node) {
-		if($node instanceof TripleNode) {
+		if($node instanceof UnionNode) {
+			return $this->buildQueryForUnion($node);
+		} else if($node instanceof IntersectionNode) {
+			return $this->buildQueryForIntersection($node);
+		} else if($node instanceof TripleNode) {
 			return $this->buildQueryForTriple($node);
-		} else if($node instanceof OperatorNode) {
-			return $this->buildQueryForOperator($node);
 		} else {
 			throw new InvalidArgumentException('Unsupported Node');
 		}
 	}
 
-	private function buildQueryForOperator(OperatorNode $operatorNode) {
+	private function buildQueryForUnion(UnionNode $unionNode) {
 		$queries = array();
 
-		foreach($operatorNode->getOperands() as $operandNode) {
+		foreach($unionNode->getOperands() as $operandNode) {
+			try {
+				$queries[] = $this->buildQueryForNode($operandNode);
+			} catch(EmptyQueryException $e) {
+				//May be ignored: we are in a union
+			}
+		}
+
+		switch(count($queries)) {
+			case 0:
+				throw new EmptyQueryException();
+			case 1:
+				return reset($queries);
+			default:
+				return new Disjunction($queries);
+		}
+	}
+
+	private function buildQueryForIntersection(IntersectionNode $intersectionNode) {
+		$queries = array();
+
+		foreach($intersectionNode->getOperands() as $operandNode) {
 			$queries[] = $this->buildQueryForNode($operandNode);
 		}
 
-		if($operatorNode instanceof UnionNode) {
-			return new Disjunction($queries);
-		} elseif($operatorNode instanceof IntersectionNode) {
-			return new Conjunction($queries);
-		} else {
-			throw new InvalidArgumentException('Unsupported OperatorNode');
+		switch(count($queries)) {
+			case 1:
+				return reset($queries);
+			default:
+				return new Conjunction($queries);
 		}
 	}
 
@@ -148,11 +169,17 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 			$objectNodes = $this->resourceListNodeParser->parse($object, $objectType);
 
 			foreach($propertyNodes as $propertyNode) {
-				$queryParameters[] = $this->buildQueryForProperty($propertyNode, $objectNodes);
+				try {
+					$queryParameters[] = $this->buildQueryForProperty($propertyNode, $objectNodes);
+				} catch(EmptyQueryException $e) {
+					//May be ignored: we are in a union
+				}
 			}
 		}
 
 		switch(count($queryParameters)) {
+			case 0:
+				throw new EmptyQueryException();
 			case 1:
 				return reset($queryParameters);
 			default:
@@ -190,6 +217,8 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 		}
 
 		switch(count($valueDescriptions)) {
+			case 0:
+				throw new EmptyQueryException();
 			case 1:
 				return reset($valueDescriptions);
 			default:
