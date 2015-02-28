@@ -9,6 +9,7 @@ use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
+use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\ItemId;
@@ -27,9 +28,9 @@ use Wikibase\EntityStore\EntityStore;
 class IntersectionWithFilterNodeSimplifier implements NodeSimplifier {
 
 	/**
-	 * @var NodeSimplifier
+	 * @var NodeSimplifierFactory
 	 */
-	private $intersectionNodeSimplifier;
+	private $nodeSimplifierFactory;
 
 	/**
 	 * @var EntityStore
@@ -42,12 +43,12 @@ class IntersectionWithFilterNodeSimplifier implements NodeSimplifier {
 	private $resourceListNodeParser;
 
 	/**
-	 * @param NodeSimplifier $intersectionNodeSimplifier
+	 * @param NodeSimplifierFactory $nodeSimplifierFactory
 	 * @param EntityStore $entityStore
 	 * @param ResourceListNodeParser $resourceListNodeParser
 	 */
-	public function __construct(NodeSimplifier $intersectionNodeSimplifier, EntityStore $entityStore, ResourceListNodeParser $resourceListNodeParser) {
-		$this->intersectionNodeSimplifier = $intersectionNodeSimplifier;
+	public function __construct(NodeSimplifierFactory $nodeSimplifierFactory, EntityStore $entityStore, ResourceListNodeParser $resourceListNodeParser) {
+		$this->nodeSimplifierFactory = $nodeSimplifierFactory;
 		$this->entityStore = $entityStore;
 		$this->resourceListNodeParser = $resourceListNodeParser;
 	}
@@ -86,7 +87,7 @@ class IntersectionWithFilterNodeSimplifier implements NodeSimplifier {
 			return $node; //case of the MissingSubjectNodeSimplifier
 		}
 
-		$baseList = $this->intersectionNodeSimplifier->simplify(new IntersectionNode($otherOperands));
+		$baseList = $this->nodeSimplifierFactory->newNodeSimplifier()->simplify(new IntersectionNode($otherOperands));
 
 		if(!($baseList instanceof ResourceListNode)) {
 			$triplesWithMissingSubjects[] = $baseList;

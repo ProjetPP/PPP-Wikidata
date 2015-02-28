@@ -27,13 +27,15 @@ use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
 class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 
 	public function buildSimplifier() {
-		$intersectionNodeSimplifierMock = $this->getMock('PPP\Module\TreeSimplifier\NodeSimplifier');
+		$nodeSimplifierFactoryMock = $this->getMockBuilder('PPP\Module\TreeSimplifier\NodeSimplifierFactory')
+			->disableOriginalConstructor()
+			->getMock();
 		$entityStoreMock = $this->getMock('Wikibase\EntityStore\EntityStore');
 		$resourceListNodeParserMock = $this->getMockBuilder('PPP\Wikidata\ValueParsers\ResourceListNodeParser')
 			->disableOriginalConstructor()
 			->getMock();
 
-		return new IntersectionWithFilterNodeSimplifier($intersectionNodeSimplifierMock, $entityStoreMock, $resourceListNodeParserMock);
+		return new IntersectionWithFilterNodeSimplifier($nodeSimplifierFactoryMock, $entityStoreMock, $resourceListNodeParserMock);
 	}
 
 	public function simplifiableProvider() {
@@ -63,11 +65,19 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 	 * @dataProvider simplifiedTripleProvider
 	 */
 	public function testSimplify(IntersectionNode $intersectionNode, AbstractNode $responseNode, IntersectionNode $recursiveCall = null, AbstractNode $recusiveResult = null, ResourceListNode $parsedBaseList, ResourceListNode $parsedPredicates, ResourceListNode $parsedObjects, array $entities) {
-		$intersectionNodeSimplifierMock = $this->getMock('PPP\Module\TreeSimplifier\NodeSimplifier');
-		$intersectionNodeSimplifierMock->expects($this->any())
+
+		$nodeSimplifierMock = $this->getMock('PPP\Module\TreeSimplifier\NodeSimplifier');
+		$nodeSimplifierMock->expects($this->any())
 			->method('simplify')
 			->with($this->equalTo($recursiveCall))
 			->will($this->returnValue($recusiveResult));
+
+		$nodeSimplifierFactoryMock = $this->getMockBuilder('PPP\Module\TreeSimplifier\NodeSimplifierFactory')
+			->disableOriginalConstructor()
+			->getMock();
+		$nodeSimplifierFactoryMock->expects($this->any())
+			->method('newNodeSimplifier')
+			->will($this->returnValue($nodeSimplifierMock));
 
 		$resourceListNodeParserMock = $this->getMockBuilder('PPP\Wikidata\ValueParsers\ResourceListNodeParser')
 			->disableOriginalConstructor()
@@ -81,7 +91,7 @@ class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {
 			));
 
 		$simplifier = new IntersectionWithFilterNodeSimplifier(
-			$intersectionNodeSimplifierMock,
+			$nodeSimplifierFactoryMock,
 			new InMemoryEntityStore($entities),
 			$resourceListNodeParserMock
 		);
