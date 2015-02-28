@@ -24,7 +24,6 @@ $entryPoint = new ModuleEntryPoint(new WikidataRequestHandler(
 		'ptwiki' => 'http://pt.wikipedia.org/w/api.php',
 		'ruwiki' => 'http://ru.wikipedia.org/w/api.php',
 		'zhwiki' => 'http://zh.wikipedia.org/w/api.php'
-	),
-	'https://wdq.wmflabs.org/api'
+	)
 ));
 $entryPoint->exec();

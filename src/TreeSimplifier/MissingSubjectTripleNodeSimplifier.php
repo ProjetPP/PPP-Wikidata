@@ -2,6 +2,11 @@
 
 namespace PPP\Wikidata\TreeSimplifier;
 
+use Ask\Language\Description\Conjunction;
+use Ask\Language\Description\Disjunction;
+use Ask\Language\Description\SomeProperty;
+use Ask\Language\Description\ValueDescription;
+use Ask\Language\Option\QueryOptions;
 use DataValues\DataValue;
 use InvalidArgumentException;
 use PPP\DataModel\AbstractNode;
@@ -12,22 +17,12 @@ use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
-use PPP\Module\TreeSimplifier\NodeSimplifierException;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\EntityStore\EntityStore;
-use WikidataQueryApi\Query\AbstractQuery;
-use WikidataQueryApi\Query\AndQuery;
-use WikidataQueryApi\Query\AroundQuery;
-use WikidataQueryApi\Query\BetweenQuery;
-use WikidataQueryApi\Query\ClaimQuery;
-use WikidataQueryApi\Query\OrQuery;
-use WikidataQueryApi\Query\QuantityQuery;
-use WikidataQueryApi\Query\StringQuery;
-use WikidataQueryApi\Services\SimpleQueryService;
 
 /**
  * Simplifies a triple node when the subject is missing.
@@ -37,15 +32,12 @@ use WikidataQueryApi\Services\SimpleQueryService;
  */
 class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 
+	const QUERY_LIMIT = 50;
+
 	/**
 	 * @var NodeSimplifierFactory
 	 */
 	private $nodeSimplifierFactory;
-
-	/**
-	 * @var SimpleQueryService
-	 */
-	private $simpleQueryService;
 
 	/**
 	 * @var EntityStore
@@ -59,13 +51,11 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 
 	/**
 	 * @param NodeSimplifierFactory $nodeSimplifierFactory
-	 * @param SimpleQueryService $simpleQueryService
 	 * @param EntityStore $entityStore
 	 * @param ResourceListNodeParser $resourceListNodeParser
 	 */
-	public function __construct(NodeSimplifierFactory $nodeSimplifierFactory, SimpleQueryService $simpleQueryService, EntityStore $entityStore, ResourceListNodeParser $resourceListNodeParser) {
+	public function __construct(NodeSimplifierFactory $nodeSimplifierFactory, EntityStore $entityStore, ResourceListNodeParser $resourceListNodeParser) {
 		$this->nodeSimplifierFactory = $nodeSimplifierFactory;
-		$this->simpleQueryService = $simpleQueryService;
 		$this->entityStore = $entityStore;
 		$this->resourceListNodeParser = $resourceListNodeParser;
 	}
@@ -114,7 +104,7 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 			return $node;
 		}
 
-		$entityIds = $this->simpleQueryService->doQuery($query);
+		$entityIds = $this->entityStore->getItemIdForQueryLookup()->getItemIdsForQuery($query, new QueryOptions(self::QUERY_LIMIT, 0));
 
 		return $this->formatQueryResult($entityIds);
 	}
@@ -137,9 +127,9 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 		}
 
 		if($operatorNode instanceof UnionNode) {
-			return new OrQuery($queries);
+			return new Disjunction($queries);
 		} elseif($operatorNode instanceof IntersectionNode) {
-			return new AndQuery($queries);
+			return new Conjunction($queries);
 		} else {
 			throw new InvalidArgumentException('Unsupported OperatorNode');
 		}
@@ -166,7 +156,7 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 			}
 		}
 
-		return new OrQuery($queryParameters);
+		return new Disjunction($queryParameters);
 	}
 
 	private function bagsPropertiesPerType($propertyNodes) {
@@ -184,42 +174,17 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function buildQueryForObject(WikibaseResourceNode $predicate, WikibaseResourceNode $object) {
-		return $this->buildQueryForValue(
+		return $this->buildQueryForPropertyValue(
 			$predicate->getDataValue()->getEntityId(),
 			$object->getDataValue()
 		);
 	}
 
-	/**
-	 * @return AbstractQuery
-	 */
-	private function buildQueryForValue(PropertyId $propertyId, DataValue $value) {
-		switch($value->getType()) {
-			case 'globecoordinate':
-				return new AroundQuery(
-					$propertyId,
-					$value->getLatLong(),
-					$this->getRadiusFromGeoCoordinatesPrecision($value->getPrecision())
-				);
-			case 'quantity':
-				return new QuantityQuery($propertyId, $value->getAmount());
-			case 'string':
-				return new StringQuery($propertyId, $value);
-			case 'time':
-				return new BetweenQuery($propertyId, $value, $value);
-			case 'wikibase-entityid':
-				return new ClaimQuery($propertyId, $value->getEntityId());
-			default:
-				throw new NodeSimplifierException('The data type ' . $value->getType() . ' is not supported.');
-		}
-	}
-
-	private function getRadiusFromGeoCoordinatesPrecision($precision) {
-		if($precision <= 0) {
-			$precision = 1 / 3600;
-		}
-
-		return $precision * 100;
+	private function buildQueryForPropertyValue(PropertyId $propertyId, DataValue $value) {
+		return new SomeProperty(
+			new EntityIdValue($propertyId),
+			new ValueDescription($value)
+		);
 	}
 
 	private function formatQueryResult(array $subjectIds) {
