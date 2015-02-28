@@ -7,21 +7,19 @@ use Ask\Language\Description\Disjunction;
 use Ask\Language\Description\SomeProperty;
 use Ask\Language\Description\ValueDescription;
 use Ask\Language\Option\QueryOptions;
-use DataValues\DataValue;
 use InvalidArgumentException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\IntersectionNode;
 use PPP\DataModel\MissingNode;
-use PPP\DataModel\OperatorNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
+use PPP\Module\TreeSimplifier\NodeSimplifierException;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
-use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\EntityStore\EntityStore;
 
 /**
@@ -90,18 +88,10 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	 * @see NodeSimplifier::doSimplification
 	 */
 	public function simplify(AbstractNode $node) {
-		if(!$this->isSimplifierFor($node)) {
-			throw new InvalidArgumentException('MissingSubjectTripleNodeSimplifier can only simplify union and intersection of TripleNodes with missing subject');
-		}
-
-		return $this->doSimplification($node);
-	}
-
-	private function doSimplification(AbstractNode $node) {
 		try {
 			$query = $this->buildQueryForNode($node);
-		} catch(InvalidArgumentException $e) {
-			return $node;
+		} catch(EmptyQueryException $e) {
+			return new ResourceListNode();
 		}
 
 		$entityIds = $this->entityStore->getItemIdForQueryLookup()->getItemIdsForQuery($query, new QueryOptions(self::QUERY_LIMIT, 0));
@@ -110,37 +100,63 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function buildQueryForNode(AbstractNode $node) {
-		if($node instanceof TripleNode) {
+		if($node instanceof UnionNode) {
+			return $this->buildQueryForUnion($node);
+		} else if($node instanceof IntersectionNode) {
+			return $this->buildQueryForIntersection($node);
+		} else if($node instanceof TripleNode) {
 			return $this->buildQueryForTriple($node);
-		} else if($node instanceof OperatorNode) {
-			return $this->buildQueryForOperator($node);
 		} else {
 			throw new InvalidArgumentException('Unsupported Node');
 		}
 	}
 
-	private function buildQueryForOperator(OperatorNode $operatorNode) {
+	private function buildQueryForUnion(UnionNode $unionNode) {
 		$queries = array();
 
-		foreach($operatorNode->getOperands() as $operandNode) {
+		foreach($unionNode->getOperands() as $operandNode) {
+			try {
+				$queries[] = $this->buildQueryForNode($operandNode);
+			} catch(EmptyQueryException $e) {
+				//May be ignored: we are in a union
+			}
+		}
+
+		switch(count($queries)) {
+			case 0:
+				throw new EmptyQueryException();
+			case 1:
+				return reset($queries);
+			default:
+				return new Disjunction($queries);
+		}
+	}
+
+	private function buildQueryForIntersection(IntersectionNode $intersectionNode) {
+		$queries = array();
+
+		foreach($intersectionNode->getOperands() as $operandNode) {
 			$queries[] = $this->buildQueryForNode($operandNode);
 		}
 
-		if($operatorNode instanceof UnionNode) {
-			return new Disjunction($queries);
-		} elseif($operatorNode instanceof IntersectionNode) {
-			return new Conjunction($queries);
-		} else {
-			throw new InvalidArgumentException('Unsupported OperatorNode');
+		switch(count($queries)) {
+			case 1:
+				return reset($queries);
+			default:
+				return new Conjunction($queries);
 		}
 	}
 
 	private function buildQueryForTriple(TripleNode $triple) {
+		if(!($triple->getSubject()->equals(new MissingNode()))) {
+			throw new InvalidArgumentException('Triple whose subject is not missing given.');
+		}
+
 		$simplifier = $this->nodeSimplifierFactory->newNodeSimplifier();
 		$predicate = $simplifier->simplify($triple->getPredicate());
 		$object = $simplifier->simplify($triple->getObject());
 		if(!($predicate instanceof ResourceListNode && $object instanceof ResourceListNode)) {
-			throw new InvalidArgumentException('Invalid triple');
+			throw new NodeSimplifierException('Invalid triple');
 		}
 
 		$propertyNodes = $this->resourceListNodeParser->parse($predicate, 'wikibase-property');
@@ -150,13 +166,22 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 			$objectNodes = $this->resourceListNodeParser->parse($object, $objectType);
 
 			foreach($propertyNodes as $propertyNode) {
-				foreach($objectNodes as $objectNode) {
-					$queryParameters[] = $this->buildQueryForObject($propertyNode, $objectNode);
+				try {
+					$queryParameters[] = $this->buildQueryForProperty($propertyNode, $objectNodes);
+				} catch(EmptyQueryException $e) {
+					//May be ignored: we are in a union
 				}
 			}
 		}
 
-		return new Disjunction($queryParameters);
+		switch(count($queryParameters)) {
+			case 0:
+				throw new EmptyQueryException();
+			case 1:
+				return reset($queryParameters);
+			default:
+				return new Disjunction($queryParameters);
+		}
 	}
 
 	private function bagsPropertiesPerType($propertyNodes) {
@@ -173,18 +198,29 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 		return $propertyNodesPerType;
 	}
 
-	private function buildQueryForObject(WikibaseResourceNode $predicate, WikibaseResourceNode $object) {
-		return $this->buildQueryForPropertyValue(
-			$predicate->getDataValue()->getEntityId(),
-			$object->getDataValue()
+	private function buildQueryForProperty(WikibaseResourceNode $predicate, ResourceListNode $objectList) {
+		return new SomeProperty(
+			new EntityIdValue($predicate->getDataValue()->getEntityId()),
+			$this->buildValueDescriptionsForObjects($objectList)
 		);
 	}
 
-	private function buildQueryForPropertyValue(PropertyId $propertyId, DataValue $value) {
-		return new SomeProperty(
-			new EntityIdValue($propertyId),
-			new ValueDescription($value)
-		);
+	private function buildValueDescriptionsForObjects(ResourceListNode $objectList) {
+		$valueDescriptions = array();
+
+		/** @var WikibaseResourceNode $object */
+		foreach($objectList as $object) {
+			$valueDescriptions[] = new ValueDescription($object->getDataValue());
+		}
+
+		switch(count($valueDescriptions)) {
+			case 0:
+				throw new EmptyQueryException();
+			case 1:
+				return reset($valueDescriptions);
+			default:
+				return new Disjunction($valueDescriptions);
+		}
 	}
 
 	private function formatQueryResult(array $subjectIds) {

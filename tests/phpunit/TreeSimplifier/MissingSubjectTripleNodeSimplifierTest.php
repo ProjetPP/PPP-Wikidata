@@ -2,6 +2,7 @@
 
 namespace PPP\Wikidata\TreeSimplifier;
 
+use Ask\Language\Description\AnyValue;
 use Ask\Language\Description\Conjunction;
 use Ask\Language\Description\Description;
 use Ask\Language\Description\Disjunction;
@@ -127,6 +128,10 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 			->method('parse')
 			->will($this->onConsecutiveCalls(
 				$parsedPredicates,
+				$parsedObjects,
+				$parsedPredicates,
+				$parsedObjects,
+				$parsedPredicates,
 				$parsedObjects
 			));
 
@@ -153,15 +158,73 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
 				)),
-				new Disjunction(array(
-					new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('113230702')))
-				)),
+				new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('113230702'))),
 				array(
 					new ItemId('Q42')
 				),
 				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
 				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702')))),
 				array(
+					new Property(new PropertyId('P214'), null, 'string')
+				)
+			),
+			array(
+				new UnionNode(array(new TripleNode(
+					new MissingNode(),
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+					new ResourceListNode(array(
+						new WikibaseResourceNode('', new StringValue('113230702')),
+						new WikibaseResourceNode('', new StringValue('113230700'))
+					))
+				))),
+				new ResourceListNode(array(
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
+				)),
+				new SomeProperty(
+					new EntityIdValue(new PropertyId('P214')),
+					new Disjunction(array(
+						new ValueDescription(new StringValue('113230702')),
+						new ValueDescription(new StringValue('113230700'))
+					))
+				),
+				array(
+					new ItemId('Q42')
+				),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+				new ResourceListNode(array(
+					new WikibaseResourceNode('', new StringValue('113230702')),
+					new WikibaseResourceNode('', new StringValue('113230700'))
+				)),
+				array(
+					new Property(new PropertyId('P214'), null, 'string')
+				)
+			),
+			array(
+				new IntersectionNode(array(new TripleNode(
+					new MissingNode(),
+					new ResourceListNode(array(
+						new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P213'))),
+						new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214')))
+					)),
+					new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702'))))
+				))),
+				new ResourceListNode(array(
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
+				)),
+				new Disjunction(array(
+					new SomeProperty(new EntityIdValue(new PropertyId('P213')), new ValueDescription(new StringValue('113230702'))),
+					new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('113230702')))
+				)),
+				array(
+					new ItemId('Q42')
+				),
+				new ResourceListNode(array(
+					new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P213'))),
+					new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214')))
+				)),
+				new ResourceListNode(array(new WikibaseResourceNode('', new StringValue('113230702')))),
+				array(
+					new Property(new PropertyId('P213'), null, 'string'),
 					new Property(new PropertyId('P214'), null, 'string')
 				)
 			),
@@ -201,17 +264,29 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 							new MissingNode(),
 							new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
 							new ResourceListNode(array(new StringResourceNode('491268')))
-						)
-					))
+						),
+						new TripleNode(
+							new MissingNode(),
+							new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+							new ResourceListNode(array(new StringResourceNode('491268')))
+						),
+					)),
+					new TripleNode(
+						new MissingNode(),
+						new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+						new ResourceListNode(array(new StringResourceNode('491268')))
+					),
 				)),
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q456')))))
 				)),
-				new Conjunction(array(new Disjunction(array(
+				new Conjunction(array(
 					new Disjunction(array(
+						new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('491268'))),
 						new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('491268')))
-					))
-				)))),
+					)),
+					new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('491268')))
+				)),
 				array(
 					new ItemId('Q456')
 				),
@@ -233,9 +308,7 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new ResourceListNode(array(
 					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId('Q42')))))
 				)),
-				new Disjunction(array(
-					new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('113230702')))
-				)),
+				new SomeProperty(new EntityIdValue(new PropertyId('P214')), new ValueDescription(new StringValue('113230702'))),
 				array(
 					new ItemId('Q42')
 				),
@@ -244,6 +317,66 @@ class MissingSubjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				array(
 					new Property(new PropertyId('P214'), null, 'string')
 				)
+			),
+			array(
+				new TripleNode(
+					new MissingNode(),
+					new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+					new ResourceListNode()
+				),
+				new ResourceListNode(),
+				new AnyValue(),
+				array(
+					new ItemId('Q42')
+				),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId('P214'))))),
+				new ResourceListNode(),
+				array(
+					new Property(new PropertyId('P214'), null, 'string')
+				)
+			),
+			array(
+				new TripleNode(
+					new MissingNode(),
+					new ResourceListNode(),
+					new ResourceListNode(array(new StringResourceNode('491268')))
+				),
+				new ResourceListNode(),
+				new AnyValue(),
+				array(
+					new ItemId('Q42')
+				),
+				new ResourceListNode(),
+				new ResourceListNode(array(new StringResourceNode('491268'))),
+				array()
+			),
+			array(
+				new UnionNode(array()),
+				new ResourceListNode(),
+				new AnyValue(),
+				array(
+					new ItemId('Q42')
+				),
+				new ResourceListNode(),
+				new ResourceListNode(),
+				array()
+			),
+			array(
+				new UnionNode(array(
+					new TripleNode(
+						new MissingNode(),
+						new ResourceListNode(),
+						new ResourceListNode(array(new StringResourceNode('491268')))
+					),
+				)),
+				new ResourceListNode(),
+				new AnyValue(),
+				array(
+					new ItemId('Q42')
+				),
+				new ResourceListNode(),
+				new ResourceListNode(array(new StringResourceNode('491268'))),
+				array()
 			),
 		);
 	}
