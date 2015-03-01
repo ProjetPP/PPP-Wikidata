@@ -85,7 +85,6 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 		}
 
 		$node = new ResourceListNode($results);
-		$this->loadEntitiesFromNode($node);
 		return $node;
 	}
 
@@ -119,19 +118,6 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 		}
 
 		return $snaks;
-	}
-
-	private function loadEntitiesFromNode(ResourceListNode $nodes) {
-		$entityIds = array();
-
-		/** @var WikibaseResourceNode $node */
-		foreach($nodes as $node) {
-			$value =  $node->getDataValue();
-
-			if($value instanceof EntityIdValue) {
-				$entityIds[] = $value->getEntityId();
-			}
-		}
 	}
 
 	private function snaksToNodes(array $snaks, EntityId $fromSubject, PropertyId $fromProperty) {

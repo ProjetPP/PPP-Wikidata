@@ -12,10 +12,7 @@ class WikibaseNodeSimplifierFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testNewSentenceTreeSimplifier() {
 		$entityStoreMock = $this->getMock('Wikibase\EntityStore\EntityStore');
-		$wikidataQueryApiMock = $this->getMockBuilder('WikidataQueryApi\WikidataQueryApi')
-			->disableOriginalConstructor()
-			->getMock();
-		$factory = new WikibaseNodeSimplifierFactory($entityStoreMock, $wikidataQueryApiMock, 'en');
+		$factory = new WikibaseNodeSimplifierFactory($entityStoreMock, 'en');
 
 		$this->assertInstanceOf(
 			'PPP\Module\TreeSimplifier\NodeSimplifier',
