@@ -4,6 +4,7 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use InvalidArgumentException;
 use PPP\DataModel\JsonLdResourceNode;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdGlobeCoordinateFormatter;
 use PPP\Wikidata\WikibaseResourceNode;
 use stdClass;
@@ -23,18 +24,18 @@ class GlobeCoordinateFormatter extends ValueFormatterBase implements WikibaseRes
 	private $jsonLdGlobeCoordinateFormatter;
 
 	/**
-	 * @var WikibaseEntityIdJsonLdFormatter
+	 * @var JsonLdDataValueFormatter
 	 */
 	private $entityJsonLdFormatter;
 
 	/**
 	 * @param JsonLdGlobeCoordinateFormatter $jsonLdGlobeCoordinateFormatter
-	 * @param WikibaseEntityIdJsonLdFormatter $entityJsonLdFormatter
+	 * @param JsonLdDataValueFormatter $entityJsonLdFormatter
 	 * @param FormatterOptions $options
 	 */
 	public function __construct(
 		JsonLdGlobeCoordinateFormatter $jsonLdGlobeCoordinateFormatter,
-		WikibaseEntityIdJsonLdFormatter $entityJsonLdFormatter,
+		JsonLdDataValueFormatter $entityJsonLdFormatter,
 		FormatterOptions $options
 	) {
 		$this->jsonLdGlobeCoordinateFormatter = $jsonLdGlobeCoordinateFormatter;

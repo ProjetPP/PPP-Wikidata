@@ -73,7 +73,7 @@ class GlobeCoordinateFormatterTest extends ValueFormatterTestBase {
 	protected function getInstance(FormatterOptions $options) {
 		$class = $this->getFormatterClass();
 
-		$entityJsonLdFormatterMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\WikibaseEntityIdJsonLdFormatter')
+		$entityJsonLdFormatterMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter')
 			->disableOriginalConstructor()
 			->getMock();
 		$entityJsonLdFormatterMock->expects($this->any())

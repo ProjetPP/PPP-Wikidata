@@ -174,20 +174,9 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 				'VIAF identifier',
 				(object) array(
 					'@context' => 'http://schema.org',
-					'@type' => 'Thing',
+					'@type' => 'Property',
 					'@id' => 'http://www.wikidata.org/entity/P214',
 					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
-					'potentialAction' => array(
-						(object) array(
-							'@type' => 'ViewAction',
-							'name' => array(
-								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
-								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
-							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-							'target' => '//www.wikidata.org/entity/P214'
-						)
-					),
 					'@reverse' => new stdClass()
 				)
 			),
