@@ -65,16 +65,38 @@ class WikibaseEntityIdParser extends StringValueParser {
 		$entityType = $this->getOption(self::OPT_ENTITY_TYPE);
 		switch($entityType) {
 			case 'item':
-				return $this->sortItemIds(
-					$this->filterItemIds(
-						$this->entityStore->getItemIdForTermLookup()->getItemIdsForTerm($term)
-					)
-				);
+				return $this->getItemIdsForTerm($term);
 			case 'property':
-				return $this->entityStore->getPropertyIdForTermLookup()->getPropertyIdsForTerm($term);
+				return $this->getPropertyIdsForTerm($term);
 			default:
 				throw new InvalidArgumentException('Unknown entity type ' . $entityType);
 		}
+	}
+
+	private function getItemIdsForTerm(Term $term) {
+		$itemIds = $this->filterItemIds(
+			$this->entityStore->getItemIdForTermLookup()->getItemIdsForTerm($term)
+		);
+
+		try {
+			$itemIds[] = new ItemId($term->getText());
+		} catch(InvalidArgumentException $e) {
+			//The term is not a valid QID
+		}
+
+		return $this->sortItemIds($itemIds);
+	}
+
+	private function getPropertyIdsForTerm(Term $term) {
+		$propertyIds = $this->entityStore->getPropertyIdForTermLookup()->getPropertyIdsForTerm($term);
+
+		try {
+			$propertyIds[] = new PropertyId($term->getText());
+		} catch(InvalidArgumentException $e) {
+			//The term is not a valid PID
+		}
+
+		return $this->sortItemIds($propertyIds);
 	}
 
 	private function filterItemIds(array $itemIds) {
