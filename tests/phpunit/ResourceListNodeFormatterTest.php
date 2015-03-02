@@ -26,9 +26,15 @@ class ResourceListNodeFormatterTest extends NodeSimplifierBaseTest {
 		$entityIdFormatterPreloaderMock->expects($this->any())
 			->method('preload');
 
+		$formatterMock = $this->getMock('PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatter');
+		$formatterMock->expects($this->any())
+			->method('format')
+			->with($this->equalTo(new WikibaseResourceNode('', new StringValue('foo'))))
+			->will($this->returnValue(new StringResourceNode('foo')));
+
 		return new ResourceListNodeFormatter(
 			new DispatchingWikibaseResourceNodeFormatter(array(
-				'string' => new StringFormatter(new FormatterOptions())
+				'string' => $formatterMock
 			)),
 			$entityIdFormatterPreloaderMock
 		);
@@ -58,12 +64,18 @@ class ResourceListNodeFormatterTest extends NodeSimplifierBaseTest {
 			),
 			array(
 				new ResourceListNode(array(
-					new StringResourceNode('Douglas Adam'),
 					new StringResourceNode('foo')
 				)),
 				new ResourceListNode(array(
-					new WikibaseResourceNode('', new StringValue('Douglas Adam')),
 					new StringResourceNode('foo')
+				))
+			),
+			array(
+				new ResourceListNode(array(
+					new StringResourceNode('foo')
+				)),
+				new ResourceListNode(array(
+					new WikibaseResourceNode('', new StringValue('foo'))
 				))
 			),
 		);

@@ -120,7 +120,18 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new ResourceListNode(array(new StringResourceNode('113230702'))),
+					new ResourceListNode(array(
+						new JsonLdResourceNode(
+							'foo',
+							(object) array(
+								'@context' => 'http://schema.org',
+								'@type' => 'Text',
+								'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+									'@value' => '113230702'
+								)
+							)
+						)
+					)),
 					array(
 						'relevance' => 1
 					)
@@ -257,8 +268,26 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new ResourceListNode(array(
-						new StringResourceNode('113230702'),
-						new StringResourceNode('34454460')
+						new JsonLdResourceNode(
+							'foo',
+							(object) array(
+								'@context' => 'http://schema.org',
+								'@type' => 'Text',
+								'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+									'@value' => '113230702'
+								)
+							)
+						),
+						new JsonLdResourceNode(
+							'foo',
+							(object) array(
+								'@context' => 'http://schema.org',
+								'@type' => 'Text',
+								'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+									'@value' => '34454460'
+								)
+							)
+						)
 					)),
 					array(
 						'relevance' => 1
@@ -285,8 +314,26 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new ResourceListNode(array(
-						new StringResourceNode('113230702'),
-						new StringResourceNode('34454460')
+						new JsonLdResourceNode(
+							'foo',
+							(object) array(
+								'@context' => 'http://schema.org',
+								'@type' => 'Text',
+								'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+									'@value' => '113230702'
+								)
+							)
+						),
+						new JsonLdResourceNode(
+							'foo',
+							(object) array(
+								'@context' => 'http://schema.org',
+								'@type' => 'Text',
+								'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+									'@value' => '34454460'
+								)
+							)
+						)
 					)),
 					array(
 						'relevance' => 1
@@ -312,7 +359,16 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new ResourceListNode(array(new StringResourceNode('113230702'))),
+					new ResourceListNode(array(new JsonLdResourceNode(
+						'foo',
+						(object) array(
+							'@context' => 'http://schema.org',
+							'@type' => 'Text',
+							'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+								'@value' => '113230702'
+							)
+						)
+					))),
 					array(
 						'relevance' => 1
 					)
@@ -423,7 +479,16 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new FirstNode(new SortNode(
-						new ResourceListNode(array(new StringResourceNode('113230702'))),
+						new ResourceListNode(array(new JsonLdResourceNode(
+							'foo',
+							(object) array(
+								'@context' => 'http://schema.org',
+								'@type' => 'Text',
+								'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+									'@value' => '113230702'
+								)
+							)
+						))),
 						new StringResourceNode('default')
 					))
 				))
@@ -459,7 +524,16 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				),
 				array(new ModuleResponse(
 					'en',
-					new ResourceListNode(array(new StringResourceNode('113230702'))),
+					new ResourceListNode(array(new JsonLdResourceNode(
+						'foo',
+						(object) array(
+							'@context' => 'http://schema.org',
+							'@type' => 'Text',
+							'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+								'@value' => '113230702'
+							)
+						)
+					))),
 					array(
 						'relevance' => 1
 					)
