@@ -1,17 +1,17 @@
 <?php
 
-namespace PPP\Wikidata\ValueFormatters;
+namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\StringValue;
 use InvalidArgumentException;
-use PPP\DataModel\StringResourceNode;
+use stdClass;
 use ValueFormatters\ValueFormatterBase;
 
 /**
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class StringFormatter extends ValueFormatterBase implements DataValueFormatter {
+class JsonLdStringFormatter extends ValueFormatterBase implements JsonLdDataValueFormatter {
 
 	/**
 	 * @see ValueFormatter::format
@@ -21,6 +21,12 @@ class StringFormatter extends ValueFormatterBase implements DataValueFormatter {
 			throw new InvalidArgumentException('$value is not a StringValue.');
 		}
 
-		return new StringResourceNode($value->getValue());
+		return $this->toJsonLd($value);
+	}
+
+	private function toJsonLd(StringValue $value) {
+		$literal = new stdClass();
+		$literal->{'@value'} = $value->getValue();
+		return $literal;
 	}
 }

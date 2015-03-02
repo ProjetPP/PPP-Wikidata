@@ -1,18 +1,17 @@
 <?php
 
-namespace PPP\Wikidata\ValueFormatters;
+namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\StringValue;
-use PPP\DataModel\StringResourceNode;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\StringFormatter
+ * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdStringFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class StringFormatterTest extends ValueFormatterTestBase {
+class JsonLdStringFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
@@ -21,7 +20,7 @@ class StringFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new StringValue('foo'),
-				new StringResourceNode('foo')
+				(object) array('@value' => 'foo')
 			),
 		);
 	}
@@ -32,7 +31,6 @@ class StringFormatterTest extends ValueFormatterTestBase {
 	 * @return string
 	 */
 	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\StringFormatter';
+		return 'PPP\Wikidata\ValueFormatters\JsonLd\JsonLdStringFormatter';
 	}
-
 }
