@@ -8,6 +8,7 @@ use ValueParsers\Test\ValueParserTestBase;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\EntityStore\Api\ApiEntityStore;
 
 /**
@@ -45,12 +46,30 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 				)
 			),
 			array(
+				'Barack Obama',
+				array(new EntityIdValue(new ItemId('Q76')))
+			),
+			array(
 				'',
 				array()
 			),
 			array(
 				'abcabcabc',
 				array()
+			),
+			array(
+				'q42',
+				array(new EntityIdValue(new ItemId('Q42')))
+			),
+			array(
+				'VIAF',
+				array(new EntityIdValue(new PropertyId('P214'))),
+				$this->getInstance('property')
+			),
+			array(
+				'P214',
+				array(new EntityIdValue(new PropertyId('P214'))),
+				$this->getInstance('property')
 			),
 		);
 	}
@@ -76,22 +95,22 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	/**
 	 * @see ValueParserTestBase::getInstance
 	 */
-	protected function getInstance() {
+	protected function getInstance($entityType = 'item') {
 		$class = $this->getParserClass();
 		return new $class(
 			new ApiEntityStore(new MediawikiApi('http://www.wikidata.org/w/api.php')),
-			$this->newParserOptions()
+			$this->newParserOptions($entityType)
 		);
 	}
 
 	/**
 	 * @see ValueParserTestBase::newParserOptions
 	 */
-	protected function newParserOptions() {
+	protected function newParserOptions($entityType = 'item') {
 		$parserOptions = parent::newParserOptions();
 
 		$parserOptions->setOption(ValueParser::OPT_LANG, 'fr');
-		$parserOptions->setOption(WikibaseEntityIdParser::OPT_ENTITY_TYPE, 'item');
+		$parserOptions->setOption(WikibaseEntityIdParser::OPT_ENTITY_TYPE, $entityType);
 
 		return $parserOptions;
 	}

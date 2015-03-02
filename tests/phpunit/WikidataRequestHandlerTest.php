@@ -112,8 +112,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				new ModuleRequest(
 					'en',
 					new TripleNode(
-						new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
-						new ResourceListNode(array(new StringResourceNode('VIAF'))),
+						new ResourceListNode(array(new StringResourceNode('Q42'))),
+						new ResourceListNode(array(new StringResourceNode('P214'))),
 						new MissingNode()
 					),
 					'a'
