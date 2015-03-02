@@ -13,7 +13,6 @@ use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\JsonLdResourceNode;
 use PPP\DataModel\StringResourceNode;
-use PPP\DataModel\TimeResourceNode;
 use PPP\Wikidata\WikibaseResourceNode;
 use stdClass;
 use Wikibase\DataModel\Entity\EntityIdValue;
@@ -86,7 +85,17 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 
 	public function testFormatterFormatTime() {
 		$this->assertEquals(
-			new TimeResourceNode('1952-03-11'),
+			new JsonLdResourceNode(
+				'1952-03-11',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Date',
+					'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+						'@type' => 'Date',
+						'@value' => '1952-03-11'
+					)
+				)
+			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
 				new WikibaseResourceNode('', new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, ''))
 			)

@@ -3,16 +3,15 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\TimeValue;
-use PPP\DataModel\TimeResourceNode;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\TimeFormatter
+ * @covers PPP\Wikidata\ValueFormatters\IsoTimeFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class TimeFormatterTest extends ValueFormatterTestBase {
+class IsoTimeFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
@@ -21,39 +20,39 @@ class TimeFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, 'http://www.wikidata.org/entity/Q1985786'),
-				new TimeResourceNode('1952-03-11', 'julian')
+				'1952-03-11'
 			),
 			array(
 				new TimeValue('-00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, ''),
-				new TimeResourceNode('-1952-03-11', 'gregorian')
+				'-1952-03-11'
 			),
 			array(
 				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_YEAR, ''),
-				new TimeResourceNode('1952', 'gregorian')
+				'1952'
 			),
 			array(
 				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_MONTH, ''),
-				new TimeResourceNode('1952-03', 'gregorian')
+				'1952-03'
 			),
 			array(
 				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_DAY, ''),
-				new TimeResourceNode('1952-03-11', 'gregorian')
+				'1952-03-11'
 			),
 			array(
 				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_HOUR, ''),
-				new TimeResourceNode('1952-03-11T01+01:30', 'gregorian')
+				'1952-03-11T01+01:30'
 			),
 			array(
 				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_MINUTE, ''),
-				new TimeResourceNode('1952-03-11T01:01+01:30', 'gregorian')
+				'1952-03-11T01:01+01:30'
 			),
 			array(
 				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_SECOND, ''),
-				new TimeResourceNode('1952-03-11T01:01:01+01:30', 'gregorian')
+				'1952-03-11T01:01:01+01:30'
 			),
 			array(
 				new TimeValue('+00000001952-03-11T01:01:01Z', -90, 0, 0, TimeValue::PRECISION_SECOND, ''),
-				new TimeResourceNode('1952-03-11T01:01:01-01:30', 'gregorian')
+				'1952-03-11T01:01:01-01:30'
 			),
 		);
 	}
@@ -64,7 +63,6 @@ class TimeFormatterTest extends ValueFormatterTestBase {
 	 * @return string
 	 */
 	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\TimeFormatter';
+		return 'PPP\Wikidata\ValueFormatters\IsoTimeFormatter';
 	}
-
 }
