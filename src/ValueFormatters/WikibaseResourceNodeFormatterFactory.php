@@ -5,6 +5,7 @@ namespace PPP\Wikidata\ValueFormatters;
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdGlobeCoordinateFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdMonolingualTextFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdStringFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdTimeFormatter;
@@ -65,7 +66,7 @@ class WikibaseResourceNodeFormatterFactory {
 		$options = $this->newFormatterOptions();
 
 		return new DispatchingWikibaseResourceNodeFormatter(array(
-			'globecoordinate' => new GlobeCoordinateFormatter($this->newWikibaseEntityIdJsonLdFormatter($options), $options),
+			'globecoordinate' => $this->newGlobeCoordinateFormatter($options),
 			'monolingualtext' => new JsonLdLiteralFormatter(new JsonLdMonolingualTextFormatter($options), $options),
 			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
 			'string' => new JsonLdLiteralFormatter(new JsonLdStringFormatter($options), $options),
@@ -79,6 +80,14 @@ class WikibaseResourceNodeFormatterFactory {
 		return new FormatterOptions(array(
 			ValueFormatter::OPT_LANG => $this->languageCode
 		));
+	}
+
+	private function newGlobeCoordinateFormatter(FormatterOptions $options) {
+		return new GlobeCoordinateFormatter(
+			new JsonLdGlobeCoordinateFormatter(new \DataValues\Geo\Formatters\GlobeCoordinateFormatter($options), $options),
+			$this->newWikibaseEntityIdJsonLdFormatter($options),
+			$options
+		);
 	}
 
 	private function newWikibaseEntityFormatter(FormatterOptions $options) {

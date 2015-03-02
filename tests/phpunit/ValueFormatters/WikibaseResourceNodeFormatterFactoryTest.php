@@ -46,6 +46,7 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 				(object) array(
 					'@context' => 'http://schema.org',
 					'@type' => 'GeoCoordinates',
+					'name' => '42, 42',
 					'latitude' => 42.0,
 					'longitude' => 42.0
 				)
