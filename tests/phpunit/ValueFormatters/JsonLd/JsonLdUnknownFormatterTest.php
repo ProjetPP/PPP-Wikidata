@@ -3,7 +3,6 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\UnknownValue;
-use PPP\DataModel\StringResourceNode;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
@@ -12,7 +11,7 @@ use ValueFormatters\Test\ValueFormatterTestBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class UnknownFormatterTest extends ValueFormatterTestBase {
+class JsonLdUnknownFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
@@ -21,7 +20,7 @@ class UnknownFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new UnknownValue('foo'),
-				new StringResourceNode('foo')
+				(object) array('@value' => 'foo')
 			),
 		);
 	}
@@ -32,7 +31,6 @@ class UnknownFormatterTest extends ValueFormatterTestBase {
 	 * @return string
 	 */
 	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\UnknownFormatter';
+		return 'PPP\Wikidata\ValueFormatters\JsonLd\JsonLdUnknownFormatter';
 	}
-
 }

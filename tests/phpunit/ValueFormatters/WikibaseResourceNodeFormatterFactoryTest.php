@@ -123,7 +123,16 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 
 	public function testFormatterFormatUnknown() {
 		$this->assertEquals(
-			new StringResourceNode('foo'),
+			new JsonLdResourceNode(
+				'foo',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Text',
+					'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+						'@value' => 'foo'
+					)
+				)
+			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
 				new WikibaseResourceNode('', new UnknownValue('foo'))
 			)
