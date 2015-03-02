@@ -58,7 +58,17 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 
 	public function testFormatterFormatMonolingualText() {
 		$this->assertEquals(
-			new StringResourceNode('foo', 'en'),
+			new JsonLdResourceNode(
+				'foo',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Text',
+					'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+						'@language' => 'en',
+						'@value' => 'foo'
+					)
+				)
+			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
 				new WikibaseResourceNode('', new MonolingualTextValue('en', 'foo'))
 			)

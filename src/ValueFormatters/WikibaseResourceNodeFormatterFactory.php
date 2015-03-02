@@ -2,10 +2,10 @@
 
 namespace PPP\Wikidata\ValueFormatters;
 
-use DataValues\TimeValue;
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdMonolingualTextFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdTimeFormatter;
 use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
@@ -64,7 +64,7 @@ class WikibaseResourceNodeFormatterFactory {
 
 		return new DispatchingWikibaseResourceNodeFormatter(array(
 			'globecoordinate' => new GlobeCoordinateFormatter($this->newWikibaseEntityIdJsonLdFormatter($options), $options),
-			'monolingualtext' => new MonolingualTextFormatter($options),
+			'monolingualtext' => new JsonLdLiteralFormatter(new JsonLdMonolingualTextFormatter($options), $options),
 			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
 			'string' => new StringFormatter($options),
 			'time' => new JsonLdLiteralFormatter(new JsonLdTimeFormatter(new IsoTimeFormatter($options), $options), $options),
