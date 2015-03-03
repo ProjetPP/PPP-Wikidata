@@ -66,7 +66,7 @@ class WikibaseResourceNodeFormatterFactory {
 	}
 
 	/**
-	 * @return WikibaseResourceNodeFormatter
+	 * @return ValueFormatter
 	 */
 	public function newWikibaseResourceNodeFormatter() {
 		$options = $this->newFormatterOptions();

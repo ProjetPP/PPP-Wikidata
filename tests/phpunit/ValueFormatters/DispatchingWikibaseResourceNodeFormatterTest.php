@@ -22,7 +22,7 @@ class DispatchingWikibaseResourceNodeFormatterTest extends ValueFormatterTestBas
 	 * @see ValueFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
-		$formatterMock = $this->getMock('PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatter');
+		$formatterMock = $this->getMock('ValueFormatters\ValueFormatter');
 		$formatterMock->expects($this->any())
 			->method('format')
 			->with($this->equalTo(new WikibaseResourceNode('', new StringValue('foo'))))

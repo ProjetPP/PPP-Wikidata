@@ -15,7 +15,7 @@ use ValueFormatters\ValueFormatterBase;
  * @author Thomas Pellissier Tanon
  * @todo builds @reverse from fromSubject and fromPredicate
  */
-class JsonLdResourceFormatter extends ValueFormatterBase implements WikibaseResourceNodeFormatter {
+class JsonLdResourceFormatter extends ValueFormatterBase {
 
 	/**
 	 * @var JsonLdDataValueFormatter

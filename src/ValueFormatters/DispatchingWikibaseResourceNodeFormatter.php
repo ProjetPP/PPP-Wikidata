@@ -17,7 +17,7 @@ use ValueFormatters\ValueFormatterBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class DispatchingWikibaseResourceNodeFormatter extends ValueFormatterBase implements WikibaseResourceNodeFormatter {
+class DispatchingWikibaseResourceNodeFormatter extends ValueFormatterBase {
 
 	/**
 	 * @var ValueFormatter[]
@@ -48,16 +48,6 @@ class DispatchingWikibaseResourceNodeFormatter extends ValueFormatterBase implem
 			throw new FormattingException('Unknown value type: ' . $type);
 		}
 
-		return $this->doFormatting($this->formatters[$type], $value);
-	}
-
-	private function doFormatting(ValueFormatter $formatter, WikibaseResourceNode $value) {
-		if($formatter instanceof DataValueFormatter) {
-			return $formatter->format($value->getDataValue());
-		} else if($formatter instanceof WikibaseResourceNodeFormatter) {
-			return $formatter->format($value);
-		} else {
-			throw new InvalidArgumentException('Formatter with unknown behaviour');
-		}
+		return $this->formatters[$type]->format($value);
 	}
 }

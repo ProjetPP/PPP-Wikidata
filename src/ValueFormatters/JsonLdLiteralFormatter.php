@@ -14,7 +14,7 @@ use ValueFormatters\ValueFormatterBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class JsonLdLiteralFormatter extends ValueFormatterBase implements WikibaseResourceNodeFormatter {
+class JsonLdLiteralFormatter extends ValueFormatterBase {
 
 	/**
 	 * @var JsonLdDataValueFormatter

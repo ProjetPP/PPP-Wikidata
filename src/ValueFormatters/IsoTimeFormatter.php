@@ -11,7 +11,7 @@ use ValueFormatters\ValueFormatterBase;
  * @author Thomas Pellissier Tanon
  * @todo Move to data-value/Time
  */
-class IsoTimeFormatter extends ValueFormatterBase implements DataValueFormatter {
+class IsoTimeFormatter extends ValueFormatterBase {
 
 	/**
 	 * @see ValueFormatter::format

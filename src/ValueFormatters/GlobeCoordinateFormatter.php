@@ -14,9 +14,9 @@ use ValueFormatters\ValueFormatterBase;
 /**
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- * @todo removes in favor of something more generic
+ * @todo removes in favor of JsonLdResourceFormatter
  */
-class GlobeCoordinateFormatter extends ValueFormatterBase implements WikibaseResourceNodeFormatter {
+class GlobeCoordinateFormatter extends ValueFormatterBase {
 
 	/**
 	 * @var JsonLdGlobeCoordinateFormatter
