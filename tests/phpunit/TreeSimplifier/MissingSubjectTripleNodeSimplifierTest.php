@@ -9,7 +9,6 @@ use Ask\Language\Description\Disjunction;
 use Ask\Language\Description\SomeProperty;
 use Ask\Language\Description\ValueDescription;
 use Ask\Language\Option\QueryOptions;
-use Ask\Language\Query;
 use DataValues\StringValue;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\IntersectionNode;

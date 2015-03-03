@@ -3,10 +3,8 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\MonolingualTextValue;
-use DataValues\StringValue;
 use DataValues\TimeValue;
 use PPP\DataModel\JsonLdResourceNode;
-use PPP\DataModel\TimeResourceNode;
 use PPP\Wikidata\WikibaseResourceNode;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;

@@ -3,11 +3,8 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\StringValue;
-use PPP\DataModel\JsonLdResourceNode;
 use PPP\DataModel\StringResourceNode;
-use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdStringFormatter;
 use PPP\Wikidata\WikibaseResourceNode;
-use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**

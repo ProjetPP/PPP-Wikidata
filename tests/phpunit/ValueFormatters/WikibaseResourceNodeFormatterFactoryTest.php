@@ -12,7 +12,6 @@ use DataValues\TimeValue;
 use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\JsonLdResourceNode;
-use PPP\DataModel\StringResourceNode;
 use PPP\Wikidata\WikibaseResourceNode;
 use stdClass;
 use Wikibase\DataModel\Entity\EntityIdValue;

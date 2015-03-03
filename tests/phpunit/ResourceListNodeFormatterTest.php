@@ -9,7 +9,6 @@ use PPP\DataModel\StringResourceNode;
 use PPP\Module\TreeSimplifier\NodeSimplifierBaseTest;
 use PPP\Wikidata\ValueFormatters\DispatchingWikibaseResourceNodeFormatter;
 use PPP\Wikidata\ValueFormatters\StringFormatter;
-use ValueFormatters\FormatterOptions;
 
 /**
  * @covers PPP\Wikidata\ResourceListNodeFormatter

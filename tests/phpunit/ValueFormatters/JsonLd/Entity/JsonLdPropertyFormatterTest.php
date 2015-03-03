@@ -3,7 +3,6 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
-use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
