@@ -44,7 +44,6 @@ class JsonLdGlobeCoordinateFormatter extends ValueFormatterBase implements JsonL
 
 	private function toJsonLd(GlobeCoordinateValue $value) {
 		$resource = new stdClass();
-		$resource->{'@context'} = 'http://schema.org';
 		$resource->{'@type'} = 'GeoCoordinates';
 		$resource->name = $this->globeCoordinateFormatter->format($value);
 		$resource->latitude = $this->roundDegrees($value->getLatitude(), $value->getPrecision());

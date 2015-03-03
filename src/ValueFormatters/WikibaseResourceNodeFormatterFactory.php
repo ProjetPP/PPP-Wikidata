@@ -9,8 +9,10 @@ use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityIdFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdItemFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdPropertyFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDecimalFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdGlobeCoordinateFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdMonolingualTextFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdQuantityFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdStringFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdTimeFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdUnknownFormatter;
@@ -72,11 +74,11 @@ class WikibaseResourceNodeFormatterFactory {
 		return new DispatchingWikibaseResourceNodeFormatter(array(
 			'globecoordinate' => $this->newGlobeCoordinateFormatter($options),
 			'monolingualtext' => new JsonLdLiteralFormatter(new JsonLdMonolingualTextFormatter($options), $options),
-			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
+			'quantity' => $this->newQuantityFormatter($options),
 			'string' => new JsonLdLiteralFormatter(new JsonLdStringFormatter($options), $options),
 			'time' => new JsonLdLiteralFormatter(new JsonLdTimeFormatter(new IsoTimeFormatter($options), $options), $options),
 			'unknown' => new JsonLdLiteralFormatter(new JsonLdUnknownFormatter($options), $options),
-			'wikibase-entityid' => $this->newWikibaseEntityFormatter($options)
+			'wikibase-entityid' => $this->newEntityIdValueFormatter($options)
 		));
 	}
 
@@ -95,7 +97,18 @@ class WikibaseResourceNodeFormatterFactory {
 		);
 	}
 
-	private function newWikibaseEntityFormatter(FormatterOptions $options) {
+	private function newQuantityFormatter(FormatterOptions $options) {
+		return new JsonLdResourceFormatter(
+			new JsonLdQuantityFormatter(
+				new QuantityFormatter(new DecimalFormatter($options), $options),
+				new JsonLdDecimalFormatter($options),
+				$options
+			),
+			$options
+		);
+	}
+
+	private function newEntityIdValueFormatter(FormatterOptions $options) {
 		return new JsonLdResourceFormatter($this->newJsonLdEntityIdFormatter($options), $options);
 	}
 

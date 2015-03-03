@@ -24,7 +24,6 @@ class JsonLdGlobeCoordinateFormatterTest extends ValueFormatterTestBase {
 			array(
 				new GlobeCoordinateValue(new LatLongValue(42, 42), 1),
 				(object) array(
-					'@context' => 'http://schema.org',
 					'@type' => 'GeoCoordinates',
 					'name' => '42, 42',
 					'latitude' => 42.0,

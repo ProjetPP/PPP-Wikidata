@@ -78,9 +78,19 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 
 	public function testFormatterFormatQuantity() {
 		$this->assertEquals(
-			new StringResourceNode('491268±1'),
+			new JsonLdResourceNode(
+				'1234.0±1.0',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'QuantitativeValue',
+					'name' => '1234.0±1.0',
+					'value' => (object) array('@type' => 'Integer', '@value' => 1234),
+					'minValue' => (object) array('@type' => 'Float', '@value' => 1233.3333),
+					'maxValue' => (object) array('@type' => 'Integer', '@value' => 1235),
+				)
+			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
-				new WikibaseResourceNode('', new QuantityValue(new DecimalValue('+491268'), '1', new DecimalValue('+491268'), new DecimalValue('+491267')))
+				new WikibaseResourceNode('', new QuantityValue(new DecimalValue(1234), '1', new DecimalValue(1235), new DecimalValue(1233.3333)))
 			)
 		);
 	}
