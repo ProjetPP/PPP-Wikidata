@@ -6,7 +6,7 @@ use DataValues\UnknownValue;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\UnknownFormatter
+ * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdUnknownFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
