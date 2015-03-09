@@ -10,13 +10,9 @@ use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
-use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\SiteLinkList;
-use Wikibase\DataModel\Term\Fingerprint;
-use Wikibase\DataModel\Term\FingerprintProvider;
 use Wikibase\DataModel\Term\Term;
-use Wikibase\EntityStore\EntityStore;
 
 /**
  * Returns the label of a given Wikibase entity id
@@ -24,12 +20,12 @@ use Wikibase\EntityStore\EntityStore;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseEntityIdJsonLdFormatter extends ValueFormatterBase {
+class ExtendedJsonLdItemFormatter extends ValueFormatterBase {
 
 	/**
-	 * @var EntityStore
+	 * @var ValueFormatter
 	 */
-	private $entityStore;
+	private $itemFormatter;
 
 	/**
 	 * @var MediawikiArticleHeaderProvider
@@ -42,18 +38,18 @@ class WikibaseEntityIdJsonLdFormatter extends ValueFormatterBase {
 	private $articleImageProvider;
 
 	/**
-	 * @param EntityStore $entityStore
+	 * @param ValueFormatter $itemFormatter
 	 * @param MediawikiArticleHeaderProvider $articleHeaderProvider
 	 * @param MediawikiArticleImageProvider $articleImageProvider
 	 * @param FormatterOptions $options
 	 */
 	public function __construct(
-		EntityStore $entityStore,
+		ValueFormatter $itemFormatter,
 		MediawikiArticleHeaderProvider $articleHeaderProvider,
 		MediawikiArticleImageProvider $articleImageProvider,
 		FormatterOptions $options
 	) {
-		$this->entityStore = $entityStore;
+		$this->itemFormatter = $itemFormatter;
 		$this->articleHeaderProvider = $articleHeaderProvider;
 		$this->articleImageProvider = $articleImageProvider;
 
@@ -63,64 +59,28 @@ class WikibaseEntityIdJsonLdFormatter extends ValueFormatterBase {
 	/**
 	 * @see ValueFormatter::format
 	 */
-	public function format($entityId) {
-		if(!($entityId instanceof EntityId)) {
-			throw new InvalidArgumentException('$value should be an EntityId');
+	public function format($value) {
+		if(!($value instanceof Item)) {
+			throw new InvalidArgumentException('$value is not an Item');
 		}
 
-		$entity = $this->entityStore->getEntityDocumentLookup()->getEntityDocumentForId($entityId);
+		return $this->toJsonLd($value);
+	}
 
-		$resource = new stdClass();
-		$resource->{'@type'} = 'Thing';
-		$resource->{'@id'} = 'http://www.wikidata.org/entity/' . $entityId->getSerialization(); //TODO: option
-		$resource->{'@reverse'} = new stdClass();
+	private function toJsonLd(Item $item) {
+		$resource = $this->itemFormatter->format($item);
+
 		$resource->potentialAction = array(
 			$this->newViewAction(
 				array(new Term('en', 'View on Wikidata'), new Term('fr', 'Voir sur Wikidata')),
 				'//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-				'//www.wikidata.org/entity/' . $entityId->getSerialization()
+				'//www.wikidata.org/entity/' . $item->getId()->getSerialization()
 			)
 		);
 
-		if($entity instanceof FingerprintProvider) {
-			$this->addFingerprintToResource($entity->getFingerprint(), $resource);
-		}
+		$this->addArticleToResource($item->getSiteLinkList(), $resource);
+		$this->addImageToResource($item->getSiteLinkList(), $resource);
 
-		if($entity instanceof Item) {
-			$this->addArticleToResource($entity->getSiteLinkList(), $resource);
-			$this->addImageToResource($entity->getSiteLinkList(), $resource);
-		}
-
-		return $resource;
-	}
-
-	private function addFingerprintToResource(Fingerprint $fingerprint, stdClass $resource) {
-		$languageCode = $this->getOption(ValueFormatter::OPT_LANG);
-
-		try {
-			$resource->name = $this->newResourceFromTerm($fingerprint->getLabel($languageCode));
-		} catch(OutOfBoundsException $e) {
-		}
-
-		try {
-			$resource->description = $this->newResourceFromTerm($fingerprint->getDescription($languageCode));
-		} catch(OutOfBoundsException $e) {
-		}
-
-		try {
-			$aliasGroup = $fingerprint->getAliasGroup($languageCode);
-			$resource->alternateName = array();
-			foreach($aliasGroup->getAliases() as $alias) {
-				$resource->alternateName[] = $this->newResourceFromTerm(new Term($aliasGroup->getLanguageCode(), $alias));
-			}
-		} catch(OutOfBoundsException $e) {
-		}
-	}
-
-	private function newResourceFromTerm(Term $term) {
-		$resource = new stdClass();
-		$resource->{'@language'} = $term->getLanguageCode();
-		$resource->{'@value'} = $term->getText();
 		return $resource;
 	}
 
@@ -186,5 +146,12 @@ class WikibaseEntityIdJsonLdFormatter extends ValueFormatterBase {
 		$actionResource->image = $image;
 		$actionResource->target = $target;
 		return $actionResource;
+	}
+
+	private function newResourceFromTerm(Term $term) {
+		$resource = new stdClass();
+		$resource->{'@language'} = $term->getLanguageCode();
+		$resource->{'@value'} = $term->getText();
+		return $resource;
 	}
 }

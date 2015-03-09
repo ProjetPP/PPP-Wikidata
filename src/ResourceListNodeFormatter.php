@@ -7,7 +7,7 @@ use PPP\DataModel\AbstractNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader;
-use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatter;
+use ValueFormatters\ValueFormatter;
 
 /**
  * Formats ResourceListNodes
@@ -18,7 +18,7 @@ use PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatter;
 class ResourceListNodeFormatter implements NodeSimplifier {
 
 	/**
-	 * @var WikibaseResourceNodeFormatter
+	 * @var ValueFormatter
 	 */
 	private $valueFormatter;
 
@@ -28,10 +28,10 @@ class ResourceListNodeFormatter implements NodeSimplifier {
 	private $entityIdFormatterPreloader;
 
 	/**
-	 * @param WikibaseResourceNodeFormatter $valueFormatter
+	 * @param ValueFormatter $valueFormatter
 	 * @param WikibaseEntityIdFormatterPreloader $entityIdFormatterPreloader
 	 */
-	public function __construct(WikibaseResourceNodeFormatter $valueFormatter, WikibaseEntityIdFormatterPreloader $entityIdFormatterPreloader) {
+	public function __construct(ValueFormatter $valueFormatter, WikibaseEntityIdFormatterPreloader $entityIdFormatterPreloader) {
 		$this->valueFormatter = $valueFormatter;
 		$this->entityIdFormatterPreloader = $entityIdFormatterPreloader;
 	}

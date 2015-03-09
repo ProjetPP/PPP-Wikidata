@@ -4,21 +4,14 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\TimeValue;
 use InvalidArgumentException;
-use PPP\DataModel\TimeResourceNode;
 use ValueFormatters\ValueFormatterBase;
-use ValueParsers\TimeParser;
 
 /**
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- * @todo Move ISO formatting to data-value/Time
+ * @todo Move to data-value/Time
  */
-class TimeFormatter extends ValueFormatterBase implements DataValueFormatter {
-
-	private static $CALENDAR_NAMES = array(
-		TimeParser::CALENDAR_GREGORIAN => 'gregorian',
-		TimeParser::CALENDAR_JULIAN => 'julian'
-	);
+class IsoTimeFormatter extends ValueFormatterBase {
 
 	/**
 	 * @see ValueFormatter::format
@@ -28,7 +21,7 @@ class TimeFormatter extends ValueFormatterBase implements DataValueFormatter {
 			throw new InvalidArgumentException('DataValue is not a TimeValue.');
 		}
 
-		return new TimeResourceNode($this->simplifyIsoTime($value), $this->getCalendarName($value->getCalendarModel()));
+		return $this->simplifyIsoTime($value);
 	}
 
 	private function simplifyIsoTime(TimeValue $value) {
@@ -102,13 +95,5 @@ class TimeFormatter extends ValueFormatterBase implements DataValueFormatter {
 			'minute' => intval($m[5]),
 			'second' => intval($m[6])
 		);
-	}
-
-	private function getCalendarName($calendarModel) {
-		if(array_key_exists($calendarModel, self::$CALENDAR_NAMES)) {
-			return self::$CALENDAR_NAMES[$calendarModel];
-		} else {
-			return 'gregorian';
-		}
 	}
 }

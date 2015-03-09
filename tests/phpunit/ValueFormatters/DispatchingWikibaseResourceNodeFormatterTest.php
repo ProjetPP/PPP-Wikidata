@@ -5,7 +5,6 @@ namespace PPP\Wikidata\ValueFormatters;
 use DataValues\StringValue;
 use PPP\DataModel\StringResourceNode;
 use PPP\Wikidata\WikibaseResourceNode;
-use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
@@ -20,14 +19,18 @@ class DispatchingWikibaseResourceNodeFormatterTest extends ValueFormatterTestBas
 	 * @see ValueFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
+		$formatterMock = $this->getMock('ValueFormatters\ValueFormatter');
+		$formatterMock->expects($this->any())
+			->method('format')
+			->with($this->equalTo(new WikibaseResourceNode('', new StringValue('foo'))))
+			->will($this->returnValue(new StringResourceNode('foo')));
+
 		return array(
 			array(
 				new WikibaseResourceNode('', new StringValue('foo')),
 				new StringResourceNode('foo'),
 				null,
-				new DispatchingWikibaseResourceNodeFormatter(array(
-					'string' => new StringFormatter(new FormatterOptions())
-				))
+				$formatterMock
 			),
 		);
 	}

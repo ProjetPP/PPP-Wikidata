@@ -5,6 +5,8 @@ namespace PPP\Wikidata\ValueFormatters;
 use Doctrine\Common\Cache\ArrayCache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
+use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdItemFormatter;
 use PPP\Wikidata\Wikipedia\MediawikiArticleHeader;
 use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
@@ -15,34 +17,34 @@ use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Entity\Property;
-use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\SiteLink;
-use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
+use Wikibase\DataModel\SiteLinkList;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\WikibaseEntityIdJsonLdFormatter
+ * @covers PPP\Wikidata\ValueFormatters\ExtendedJsonLdItemFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
+class ExtendedJsonLdItemFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
+		$item = new Item(
+			new ItemId('Q42'),
+			null,
+			new SiteLinkList(array(new SiteLink('enwiki', 'Douglas Adams')))
+		);
+
 		return array(
 			array(
-				new ItemId('Q42'),
+				$item,
 				(object) array(
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
-					'description' => (object) array('@value' => 'Author', '@language' => 'en'),
-					'alternateName' => array(
-						(object) array('@value' => '42', '@language' => 'en')
-					),
+					'name' => 'Q42',
 					'potentialAction' => array(
 						(object) array(
 							'@type' => 'ViewAction',
@@ -86,14 +88,17 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 						)
 					)
 				),
-				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'en'))
+				new FormatterOptions(array(
+					JsonLdEntityFormatter::OPT_ENTITY_BASE_URI => 'http://www.wikidata.org/entity/',
+					ValueFormatter::OPT_LANG => 'en'
+				))
 			),
 			array(
-				new ItemId('Q42'),
+				$item,
 				(object) array(
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'name' => (object) array('@value' => 'Дуглас Адамс', '@language' => 'ru'),
+					'name' => 'Q42',
 					'potentialAction' => array(
 						(object) array(
 							'@type' => 'ViewAction',
@@ -107,47 +112,10 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 					),
 					'@reverse' => new stdClass()
 				),
-				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'ru'))
-			),
-			array(
-				new ItemId('Q42'),
-				(object) array(
-					'@type' => 'Thing',
-					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'potentialAction' => array(
-						(object) array(
-							'@type' => 'ViewAction',
-							'name' => array(
-								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
-								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
-							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-							'target' => '//www.wikidata.org/entity/Q42'
-						)
-					),
-					'@reverse' => new stdClass()
-				),
-				new FormatterOptions(array(ValueFormatter::OPT_LANG => 'de'))
-			),
-			array(
-				new PropertyId('P214'),
-				(object) array(
-					'@type' => 'Thing',
-					'@id' => 'http://www.wikidata.org/entity/P214',
-					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
-					'potentialAction' => array(
-						(object) array(
-							'@type' => 'ViewAction',
-							'name' => array(
-								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
-								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
-							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-							'target' => '//www.wikidata.org/entity/P214'
-						)
-					),
-					'@reverse' => new stdClass()
-				)
+				new FormatterOptions(array(
+					JsonLdEntityFormatter::OPT_ENTITY_BASE_URI => 'http://www.wikidata.org/entity/',
+					ValueFormatter::OPT_LANG => 'ru'
+				))
 			)
 		);
 	}
@@ -156,7 +124,7 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 	 * @see ValueFormatterTestBase::getFormatterClass
 	 */
 	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\WikibaseEntityIdJsonLdFormatter';
+		return 'PPP\Wikidata\ValueFormatters\ExtendedJsonLdItemFormatter';
 	}
 
 
@@ -184,7 +152,7 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 		));
 
 		return new $class(
-			new InMemoryEntityStore(array($this->getQ42(), $this->getP214())),
+			new JsonLdItemFormatter(new JsonLdEntityFormatter($options), $options),
 			new MediawikiArticleHeaderProvider(
 				array(
 					'enwiki' => new MediawikiApi('http://example.org')
@@ -199,25 +167,5 @@ class WikibaseEntityIdJsonLdFormatterTest extends ValueFormatterTestBase {
 			),
 			$options
 		);
-	}
-
-	private function getQ42() {
-		$item = new Item();
-		$item->setId( new ItemId('Q42'));
-		$item->getFingerprint()->setLabel('en', 'Douglas Adams');
-		$item->getFingerprint()->setDescription('en', 'Author');
-		$item->getFingerprint()->setAliasGroup('en', array('42'));
-		$item->getFingerprint()->setLabel('ru', 'Дуглас Адамс');
-		$item->getSiteLinkList()->addNewSiteLink('enwiki', 'Douglas Adams');
-
-		return $item;
-	}
-
-	private function getP214() {
-		$property = Property::newFromType('string');
-		$property->setId(new PropertyId('P214'));
-		$property->getFingerprint()->setLabel('en', 'VIAF identifier');
-
-		return $property;
 	}
 }

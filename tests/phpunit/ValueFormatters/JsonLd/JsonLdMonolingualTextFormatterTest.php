@@ -1,18 +1,17 @@
 <?php
 
-namespace PPP\Wikidata\ValueFormatters;
+namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\MonolingualTextValue;
-use PPP\DataModel\StringResourceNode;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
- * @covers PPP\Wikidata\ValueFormatters\MonolingualTextFormatter
+ * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdMonolingualTextFormatter
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class MonolingualTextFormatterTest extends ValueFormatterTestBase {
+class JsonLdMonolingualTextFormatterTest extends ValueFormatterTestBase {
 
 	/**
 	 * @see ValueFormatterTestBase::validProvider
@@ -21,7 +20,7 @@ class MonolingualTextFormatterTest extends ValueFormatterTestBase {
 		return array(
 			array(
 				new MonolingualTextValue('en', 'foo'),
-				new StringResourceNode('foo', 'en')
+				(object) array('@language' => 'en', '@value' => 'foo')
 			),
 		);
 	}
@@ -32,7 +31,6 @@ class MonolingualTextFormatterTest extends ValueFormatterTestBase {
 	 * @return string
 	 */
 	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\MonolingualTextFormatter';
+		return 'PPP\Wikidata\ValueFormatters\JsonLd\JsonLdMonolingualTextFormatter';
 	}
-
 }

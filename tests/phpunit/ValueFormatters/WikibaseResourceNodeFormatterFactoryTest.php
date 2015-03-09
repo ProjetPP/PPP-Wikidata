@@ -12,8 +12,6 @@ use DataValues\TimeValue;
 use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\JsonLdResourceNode;
-use PPP\DataModel\StringResourceNode;
-use PPP\DataModel\TimeResourceNode;
 use PPP\Wikidata\WikibaseResourceNode;
 use stdClass;
 use Wikibase\DataModel\Entity\EntityIdValue;
@@ -47,6 +45,7 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 				(object) array(
 					'@context' => 'http://schema.org',
 					'@type' => 'GeoCoordinates',
+					'name' => '42, 42',
 					'latitude' => 42.0,
 					'longitude' => 42.0
 				)
@@ -59,7 +58,17 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 
 	public function testFormatterFormatMonolingualText() {
 		$this->assertEquals(
-			new StringResourceNode('foo', 'en'),
+			new JsonLdResourceNode(
+				'foo',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Text',
+					'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+						'@language' => 'en',
+						'@value' => 'foo'
+					)
+				)
+			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
 				new WikibaseResourceNode('', new MonolingualTextValue('en', 'foo'))
 			)
@@ -68,16 +77,35 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 
 	public function testFormatterFormatQuantity() {
 		$this->assertEquals(
-			new StringResourceNode('491268±1'),
+			new JsonLdResourceNode(
+				'1234.0±1.0',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'QuantitativeValue',
+					'name' => '1234.0±1.0',
+					'value' => (object) array('@type' => 'Integer', '@value' => 1234),
+					'minValue' => (object) array('@type' => 'Float', '@value' => 1233.3333),
+					'maxValue' => (object) array('@type' => 'Integer', '@value' => 1235),
+				)
+			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
-				new WikibaseResourceNode('', new QuantityValue(new DecimalValue('+491268'), '1', new DecimalValue('+491268'), new DecimalValue('+491267')))
+				new WikibaseResourceNode('', new QuantityValue(new DecimalValue(1234), '1', new DecimalValue(1235), new DecimalValue(1233.3333)))
 			)
 		);
 	}
 
 	public function testFormatterFormatString() {
 		$this->assertEquals(
-			new StringResourceNode('foo'),
+			new JsonLdResourceNode(
+				'foo',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Text',
+					'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+						'@value' => 'foo'
+					)
+				)
+			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
 				new WikibaseResourceNode('', new StringValue('foo'))
 			)
@@ -86,7 +114,17 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 
 	public function testFormatterFormatTime() {
 		$this->assertEquals(
-			new TimeResourceNode('1952-03-11'),
+			new JsonLdResourceNode(
+				'1952-03-11',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Date',
+					'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+						'@type' => 'Date',
+						'@value' => '1952-03-11'
+					)
+				)
+			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
 				new WikibaseResourceNode('', new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, ''))
 			)
@@ -95,7 +133,16 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 
 	public function testFormatterFormatUnknown() {
 		$this->assertEquals(
-			new StringResourceNode('foo'),
+			new JsonLdResourceNode(
+				'foo',
+				(object) array(
+					'@context' => 'http://schema.org',
+					'@type' => 'Text',
+					'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+						'@value' => 'foo'
+					)
+				)
+			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
 				new WikibaseResourceNode('', new UnknownValue('foo'))
 			)
@@ -136,20 +183,9 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 				'VIAF identifier',
 				(object) array(
 					'@context' => 'http://schema.org',
-					'@type' => 'Thing',
+					'@type' => 'Property',
 					'@id' => 'http://www.wikidata.org/entity/P214',
 					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
-					'potentialAction' => array(
-						(object) array(
-							'@type' => 'ViewAction',
-							'name' => array(
-								(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
-								(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
-							),
-							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
-							'target' => '//www.wikidata.org/entity/P214'
-						)
-					),
 					'@reverse' => new stdClass()
 				)
 			),

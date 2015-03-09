@@ -5,6 +5,17 @@ namespace PPP\Wikidata\ValueFormatters;
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
+use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityIdFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdItemFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdPropertyFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDecimalFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdGlobeCoordinateFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdMonolingualTextFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdQuantityFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdStringFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdTimeFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdUnknownFormatter;
 use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use ValueFormatters\DecimalFormatter;
@@ -55,41 +66,65 @@ class WikibaseResourceNodeFormatterFactory {
 	}
 
 	/**
-	 * @return WikibaseResourceNodeFormatter
+	 * @return ValueFormatter
 	 */
 	public function newWikibaseResourceNodeFormatter() {
 		$options = $this->newFormatterOptions();
 
 		return new DispatchingWikibaseResourceNodeFormatter(array(
-			'globecoordinate' => new GlobeCoordinateFormatter($this->newWikibaseEntityIdJsonLdFormatter($options), $options),
-			'monolingualtext' => new MonolingualTextFormatter($options),
-			'quantity' => new ToStringFormatter(new QuantityFormatter(new DecimalFormatter($options), $options)),
-			'string' => new StringFormatter($options),
-			'time' => new TimeFormatter($options),
-			'unknown' => new UnknownFormatter($options),
-			'wikibase-entityid' => $this->newWikibaseEntityFormatter($options)
+			'globecoordinate' => $this->newGlobeCoordinateFormatter($options),
+			'monolingualtext' => new JsonLdLiteralFormatter(new JsonLdMonolingualTextFormatter($options), $options),
+			'quantity' => $this->newQuantityFormatter($options),
+			'string' => new JsonLdLiteralFormatter(new JsonLdStringFormatter($options), $options),
+			'time' => new JsonLdLiteralFormatter(new JsonLdTimeFormatter(new IsoTimeFormatter($options), $options), $options),
+			'unknown' => new JsonLdLiteralFormatter(new JsonLdUnknownFormatter($options), $options),
+			'wikibase-entityid' => $this->newEntityIdValueFormatter($options)
 		));
 	}
 
 	private function newFormatterOptions() {
 		return new FormatterOptions(array(
-			ValueFormatter::OPT_LANG => $this->languageCode
+			ValueFormatter::OPT_LANG => $this->languageCode,
+			JsonLdEntityFormatter::OPT_ENTITY_BASE_URI => 'http://www.wikidata.org/entity/'
 		));
 	}
 
-	private function newWikibaseEntityFormatter(FormatterOptions $options) {
-		return new WikibaseEntityIdFormatter(
-			$this->entityStore,
-			$this->newWikibaseEntityIdJsonLdFormatter($options),
+	private function newGlobeCoordinateFormatter(FormatterOptions $options) {
+		return new GlobeCoordinateFormatter(
+			new JsonLdGlobeCoordinateFormatter(new \DataValues\Geo\Formatters\GlobeCoordinateFormatter($options), $options),
+			$this->newJsonLdEntityIdFormatter($options),
 			$options
 		);
 	}
 
-	private function newWikibaseEntityIdJsonLdFormatter(FormatterOptions $options) {
-		return new WikibaseEntityIdJsonLdFormatter(
-			$this->entityStore,
-			$this->newMediawikiArticleHeaderProvider(),
-			$this->newMediawikiArticleImageProvider(),
+	private function newQuantityFormatter(FormatterOptions $options) {
+		return new JsonLdResourceFormatter(
+			new JsonLdQuantityFormatter(
+				new QuantityFormatter(new DecimalFormatter($options), $options),
+				new JsonLdDecimalFormatter($options),
+				$options
+			),
+			$options
+		);
+	}
+
+	private function newEntityIdValueFormatter(FormatterOptions $options) {
+		return new JsonLdResourceFormatter($this->newJsonLdEntityIdFormatter($options), $options);
+	}
+
+	private function newJsonLdEntityIdFormatter(FormatterOptions $options) {
+		$entityFormatter = new JsonLdEntityFormatter($options);
+
+		return new JsonLdEntityIdFormatter(
+			$this->entityStore->getItemLookup(),
+			new ExtendedJsonLdItemFormatter(
+				new JsonLdItemFormatter($entityFormatter, $options),
+				$this->newMediawikiArticleHeaderProvider(),
+				$this->newMediawikiArticleImageProvider(),
+				$options
+			),
+			$this->entityStore->getPropertyLookup(),
+			new JsonLdPropertyFormatter($entityFormatter, $options),
 			$options
 		);
 	}

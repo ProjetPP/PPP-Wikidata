@@ -5,6 +5,7 @@ namespace PPP\Wikidata\ValueFormatters;
 use DataValues\Geo\Values\LatLongValue;
 use DataValues\GlobeCoordinateValue;
 use PPP\DataModel\JsonLdResourceNode;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdGlobeCoordinateFormatter;
 use PPP\Wikidata\WikibaseResourceNode;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
@@ -18,7 +19,7 @@ use Wikibase\DataModel\Entity\ItemId;
  */
 class GlobeCoordinateFormatterTest extends ValueFormatterTestBase {
 
-	/**T
+	/**
 	 * @see ValueFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
@@ -30,6 +31,7 @@ class GlobeCoordinateFormatterTest extends ValueFormatterTestBase {
 					(object) array(
 						'@context' => 'http://schema.org',
                         '@type' => 'GeoCoordinates',
+						'name' => '42, 42',
                         'latitude' => 42.0,
 						'longitude' => 42.0
 					)
@@ -42,6 +44,7 @@ class GlobeCoordinateFormatterTest extends ValueFormatterTestBase {
 					(object) array(
 						'@context' => 'http://schema.org',
 						'@type' => 'GeoCoordinates',
+						'name' => '42, 42',
 						'latitude' => 42.0,
 						'longitude' => 42.0,
 						'@reverse' => (object) array(
@@ -70,7 +73,7 @@ class GlobeCoordinateFormatterTest extends ValueFormatterTestBase {
 	protected function getInstance(FormatterOptions $options) {
 		$class = $this->getFormatterClass();
 
-		$entityJsonLdFormatterMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\WikibaseEntityIdJsonLdFormatter')
+		$entityJsonLdFormatterMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter')
 			->disableOriginalConstructor()
 			->getMock();
 		$entityJsonLdFormatterMock->expects($this->any())
@@ -78,6 +81,10 @@ class GlobeCoordinateFormatterTest extends ValueFormatterTestBase {
 			->with($this->equalTo(new ItemId('Q42')))
 			->will($this->returnValue((object) array('@id' => 'http://exemple.org')));
 
-		return new $class($entityJsonLdFormatterMock, $options);
+		return new $class(
+			new JsonLdGlobeCoordinateFormatter(new \DataValues\Geo\Formatters\GlobeCoordinateFormatter($options), $options),
+			$entityJsonLdFormatterMock,
+			$options
+		);
 	}
 }
