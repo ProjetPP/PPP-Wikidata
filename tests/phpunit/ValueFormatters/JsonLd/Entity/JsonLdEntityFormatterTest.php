@@ -39,9 +39,6 @@ class JsonLdEntityFormatterTest extends ValueFormatterTestBase {
 					'@id' => 'http://www.wikidata.org/entity/Q42',
 					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
 					'description' => (object) array('@value' => 'Author', '@language' => 'en'),
-					'alternateName' => array(
-						(object) array('@value' => '42', '@language' => 'en')
-					),
 					'@reverse' => (object) array()
 				),
 				new FormatterOptions(array(
