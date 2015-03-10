@@ -96,7 +96,7 @@ class WikibaseEntityIdParser extends StringValueParser {
 			//The term is not a valid PID
 		}
 
-		return $this->sortItemIds($propertyIds);
+		return $propertyIds;
 	}
 
 	private function filterItemIds(array $itemIds) {
