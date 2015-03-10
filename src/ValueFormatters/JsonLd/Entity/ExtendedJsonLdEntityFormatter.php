@@ -22,11 +22,6 @@ use Wikibase\DataModel\Term\Term;
 class ExtendedJsonLdEntityFormatter extends ValueFormatterBase {
 
 	/**
-	 * Base URI for Wikibase entities. For Wikidata it is "http://www.wikidata.org/entity/"
-	 */
-	const OPT_ENTITY_BASE_URI = 'entity-baseuri';
-
-	/**
 	 * @var ValueFormatter
 	 */
 	private $entityFormatter;
@@ -47,8 +42,6 @@ class ExtendedJsonLdEntityFormatter extends ValueFormatterBase {
 		$this->snakFormatter = $snakFormatter;
 
 		parent::__construct($options);
-
-		$this->requireOption(self::OPT_ENTITY_BASE_URI);
 	}
 
 	/**
