@@ -77,7 +77,7 @@ class JsonLdSnakFormatter extends ValueFormatterBase {
 		}
 
 		return array_fill_keys(
-			$this->getPropertyIris($snak->getPropertyId()),
+			$this->normalizePropertyIris($this->getPropertyIris($snak->getPropertyId())),
 			$this->dataValueFormatter->format($snak->getDataValue())
 		);
 	}
@@ -111,5 +111,14 @@ class JsonLdSnakFormatter extends ValueFormatterBase {
 		);
 
 		return '/^' . implode( '|', $escaped ) . '/';
+	}
+
+	private function normalizePropertyIris($iris) {
+		return array_map(
+			function($iri) {
+				return str_replace('http://schema.org/', '', $iri);
+			},
+			$iris
+		);
 	}
 }

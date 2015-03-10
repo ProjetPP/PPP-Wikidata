@@ -42,7 +42,7 @@ class ExtendedJsonLdEntityFormatterTest extends ValueFormatterTestBase {
 					'alternateName' => array(
 						(object) array('@value' => '42', '@language' => 'en')
 					),
-					'http://schema.org/gender' => array(
+					'gender' => array(
 						(object) array('name' => 'foo')
 					)
 				),
@@ -71,7 +71,7 @@ class ExtendedJsonLdEntityFormatterTest extends ValueFormatterTestBase {
 			->method('format')
 			->with($this->equalTo(new PropertyValueSnak(new PropertyId('P21'), new EntityIdValue(new ItemId('Q1')))))
 			->willReturn(array(
-				'http://schema.org/gender' => (object) array('name' => 'foo')
+				'gender' => (object) array('name' => 'foo')
 			));
 
 		return new $class(

@@ -45,7 +45,7 @@ class JsonLdSnakFormatterTest extends ValueFormatterTestBase {
 			array(
 				new PropertyValueSnak(new PropertyId('P21'), new EntityIdValue(new ItemId('Q1'))),
 				array(
-					'http://schema.org/gender' => (object) array('name' => 'test')
+					'gender' => (object) array('name' => 'test')
 				),
 				null,
 				$this->getFormatter($withPropertyLookupMock)
