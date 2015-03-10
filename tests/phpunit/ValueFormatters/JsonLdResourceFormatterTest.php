@@ -2,6 +2,8 @@
 
 namespace PPP\Wikidata\ValueFormatters;
 
+use DataValues\MonolingualTextValue;
+use DataValues\TimeValue;
 use PPP\DataModel\JsonLdResourceNode;
 use PPP\Wikidata\WikibaseResourceNode;
 use ValueFormatters\FormatterOptions;
@@ -55,6 +57,25 @@ class JsonLdResourceFormatterTest extends ValueFormatterTestBase {
 			->willReturn(array(
 				'http://schema.org/gender' => (object) array('name' => 'foo')
 			));
+
+
+		$snakEmptyFormatterMock = $this->getMock('ValueFormatters\ValueFormatter');
+		$snakEmptyFormatterMock->expects($this->any())
+			->method('format')
+			->with($this->equalTo(new PropertyValueSnak(new PropertyId('P21'), new EntityIdValue(new ItemId('Q1')))))
+			->willReturn(array());
+
+		$withTypeLiteralFormatter = $this->getMock('PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter');
+		$withTypeLiteralFormatter->expects($this->once())
+			->method('format')
+			->with($this->equalTo(new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, '')))
+			->will($this->returnValue((object) array( '@type' => 'Date', '@value' => '1952-03-11')));
+
+		$withoutTypeLiteralFormatter = $this->getMock('PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter');
+		$withoutTypeLiteralFormatter->expects($this->once())
+			->method('format')
+			->with($this->equalTo(new MonolingualTextValue('en', 'foo')))
+			->will($this->returnValue((object) array( '@language' => 'en', '@value' => 'foo')));
 
 		return array(
 			array(
@@ -114,6 +135,46 @@ class JsonLdResourceFormatterTest extends ValueFormatterTestBase {
 				),
 				null,
 				new JsonLdResourceFormatter($withOtherLanguageNameFormatter, $snakFormatterMock, new FormatterOptions())
+			),
+			array(
+				new WikibaseResourceNode(
+					'',
+					new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, '')
+				),
+				new JsonLdResourceNode(
+					'1952-03-11',
+					(object) array(
+						'@context' => 'http://schema.org',
+						'@type' => 'Date',
+						'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+							'@type' => 'Date',
+							'@value' => '1952-03-11'
+						)
+					)
+				),
+				null,
+				new JsonLdResourceFormatter($withTypeLiteralFormatter, $snakFormatterMock, new FormatterOptions())
+			),
+			array(
+				new WikibaseResourceNode(
+					'',
+					new MonolingualTextValue('en', 'foo'),
+					new ItemId('Q1'),
+					new PropertyId('P21')
+				),
+				new JsonLdResourceNode(
+					'foo',
+					(object) array(
+						'@context' => 'http://schema.org',
+						'@type' => 'Text',
+						'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+							'@language' => 'en',
+							'@value' => 'foo'
+						)
+					)
+				),
+				null,
+				new JsonLdResourceFormatter($withoutTypeLiteralFormatter, $snakEmptyFormatterMock, new FormatterOptions())
 			),
 		);
 	}

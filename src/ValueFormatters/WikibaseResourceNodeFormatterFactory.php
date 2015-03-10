@@ -76,17 +76,13 @@ class WikibaseResourceNodeFormatterFactory {
 	 */
 	public function newWikibaseResourceNodeFormatter() {
 		$options = $this->newFormatterOptions();
-		$snakFormatter = $this->newSnakFormatter($this->newExtendedDispatchingJsonLdDataValueFormatter($options), $options);
 
-		return new DispatchingWikibaseResourceNodeFormatter(array(
-			'globecoordinate' => new JsonLdResourceFormatter($this->newJsonLdGlobeCoordinateFormatter($options), $snakFormatter, $options),
-			'monolingualtext' => new JsonLdLiteralFormatter(new JsonLdMonolingualTextFormatter($options), $options),
-			'quantity' => new JsonLdResourceFormatter($this->newJsonLdQuantityFormatter($options), $snakFormatter, $options),
-			'string' => new JsonLdLiteralFormatter(new JsonLdStringFormatter($options), $options),
-			'time' => new JsonLdLiteralFormatter(new JsonLdTimeFormatter(new IsoTimeFormatter($options), $options), $options),
-			'unknown' => new JsonLdLiteralFormatter(new JsonLdUnknownFormatter($options), $options),
-			'wikibase-entityid' => new JsonLdResourceFormatter($this->newExtendedJsonLdEntityIdFormatter($options), $snakFormatter, $options)
-		));
+		$dispatchingFormatter = $this->newExtendedDispatchingJsonLdDataValueFormatter($options);
+		return new JsonLdResourceFormatter(
+			$dispatchingFormatter,
+			$this->newSnakFormatter($dispatchingFormatter, $options),
+			$options
+		);
 	}
 
 	private function newFormatterOptions() {
