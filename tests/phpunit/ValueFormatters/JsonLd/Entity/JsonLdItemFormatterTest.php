@@ -27,8 +27,7 @@ class JsonLdItemFormatterTest extends ValueFormatterTestBase {
 				(object) array(
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'name' => 'Q42',
-					'@reverse' => (object) array()
+					'name' => 'Q42'
 				),
 				new FormatterOptions(array(
 					ValueFormatter::OPT_LANG => 'en',

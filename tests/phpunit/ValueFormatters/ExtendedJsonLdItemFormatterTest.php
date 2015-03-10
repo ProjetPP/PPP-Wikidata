@@ -11,7 +11,6 @@ use PPP\Wikidata\Wikipedia\MediawikiArticleHeader;
 use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
-use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
@@ -109,8 +108,7 @@ class ExtendedJsonLdItemFormatterTest extends ValueFormatterTestBase {
 							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
 							'target' => '//www.wikidata.org/entity/Q42'
 						)
-					),
-					'@reverse' => new stdClass()
+					)
 				),
 				new FormatterOptions(array(
 					JsonLdEntityFormatter::OPT_ENTITY_BASE_URI => 'http://www.wikidata.org/entity/',

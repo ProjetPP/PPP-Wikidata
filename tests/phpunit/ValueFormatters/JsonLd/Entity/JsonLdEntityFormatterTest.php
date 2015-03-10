@@ -3,7 +3,6 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
-use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
@@ -38,11 +37,7 @@ class JsonLdEntityFormatterTest extends ValueFormatterTestBase {
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
 					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
-					'description' => (object) array('@value' => 'Author', '@language' => 'en'),
-					'alternateName' => array(
-						(object) array('@value' => '42', '@language' => 'en')
-					),
-					'@reverse' => (object) array()
+					'description' => (object) array('@value' => 'Author', '@language' => 'en')
 				),
 				new FormatterOptions(array(
 					ValueFormatter::OPT_LANG => 'en',
@@ -54,8 +49,7 @@ class JsonLdEntityFormatterTest extends ValueFormatterTestBase {
 				(object) array(
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'name' => (object) array('@value' => 'Дуглас Адамс', '@language' => 'ru'),
-					'@reverse' => new stdClass()
+					'name' => (object) array('@value' => 'Дуглас Адамс', '@language' => 'ru')
 				),
 				new FormatterOptions(array(
 					ValueFormatter::OPT_LANG => 'ru',
@@ -67,8 +61,7 @@ class JsonLdEntityFormatterTest extends ValueFormatterTestBase {
 				(object) array(
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'name' => 'Q42',
-					'@reverse' => new stdClass()
+					'name' => 'Q42'
 				),
 				new FormatterOptions(array(
 					ValueFormatter::OPT_LANG => 'de',
@@ -80,8 +73,7 @@ class JsonLdEntityFormatterTest extends ValueFormatterTestBase {
 				(object) array(
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/P214',
-					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
-					'@reverse' => new stdClass()
+					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en')
 				),
 				new FormatterOptions(array(
 					JsonLdEntityFormatter::OPT_ENTITY_BASE_URI => 'http://www.wikidata.org/entity/'

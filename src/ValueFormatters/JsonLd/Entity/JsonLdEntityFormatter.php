@@ -16,7 +16,6 @@ use Wikibase\DataModel\Term\Term;
 /**
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- * @todo output statements
  */
 class JsonLdEntityFormatter extends ValueFormatterBase {
 
@@ -25,6 +24,9 @@ class JsonLdEntityFormatter extends ValueFormatterBase {
 	 */
 	const OPT_ENTITY_BASE_URI = 'entity-baseuri';
 
+	/**
+	 * @param FormatterOptions $options
+	 */
 	public function __construct(FormatterOptions $options) {
 		parent::__construct($options);
 
@@ -47,7 +49,6 @@ class JsonLdEntityFormatter extends ValueFormatterBase {
 		$resource->{'@type'} = 'Thing';
 		$resource->name = $entity->getId()->getSerialization();
 		$resource->{'@id'} = $this->getOption(JsonLdEntityFormatter::OPT_ENTITY_BASE_URI) . $entity->getId()->getSerialization();
-		$resource->{'@reverse'} = new stdClass();
 
 		if($entity instanceof FingerprintProvider) {
 			$this->addFingerprintToResource($entity->getFingerprint(), $resource);
@@ -56,7 +57,7 @@ class JsonLdEntityFormatter extends ValueFormatterBase {
 		return $resource;
 	}
 
-	private function addFingerprintToResource(Fingerprint $fingerprint, stdClass &$resource) {
+	private function addFingerprintToResource(Fingerprint $fingerprint, stdClass $resource) {
 		$languageCode = $this->getOption(ValueFormatter::OPT_LANG);
 
 		try {
@@ -67,16 +68,6 @@ class JsonLdEntityFormatter extends ValueFormatterBase {
 
 		try {
 			$resource->description = $this->newResourceFromTerm($fingerprint->getDescription($languageCode));
-		} catch(OutOfBoundsException $e) {
-			//Just ignore it
-		}
-
-		try {
-			$aliasGroup = $fingerprint->getAliasGroup($languageCode);
-			$resource->alternateName = array();
-			foreach($aliasGroup->getAliases() as $alias) {
-				$resource->alternateName[] = $this->newResourceFromTerm(new Term($aliasGroup->getLanguageCode(), $alias));
-			}
 		} catch(OutOfBoundsException $e) {
 			//Just ignore it
 		}

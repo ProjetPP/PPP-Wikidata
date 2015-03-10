@@ -32,9 +32,7 @@ class ResourceListNodeFormatterTest extends NodeSimplifierBaseTest {
 			->will($this->returnValue(new StringResourceNode('foo')));
 
 		return new ResourceListNodeFormatter(
-			new DispatchingWikibaseResourceNodeFormatter(array(
-				'string' => $formatterMock
-			)),
+			$formatterMock,
 			$entityIdFormatterPreloaderMock
 		);
 	}

@@ -1,14 +1,11 @@
 <?php
 
-namespace PPP\Wikidata\ValueFormatters;
+namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\DataValue;
 use InvalidArgumentException;
-use PPP\DataModel\ResourceNode;
-use PPP\Wikidata\WikibaseResourceNode;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\FormattingException;
-use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
 
 /**
@@ -17,32 +14,32 @@ use ValueFormatters\ValueFormatterBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class DispatchingWikibaseResourceNodeFormatter extends ValueFormatterBase {
+class DispatchingJsonLdDataValueFormatter extends ValueFormatterBase implements JsonLdDataValueFormatter {
 
 	/**
-	 * @var ValueFormatter[]
+	 * @var JsonLdDataValueFormatter[]
 	 */
 	public $formatters;
 
 	/**
-	 * @param ValueFormatter[] $formatters
+	 * @param JsonLdDataValueFormatter[] $formatters
+	 * @param FormatterOptions $options
 	 */
-	public function __construct(array $formatters) {
+	public function __construct(array $formatters, FormatterOptions $options) {
 		$this->formatters = $formatters;
-		parent::__construct(new FormatterOptions());
+
+		parent::__construct($options);
 	}
 
 	/**
 	 * @see ValueFormatter::format
-	 * @param DataValue $value
-	 * @return ResourceNode
 	 */
 	public function format($value) {
-		if(!($value instanceof WikibaseResourceNode)) {
-			throw new InvalidArgumentException('$value should be a WikibaseResourceNode');
+		if(!($value instanceof DataValue)) {
+			throw new InvalidArgumentException('$value should be a DataValue');
 		}
 
-		$type = $value->getDataValue()->getType();
+		$type = $value->getType();
 
 		if(!array_key_exists($type, $this->formatters)) {
 			throw new FormattingException('Unknown value type: ' . $type);

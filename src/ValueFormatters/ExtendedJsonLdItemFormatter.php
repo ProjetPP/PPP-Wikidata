@@ -105,7 +105,11 @@ class ExtendedJsonLdItemFormatter extends ValueFormatterBase {
 			$articleResource->author->{'@id'} = 'http://www.wikidata.org/entity/Q52';
 			$articleResource->author->name = 'Wikipedia';
 
+			if(!property_exists($resource, '@reverse')) {
+				$resource->{'@reverse'} = new stdClass();
+			}
 			$resource->{'@reverse'}->about = $articleResource;
+
 			$resource->potentialAction[] = $this->newViewAction(
 				array(new Term('en', 'View on Wikipedia'), new Term('fr', 'Voir sur Wikipédia')),
 				'//upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/64px-Wikipedia-logo-v2.svg.png',
