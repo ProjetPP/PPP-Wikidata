@@ -13,7 +13,6 @@ use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\JsonLdResourceNode;
 use PPP\Wikidata\WikibaseResourceNode;
-use stdClass;
 use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
@@ -62,7 +61,6 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 								'@type' => 'Thing',
 								'@id' => 'http://www.wikidata.org/entity/Q42',
 								'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
-								'@reverse' => new stdClass(),
 								'potentialAction' => array(
 									(object) array(
 										'@type' => 'ViewAction',
@@ -202,8 +200,7 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 							'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
 							'target' => '//www.wikidata.org/entity/Q42'
 						)
-					),
-					'@reverse' => new stdClass()
+					)
 				)
 			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
@@ -220,8 +217,7 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 					'@context' => 'http://schema.org',
 					'@type' => 'Property',
 					'@id' => 'http://www.wikidata.org/entity/P214',
-					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en'),
-					'@reverse' => new stdClass()
+					'name' => (object) array('@value' => 'VIAF identifier', '@language' => 'en')
 				)
 			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(

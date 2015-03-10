@@ -6,7 +6,6 @@ use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityIdFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdItemFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdPropertyFormatter;
-use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
@@ -70,8 +69,7 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 				(object) array(
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
-					'@reverse' => (object) array()
+					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en')
 				),
 				null,
 				$this->getFormatter(
@@ -84,8 +82,7 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 				(object) array(
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'name' => 'Q42',
-					'@reverse' => new stdClass()
+					'name' => 'Q42'
 				),
 				null,
 				$this->getFormatter(
@@ -98,8 +95,7 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 				(object) array(
 					'@type' => 'Property',
 					'@id' => 'http://www.wikidata.org/entity/P214',
-					'name' => (object) array('@value' => 'VIAF', '@language' => 'en'),
-					'@reverse' => new stdClass()
+					'name' => (object) array('@value' => 'VIAF', '@language' => 'en')
 				),
 				null,
 				$this->getFormatter(
@@ -112,8 +108,7 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 				(object) array(
 					'@type' => 'Property',
 					'@id' => 'http://www.wikidata.org/entity/P214',
-					'name' => 'P214',
-					'@reverse' => new stdClass()
+					'name' => 'P214'
 				),
 				null,
 				$this->getFormatter(

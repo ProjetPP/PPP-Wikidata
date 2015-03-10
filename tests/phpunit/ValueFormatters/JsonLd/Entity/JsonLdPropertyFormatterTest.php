@@ -27,8 +27,7 @@ class JsonLdPropertyFormatterTest extends ValueFormatterTestBase {
 				(object) array(
 					'@type' => 'Property',
 					'@id' => 'http://www.wikidata.org/entity/P214',
-					'name' => 'P214',
-					'@reverse' => (object) array()
+					'name' => 'P214'
 				),
 				new FormatterOptions(array(
 					ValueFormatter::OPT_LANG => 'en',

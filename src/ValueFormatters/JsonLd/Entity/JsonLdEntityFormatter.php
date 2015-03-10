@@ -49,7 +49,6 @@ class JsonLdEntityFormatter extends ValueFormatterBase {
 		$resource->{'@type'} = 'Thing';
 		$resource->name = $entity->getId()->getSerialization();
 		$resource->{'@id'} = $this->getOption(JsonLdEntityFormatter::OPT_ENTITY_BASE_URI) . $entity->getId()->getSerialization();
-		$resource->{'@reverse'} = new stdClass();
 
 		if($entity instanceof FingerprintProvider) {
 			$this->addFingerprintToResource($entity->getFingerprint(), $resource);

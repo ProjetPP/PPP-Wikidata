@@ -3,7 +3,6 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
-use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use Wikibase\DataModel\Claim\Claim;
@@ -43,7 +42,6 @@ class ExtendedJsonLdEntityFormatterTest extends ValueFormatterTestBase {
 					'alternateName' => array(
 						(object) array('@value' => '42', '@language' => 'en')
 					),
-					'@reverse' => new stdClass(),
 					'http://schema.org/gender' => array(
 						(object) array('name' => 'foo')
 					)
