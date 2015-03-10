@@ -8,6 +8,8 @@ use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\DataModel\Snak\PropertyValueSnak;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLdResourceFormatter
@@ -33,7 +35,8 @@ class JsonLdResourceFormatterTest extends ValueFormatterTestBase {
 			->with($this->equalTo(new EntityIdValue(new ItemId('Q1'))))
 			->will($this->returnValue((object) array(
 				'@type' => 'Thing',
-				'name' => (object) array('@language' => 'en', '@value' => 'foo')
+				'name' => (object) array('@language' => 'en', '@value' => 'foo'),
+				'@reverse' => (object) array()
 			)));
 
 		$withOtherLanguageNameFormatter = $this->getMock('PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter');
@@ -45,38 +48,56 @@ class JsonLdResourceFormatterTest extends ValueFormatterTestBase {
 				'name' => (object) array('@language' => 'fr', '@value' => 'foo')
 			)));
 
+		$snakFormatterMock = $this->getMock('ValueFormatters\ValueFormatter');
+		$snakFormatterMock->expects($this->any())
+			->method('format')
+			->with($this->equalTo(new PropertyValueSnak(new PropertyId('P21'), new EntityIdValue(new ItemId('Q1')))))
+			->willReturn(array(
+				'http://schema.org/gender' => (object) array('name' => 'foo')
+			));
+
 		return array(
 			array(
 				new WikibaseResourceNode(
 					'',
-					new EntityIdValue(new ItemId('Q1'))
+					new EntityIdValue(new ItemId('Q1')),
+					new ItemId('Q1'),
+					new PropertyId('P21')
 				),
 				new JsonLdResourceNode(
 					'foo',
 					(object) array(
 						'@context' => 'http://schema.org',
 						'@type' => 'Thing',
-						'name' => array('foo')
+						'name' => array('foo'),
+						'@reverse' => (object) array(
+							'http://schema.org/gender' => array((object) array('name' => 'foo'))
+						)
 					)
 				),
 				null,
-				new JsonLdResourceFormatter($withNameArrayFormatter, new FormatterOptions())
+				new JsonLdResourceFormatter($withNameArrayFormatter, $snakFormatterMock, new FormatterOptions())
 			),
 			array(
 				new WikibaseResourceNode(
 					'',
-					new EntityIdValue(new ItemId('Q1'))
+					new EntityIdValue(new ItemId('Q1')),
+					new ItemId('Q1'),
+					new PropertyId('P21')
 				),
 				new JsonLdResourceNode(
 					'foo',
 					(object) array(
 						'@context' => 'http://schema.org',
 						'@type' => 'Thing',
-						'name' => (object) array('@language' => 'en', '@value' => 'foo')
+						'name' => (object) array('@language' => 'en', '@value' => 'foo'),
+						'@reverse' => (object) array(
+							'http://schema.org/gender' => array((object) array('name' => 'foo'))
+						)
 					)
 				),
 				null,
-				new JsonLdResourceFormatter($withNameObjectFormatter, new FormatterOptions())
+				new JsonLdResourceFormatter($withNameObjectFormatter, $snakFormatterMock, new FormatterOptions())
 			),
 			array(
 				new WikibaseResourceNode(
@@ -92,7 +113,7 @@ class JsonLdResourceFormatterTest extends ValueFormatterTestBase {
 					)
 				),
 				null,
-				new JsonLdResourceFormatter($withOtherLanguageNameFormatter, new FormatterOptions())
+				new JsonLdResourceFormatter($withOtherLanguageNameFormatter, $snakFormatterMock, new FormatterOptions())
 			),
 		);
 	}

@@ -14,11 +14,18 @@ use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\JsonLdResourceNode;
 use PPP\Wikidata\WikibaseResourceNode;
 use stdClass;
+use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
+use Wikibase\DataModel\Snak\PropertyValueSnak;
+use Wikibase\DataModel\Statement\Statement;
+use Wikibase\DataModel\Statement\StatementList;
+use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\Term;
+use Wikibase\DataModel\Term\TermList;
 use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
 
 /**
@@ -32,7 +39,8 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 	private function newFactory() {
 		$entityStore = new InMemoryEntityStore(array(
 			$this->getQ42(),
-			$this->getP214()
+			$this->getP214(),
+			$this->getP625()
 		));
 
 		return new WikibaseResourceNodeFormatterFactory('en', $entityStore, array(), new ArrayCache());
@@ -47,11 +55,37 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 					'@type' => 'GeoCoordinates',
 					'name' => '42, 42',
 					'latitude' => 42.0,
-					'longitude' => 42.0
+					'longitude' => 42.0,
+					'@reverse' => (object) array(
+						'http://schema.org/geo' => array(
+							(object) array(
+								'@type' => 'Thing',
+								'@id' => 'http://www.wikidata.org/entity/Q42',
+								'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
+								'@reverse' => new stdClass(),
+								'potentialAction' => array(
+									(object) array(
+										'@type' => 'ViewAction',
+										'name' => array(
+											(object) array('@value' => 'View on Wikidata', '@language' => 'en'),
+											(object) array('@value' => 'Voir sur Wikidata', '@language' => 'fr')
+										),
+										'image' => '//upload.wikimedia.org/wikipedia/commons/f/ff/Wikidata-logo.svg',
+										'target' => '//www.wikidata.org/entity/Q42'
+									)
+								)
+							)
+						)
+					)
 				)
 			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
-				new WikibaseResourceNode('', new GlobeCoordinateValue(new LatLongValue(42, 42), 1))
+				new WikibaseResourceNode(
+					'',
+					new GlobeCoordinateValue(new LatLongValue(42, 42), 1),
+					new ItemId('Q42'),
+					new PropertyId('P625')
+				)
 			)
 		);
 	}
@@ -157,7 +191,8 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 					'@context' => 'http://schema.org',
 					'@type' => 'Thing',
 					'@id' => 'http://www.wikidata.org/entity/Q42',
-					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),'potentialAction' => array(
+					'name' => (object) array('@value' => 'Douglas Adams', '@language' => 'en'),
+					'potentialAction' => array(
 						(object) array(
 							'@type' => 'ViewAction',
 							'name' => array(
@@ -196,19 +231,29 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 	}
 
 	private function getQ42() {
-		$item = new Item();
-		$item->setId( new ItemId('Q42'));
-		$item->getFingerprint()->setLabel('en', 'Douglas Adams');
-
-		return $item;
+		return new Item(
+			new ItemId('Q42'),
+			new Fingerprint(new TermList(array(new Term('en', 'Douglas Adams'))))
+		);
 	}
 
 	private function getP214() {
-		$property = Property::newFromType('string');
-		$property->setId(new PropertyId('P214'));
-		$property->getFingerprint()->setLabel('en', 'VIAF identifier');
+		return new Property(
+			new PropertyId('P214'),
+			new Fingerprint(new TermList(array(new Term('en', 'VIAF identifier')))),
+			'string'
+		);
+	}
 
-		return $property;
+	private function getP625() {
+		return new Property(
+			new PropertyId('P625'),
+			new Fingerprint(new TermList(array(new Term('en', 'geo coordinates')))),
+			'globe-coordinate',
+			new StatementList(array(
+				new Statement(new Claim(new PropertyValueSnak(new PropertyId('P1628'), new StringValue('http://schema.org/geo'))))
+			))
+		);
 	}
 
 	public function testWikibaseEntityIdFormatterPreloader() {

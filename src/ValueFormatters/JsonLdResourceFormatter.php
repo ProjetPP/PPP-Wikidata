@@ -8,12 +8,14 @@ use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter;
 use PPP\Wikidata\WikibaseResourceNode;
 use stdClass;
 use ValueFormatters\FormatterOptions;
+use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
+use Wikibase\DataModel\Entity\EntityIdValue;
+use Wikibase\DataModel\Snak\PropertyValueSnak;
 
 /**
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- * @todo builds @reverse from fromSubject and fromPredicate
  */
 class JsonLdResourceFormatter extends ValueFormatterBase {
 
@@ -23,11 +25,18 @@ class JsonLdResourceFormatter extends ValueFormatterBase {
 	private $jsonLdFormatter;
 
 	/**
+	 * @var ValueFormatter
+	 */
+	private $snakFormatter;
+
+	/**
 	 * @param JsonLdDataValueFormatter $jsonLdFormatter
+	 * @param ValueFormatter $snakFormatter
 	 * @param FormatterOptions $options
 	 */
-	public function __construct(JsonLdDataValueFormatter $jsonLdFormatter, FormatterOptions $options) {
+	public function __construct(JsonLdDataValueFormatter $jsonLdFormatter, ValueFormatter $snakFormatter, FormatterOptions $options) {
 		$this->jsonLdFormatter = $jsonLdFormatter;
+		$this->snakFormatter = $snakFormatter;
 
 		parent::__construct($options);
 	}
@@ -42,6 +51,7 @@ class JsonLdResourceFormatter extends ValueFormatterBase {
 
 		$resource = $this->jsonLdFormatter->format($value->getDataValue());
 		$resource->{'@context'} = 'http://schema.org';
+		$this->addContextToResource($value, $resource);
 
 		return new JsonLdResourceNode(
 			$this->getName($resource),
@@ -70,6 +80,24 @@ class JsonLdResourceFormatter extends ValueFormatterBase {
 			return $namesByLanguage[$language];
 		} else {
 			return reset($namesByLanguage);
+		}
+	}
+
+	private function addContextToResource(WikibaseResourceNode $resourceNode, stdClass $resource) {
+		$fromPredicate = $resourceNode->getFromPredicate();
+		$fromSubject = $resourceNode->getFromSubject();
+		if($fromPredicate === null || $fromSubject === null) {
+			return;
+		}
+
+		$formatted = $this->snakFormatter->format(new PropertyValueSnak($fromPredicate, new EntityIdValue($fromSubject)));
+
+		if(!property_exists($resource, '@reverse')) {
+			$resource->{'@reverse'} = new stdClass();
+		}
+
+		foreach($formatted as $property => $value) {
+			$resource->{'@reverse'}->{$property}[] = $value;
 		}
 	}
 }
