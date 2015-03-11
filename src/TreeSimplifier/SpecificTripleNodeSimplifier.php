@@ -84,31 +84,9 @@ class SpecificTripleNodeSimplifier implements NodeSimplifier {
 			if(in_array($predicate->getValue(), self::$MEANINGLESS_PREDICATES)) {
 				$additionalNodes[] = $this->resourceListNodeParser->parse($node->getSubject(), 'wikibase-item');
 			} else if($predicate->equals(new StringResourceNode('son'))) {
-				$additionalNodes[] = new IntersectionNode(array(
-					new TripleNode(
-						$node->getSubject(),
-						new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId(self::PROPERTY_CHILD))))),
-						$node->getObject()
-					),
-					new TripleNode(
-						$node->getObject(),
-						new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId(self::PROPERTY_SEX))))),
-						new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId(self::ITEM_MALE)))))
-					),
-				));
+				$additionalNodes[] = $this->buildSonNode($node);
 			} else if($predicate->equals(new StringResourceNode('daughter'))) {
-				$additionalNodes[] = new IntersectionNode(array(
-					new TripleNode(
-						$node->getSubject(),
-						new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId(self::PROPERTY_CHILD))))),
-						$node->getObject()
-					),
-					new TripleNode(
-						$node->getObject(),
-						new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId(self::PROPERTY_SEX))))),
-						new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId(self::ITEM_FEMALE)))))
-					),
-				));
+				$additionalNodes[] = $this->buildDaughterNode($node);
 			} else {
 				$otherPredicates[] = $predicate;
 			}
@@ -123,5 +101,35 @@ class SpecificTripleNodeSimplifier implements NodeSimplifier {
 		}
 
 		return new UnionNode($additionalNodes);
+	}
+
+	private function buildSonNode(TripleNode $node) {
+		return new IntersectionNode(array(
+			new TripleNode(
+				$node->getSubject(),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId(self::PROPERTY_CHILD))))),
+				$node->getObject()
+			),
+			new TripleNode(
+				$node->getObject(),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId(self::PROPERTY_SEX))))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId(self::ITEM_MALE)))))
+			),
+		));
+	}
+
+	private function buildDaughterNode(TripleNode $node) {
+		return new IntersectionNode(array(
+			new TripleNode(
+				$node->getSubject(),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId(self::PROPERTY_CHILD))))),
+				$node->getObject()
+			),
+			new TripleNode(
+				$node->getObject(),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new PropertyId(self::PROPERTY_SEX))))),
+				new ResourceListNode(array(new WikibaseResourceNode('', new EntityIdValue(new ItemId(self::ITEM_FEMALE)))))
+			),
+		));
 	}
 }
