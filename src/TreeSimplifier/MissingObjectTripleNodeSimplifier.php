@@ -3,7 +3,6 @@
 namespace PPP\Wikidata\TreeSimplifier;
 
 use InvalidArgumentException;
-use OutOfBoundsException;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
@@ -11,15 +10,6 @@ use PPP\DataModel\TripleNode;
 use PPP\Module\TreeSimplifier\NodeSimplifier;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\WikibaseResourceNode;
-use Wikibase\DataModel\Entity\EntityId;
-use Wikibase\DataModel\Entity\Item;
-use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\DataModel\Snak\PropertyValueSnak;
-use Wikibase\DataModel\Snak\Snak;
-use Wikibase\DataModel\Statement\BestStatementsFinder;
-use Wikibase\DataModel\Statement\Statement;
-use Wikibase\EntityStore\EntityStore;
 
 /**
  * Simplifies a triple node when the object is missing.
@@ -35,17 +25,17 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	private $resourceListNodeParser;
 
 	/**
-	 * @var EntityStore
+	 * @var ResourceListForEntityProperty
 	 */
-	private $entityStore;
+	private $resourceListForEntityProperty;
 
 	/**
 	 * @param ResourceListNodeParser $resourceListNodeParser
-	 * @param EntityStore $entityStore
+	 * @param ResourceListForEntityProperty $resourceListForEntityProperty
 	 */
-	public function __construct(ResourceListNodeParser $resourceListNodeParser, EntityStore $entityStore) {
+	public function __construct(ResourceListNodeParser $resourceListNodeParser, ResourceListForEntityProperty $resourceListForEntityProperty) {
 		$this->resourceListNodeParser = $resourceListNodeParser;
-		$this->entityStore = $entityStore;
+		$this->resourceListForEntityProperty = $resourceListForEntityProperty;
 	}
 
 	/**
@@ -76,10 +66,7 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 
 		foreach($subjectNodes as $subject) {
 			foreach($propertyNodes as $predicate) {
-				$results = array_merge(
-					$results,
-					$this->getNodesForObject($subject, $predicate)
-				);
+				$results[] = $this->getNodesForObject($subject, $predicate);
 			}
 		}
 
@@ -88,47 +75,9 @@ class MissingObjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	protected function getNodesForObject(WikibaseResourceNode $subject, WikibaseResourceNode $predicate) {
-		/** @var ItemId $itemId */
-		$itemId = $subject->getDataValue()->getEntityId();
-		/** @var PropertyId $propertyId */
-		$propertyId = $predicate->getDataValue()->getEntityId();
-
-		$item = $this->entityStore->getItemLookup()->getItemForId($itemId);
-		$snaks = $this->getSnaksForProperty($item, $propertyId);
-		return $this->snaksToNodes($snaks, $itemId, $propertyId);
-	}
-
-	/**
-	 * @return Snak[]
-	 */
-	private function getSnaksForProperty(Item $item, PropertyId $propertyId) {
-		$statementFinder = new BestStatementsFinder($item->getStatements());
-
-		try {
-			$statements = $statementFinder->getBestStatementsForProperty($propertyId);
-		} catch(OutOfBoundsException $e) {
-			return array();
-		}
-
-		$snaks = array();
-		/** @var Statement $statement */
-		foreach($statements as $statement) {
-			$snaks[] = $statement->getMainSnak();
-		}
-
-		return $snaks;
-	}
-
-	private function snaksToNodes(array $snaks, EntityId $fromSubject, PropertyId $fromProperty) {
-		$nodes = array();
-
-		foreach($snaks as $snak) {
-			if($snak instanceof PropertyValueSnak) {
-				$nodes[] = new WikibaseResourceNode('', $snak->getDataValue(), $fromSubject, $fromProperty);
-			}
-			//TODO case of PropertySomeValueSnak (MissingNode) and PropertyNoValueSnak (return the negation of the triple?)
-		}
-
-		return $nodes;
+		return $this->resourceListForEntityProperty->getForEntityProperty(
+			$subject->getDataValue()->getEntityId(),
+			$predicate->getDataValue()->getEntityId()
+		);
 	}
 }

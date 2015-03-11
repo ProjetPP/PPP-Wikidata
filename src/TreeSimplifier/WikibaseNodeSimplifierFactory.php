@@ -43,7 +43,7 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	private function newMissingObjectTripleNodeSimplifier(EntityStore $entityStore, $languageCode) {
 		return new MissingObjectTripleNodeSimplifier(
 			$this->newResourceListNodeParser($entityStore, $languageCode),
-			$entityStore
+			new ResourceListForEntityProperty($entityStore)
 		);
 	}
 
