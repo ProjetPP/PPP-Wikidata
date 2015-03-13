@@ -2,6 +2,7 @@
 
 namespace PPP\Wikidata\TreeSimplifier;
 
+use DateTime;
 use PPP\Module\TreeSimplifier\IntersectionNodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
@@ -37,13 +38,18 @@ class WikibaseNodeSimplifierFactory extends NodeSimplifierFactory {
 	}
 
 	private function newMeaninglessPredicateTripleNodeSimplifier(EntityStore $entityStore, $languageCode) {
-		return new SpecificTripleNodeSimplifier($this->newResourceListNodeParser($entityStore, $languageCode));
+		date_default_timezone_set('UTC');
+		return new SpecificTripleNodeSimplifier(
+			$this->newResourceListNodeParser($entityStore, $languageCode),
+			new ResourceListForEntityProperty($entityStore),
+			new DateTime()
+		);
 	}
 
 	private function newMissingObjectTripleNodeSimplifier(EntityStore $entityStore, $languageCode) {
 		return new MissingObjectTripleNodeSimplifier(
 			$this->newResourceListNodeParser($entityStore, $languageCode),
-			$entityStore
+			new ResourceListForEntityProperty($entityStore)
 		);
 	}
 

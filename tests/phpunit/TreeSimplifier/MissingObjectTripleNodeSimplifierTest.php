@@ -31,8 +31,10 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		$resourceListNodeParserMock = $this->getMockBuilder('PPP\Wikidata\ValueParsers\ResourceListNodeParser')
 			->disableOriginalConstructor()
 			->getMock();
-		$entityStoreMock = $this->getMock('Wikibase\EntityStore\EntityStore');
-		return new MissingObjectTripleNodeSimplifier($resourceListNodeParserMock, $entityStoreMock);
+		$resourceListForEntityPropertyMock = $this->getMockBuilder('PPP\Wikidata\TreeSimplifier\ResourceListForEntityProperty')
+			->disableOriginalConstructor()
+			->getMock();
+		return new MissingObjectTripleNodeSimplifier($resourceListNodeParserMock, $resourceListForEntityPropertyMock);
 	}
 
 	/**
@@ -98,7 +100,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 
 		$simplifier = new MissingObjectTripleNodeSimplifier(
 			$resourceListNodeParserMock,
-			new InMemoryEntityStore(array($item))
+			new ResourceListForEntityProperty(new InMemoryEntityStore(array($item)))
 		);
 		$this->assertEquals(
 			$responseNodes,

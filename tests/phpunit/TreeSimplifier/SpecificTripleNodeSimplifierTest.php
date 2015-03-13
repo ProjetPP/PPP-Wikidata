@@ -2,21 +2,20 @@
 
 namespace PPP\Wikidata\TreeSimplifier;
 
-use Mediawiki\Api\MediawikiApi;
+use DataValues\TimeValue;
+use DateTime;
 use PPP\DataModel\AbstractNode;
 use PPP\DataModel\IntersectionNode;
+use PPP\DataModel\JsonLdResourceNode;
 use PPP\DataModel\MissingNode;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\DataModel\UnionNode;
-use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
-use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;
 use PPP\Wikidata\WikibaseResourceNode;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\EntityStore\Api\ApiEntityStore;
 
 /**
  * @covers PPP\Wikidata\TreeSimplifier\SpecificTripleNodeSimplifier
@@ -27,12 +26,15 @@ use Wikibase\EntityStore\Api\ApiEntityStore;
 class SpecificTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 
 	protected function buildSimplifier() {
-		$valueParserFactory = new WikibaseValueParserFactory(
-			'en',
-			new ApiEntityStore(new MediawikiApi('http://www‡.wikidata.org/w/api.php'))
-		);
+		$resourceListNodeParserMock = $this->getMockBuilder('PPP\Wikidata\ValueParsers\ResourceListNodeParser')
+			->disableOriginalConstructor()
+			->getMock();
+		$resourceListForEntityPropertyMock = $this->getMockBuilder('PPP\Wikidata\TreeSimplifier\ResourceListForEntityProperty')
+			->disableOriginalConstructor()
+			->getMock();
 
-		return new SpecificTripleNodeSimplifier(new ResourceListNodeParser($valueParserFactory->newWikibaseValueParser()));
+		date_default_timezone_set('UTC');
+		return new SpecificTripleNodeSimplifier($resourceListNodeParserMock, $resourceListForEntityPropertyMock, new DateTime('2015-03-12'));
 	}
 
 	public function simplifiableProvider() {
@@ -62,8 +64,16 @@ class SpecificTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 			->method('parse')
 			->with($this->equalTo(new ResourceListNode(array(new StringResourceNode('Douglas Adams')))))
 			->will($this->returnValue(new ResourceListNode(array(new WikibaseResourceNode('Douglas Adams', new EntityIdValue(new ItemId('Q42')))))));
+		$resourceListForEntityPropertyMock = $this->getMockBuilder('PPP\Wikidata\TreeSimplifier\ResourceListForEntityProperty')
+			->disableOriginalConstructor()
+			->getMock();
+		$resourceListForEntityPropertyMock->expects($this->any())
+			->method('getForEntityProperty')
+			->with($this->equalTo(new ItemId('Q42')), $this->equalTo('P569'))
+			->will($this->returnValue(new ResourceListNode(array(new WikibaseResourceNode('', new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, 'http://www.wikidata.org/entity/Q1985786'))))));
 
-		$simplifier = new SpecificTripleNodeSimplifier($resourceListNodeParserMock);
+		date_default_timezone_set('UTC');
+		$simplifier = new SpecificTripleNodeSimplifier($resourceListNodeParserMock, $resourceListForEntityPropertyMock, new DateTime('2015-03-12'));
 
 		$this->assertEquals(
 			$outputNode,
@@ -151,6 +161,27 @@ class SpecificTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 				new TripleNode(
 					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
 					new ResourceListNode(array(new StringResourceNode('daughter'))),
+					new MissingNode()
+				)
+			),
+			array(
+				new ResourceListNode(array(
+					new JsonLdResourceNode(
+						'63',
+						(object) array(
+							'@context' => 'http://schema.org',
+							'@type' => 'Duration',
+							'name' => '63',
+							'http://www.w3.org/1999/02/22-rdf-syntax-ns#value' => (object) array(
+								'@type' => 'Duration',
+								'@value' => 'P63Y0M1D'
+							)
+						)
+					)
+				)),
+				new TripleNode(
+					new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+					new ResourceListNode(array(new StringResourceNode('age'))),
 					new MissingNode()
 				)
 			),
