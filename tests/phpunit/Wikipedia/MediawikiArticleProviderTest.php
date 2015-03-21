@@ -15,7 +15,7 @@ use Wikibase\DataModel\SiteLink;
  */
 class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 
-	public function testGetHeaderForSiteLinkWithImage() {
+	public function testGetArticleForSiteLinkWithImage() {
 		$mediawikiApiMock = $this->getMockBuilder('Mediawiki\Api\MediawikiApi')
 			->disableOriginalConstructor()
 			->getMock();
@@ -66,13 +66,13 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 				'foo',
 				'en',
 				'http://en.wikipedia.org/wiki/Bar',
-				new MediawikiArticleImage(new SiteLink('enwiki', 'Bar'), 'http://test.org', 1, 1, 'foo')
+				new MediawikiArticleImage('http://test.org', 1, 1, 'foo')
 			),
-			$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'Bar'))
+			$provider->getArticleForSiteLink(new SiteLink('enwiki', 'Bar'))
 		);
 	}
 
-	public function testGetHeaderForSiteLinkWithoutImage() {
+	public function testGetArticleForSiteLinkWithoutImage() {
 		$mediawikiApiMock = $this->getMockBuilder('Mediawiki\Api\MediawikiApi')
 			->disableOriginalConstructor()
 			->getMock();
@@ -113,11 +113,11 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			new MediawikiArticle(new SiteLink('enwiki', 'Bar'), 'foo', 'en', 'http://en.wikipedia.org/wiki/Bar'),
-			$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'Bar'))
+			$provider->getArticleForSiteLink(new SiteLink('enwiki', 'Bar'))
 		);
 	}
 
-	public function testGetHeaderForSiteLinkWithException() {
+	public function testGetArticleForSiteLinkWithException() {
 		$this->setExpectedException('\OutOfBoundsException');
 
 		$mediawikiApiMock = $this->getMockBuilder('Mediawiki\Api\MediawikiApi')
@@ -128,10 +128,10 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 			->will($this->returnValue(array('query' => array('pages' => array()))));
 
 		$provider = new MediawikiArticleProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
-		$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'bar'));
+		$provider->getArticleForSiteLink(new SiteLink('enwiki', 'bar'));
 	}
 
-	public function testGetHeaderForSiteLinkWithCache() {
+	public function testGetArticleForSiteLinkWithCache() {
 		$mediawikiApiMock = $this->getMockBuilder('Mediawiki\Api\MediawikiApi')
 			->disableOriginalConstructor()
 			->getMock();
@@ -143,11 +143,11 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			new MediawikiArticle(new SiteLink('enwiki', 'bar'), 'foo', 'en', 'http://test.org'),
-			$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'bar'))
+			$provider->getArticleForSiteLink(new SiteLink('enwiki', 'bar'))
 		);
 	}
 
-	public function testGetItemWithLoad() {
+	public function testGetArticleForSiteLinkWithLoad() {
 		$mediawikiApiMock = $this->getMockBuilder('Mediawiki\Api\MediawikiApi')
 			->disableOriginalConstructor()
 			->getMock();
@@ -158,7 +158,7 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 				$this->equalTo(array(
 					'action' => 'query',
 					'titles' => 'Bar',
-					'prop' => 'extracts|info',
+					'prop' => 'extracts|info|pageimages',
 					'inprop' => 'url',
 					'redirects' => true,
 					'exintro' => true,
@@ -166,6 +166,9 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 					'explaintext' => true,
 					'exsentences' => 3,
 					'exlimit' => 20,
+					'piprop' => 'thumbnail|name',
+					'pithumbsize' => 300,
+					'pilimit' => 20,
 					'continue' => ''
 				)))
 			->will($this->returnValue(array(
@@ -186,7 +189,7 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 		$provider->loadFromSiteLinks(array(new SiteLink('enwiki', 'Bar'), new SiteLink('dewiki', 'Bar')));
 		$this->assertEquals(
 			new MediawikiArticle(new SiteLink('enwiki', 'Bar'), 'foo', 'en', 'http://en.wikipedia.org/wiki/Bar'),
-			$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'Bar'))
+			$provider->getArticleForSiteLink(new SiteLink('enwiki', 'Bar'))
 		);
 	}
 
