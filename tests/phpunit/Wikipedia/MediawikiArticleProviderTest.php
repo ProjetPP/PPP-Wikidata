@@ -3,6 +3,7 @@
 namespace PPP\Wikidata\Wikipedia;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Mediawiki\Api\SimpleRequest;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
 use Wikibase\DataModel\SiteLink;
 
@@ -20,10 +21,10 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 			->disableOriginalConstructor()
 			->getMock();
 		$mediawikiApiMock->expects($this->once())
-			->method('getAction')
-			->with(
-				$this->equalTo('query'),
-				$this->equalTo(array(
+			->method('getRequest')
+			->with($this->equalTo(new SimpleRequest(
+				'query',
+				array(
 					'action' => 'query',
 					'titles' => 'Bar',
 					'prop' => 'extracts|info|pageimages',
@@ -38,7 +39,8 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 					'pithumbsize' => 300,
 					'pilimit' => 20,
 					'continue' => ''
-				)))
+				)
+			)))
 			->will($this->returnValue(array(
 				'query' => array(
 					'pages' => array(
@@ -77,10 +79,10 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 			->disableOriginalConstructor()
 			->getMock();
 		$mediawikiApiMock->expects($this->once())
-			->method('getAction')
-			->with(
-				$this->equalTo('query'),
-				$this->equalTo(array(
+			->method('getRequest')
+			->with($this->equalTo(new SimpleRequest(
+				'query',
+				array(
 					'action' => 'query',
 					'titles' => 'Bar',
 					'prop' => 'extracts|info|pageimages',
@@ -95,7 +97,8 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 					'pithumbsize' => 300,
 					'pilimit' => 20,
 					'continue' => ''
-				)))
+				)
+			)))
 			->will($this->returnValue(array(
 				'query' => array(
 					'pages' => array(
@@ -124,7 +127,7 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 			->disableOriginalConstructor()
 			->getMock();
 		$mediawikiApiMock->expects($this->once())
-			->method('getAction')
+			->method('getRequest')
 			->will($this->returnValue(array('query' => array('pages' => array()))));
 
 		$provider = new MediawikiArticleProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
@@ -152,10 +155,10 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 			->disableOriginalConstructor()
 			->getMock();
 		$mediawikiApiMock->expects($this->once())
-			->method('getAction')
-			->with(
-				$this->equalTo('query'),
-				$this->equalTo(array(
+			->method('getRequest')
+			->with($this->equalTo(new SimpleRequest(
+				'query',
+				array(
 					'action' => 'query',
 					'titles' => 'Bar',
 					'prop' => 'extracts|info|pageimages',
@@ -170,7 +173,8 @@ class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 					'pithumbsize' => 300,
 					'pilimit' => 20,
 					'continue' => ''
-				)))
+				)
+			)))
 			->will($this->returnValue(array(
 				'query' => array(
 					'pages' => array(

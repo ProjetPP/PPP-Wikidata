@@ -4,6 +4,7 @@ namespace PPP\Wikidata\Wikipedia;
 
 use InvalidArgumentException;
 use Mediawiki\Api\MediawikiApi;
+use Mediawiki\Api\SimpleRequest;
 use OutOfBoundsException;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
 use Wikibase\DataModel\SiteLink;
@@ -82,7 +83,7 @@ abstract class PerSiteLinkProvider {
 		$result = array('continue' => '');
 		do {
 			$request['continue'] = $result['continue'];
-			$result =  $api->getAction($request['action'], $request);
+			$result =  $api->getRequest(new SimpleRequest($request['action'], $request));
 			$finalResults = array_merge($finalResults, $this->parseResult($wikiId, $titles, $result));
 
 		} while(array_key_exists('continue', $result));
