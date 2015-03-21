@@ -4,8 +4,10 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use InvalidArgumentException;
 use OutOfBoundsException;
-use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticle;
+use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleProvider;
 use stdClass;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatter;
@@ -28,30 +30,22 @@ class ExtendedJsonLdItemFormatter extends ValueFormatterBase {
 	private $itemFormatter;
 
 	/**
-	 * @var MediawikiArticleHeaderProvider
+	 * @var MediawikiArticleProvider
 	 */
-	private $articleHeaderProvider;
-
-	/**
-	 * @var MediawikiArticleImageProvider
-	 */
-	private $articleImageProvider;
+	private $articleProvider;
 
 	/**
 	 * @param ValueFormatter $itemFormatter
-	 * @param MediawikiArticleHeaderProvider $articleHeaderProvider
-	 * @param MediawikiArticleImageProvider $articleImageProvider
+	 * @param MediawikiArticleProvider $articleProvider
 	 * @param FormatterOptions $options
 	 */
 	public function __construct(
 		ValueFormatter $itemFormatter,
-		MediawikiArticleHeaderProvider $articleHeaderProvider,
-		MediawikiArticleImageProvider $articleImageProvider,
+		MediawikiArticleProvider $articleProvider,
 		FormatterOptions $options
 	) {
 		$this->itemFormatter = $itemFormatter;
-		$this->articleHeaderProvider = $articleHeaderProvider;
-		$this->articleImageProvider = $articleImageProvider;
+		$this->articleProvider = $articleProvider;
 
 		parent::__construct($options);
 	}
@@ -78,66 +72,62 @@ class ExtendedJsonLdItemFormatter extends ValueFormatterBase {
 			)
 		);
 
-		$this->addArticleToResource($item->getSiteLinkList(), $resource);
-		$this->addImageToResource($item->getSiteLinkList(), $resource);
+		$this->addSiteLinksContentToResource($item->getSiteLinkList(), $resource);
 
 		return $resource;
 	}
 
-	private function addArticleToResource(SiteLinkList $siteLinkList, stdClass $resource) {
+	private function addSiteLinksContentToResource(SiteLinkList $siteLinkList, stdClass $resource) {
 		$wikiId = $this->getOption(ValueFormatter::OPT_LANG) . 'wiki';
 
-		if(!$this->articleHeaderProvider->isWikiIdSupported($wikiId)) {
+		if(!$this->articleProvider->isWikiIdSupported($wikiId)) {
 			return;
 		}
 
 		try {
-			$header = $this->articleHeaderProvider->getHeaderForSiteLink($siteLinkList->getBySiteId($wikiId));
-
-			$articleResource = new stdClass();
-			$articleResource->{'@type'} = 'Article';
-			$articleResource->{'@id'} = $header->getUrl();
-			$articleResource->inLanguage = $header->getLanguageCode();
-			$articleResource->headline = $header->getText();
-			$articleResource->license = 'http://creativecommons.org/licenses/by-sa/3.0/';
-			$articleResource->author = new stdClass();
-			$articleResource->author->{'@type'} = 'Organization';
-			$articleResource->author->{'@id'} = 'http://www.wikidata.org/entity/Q52';
-			$articleResource->author->name = 'Wikipedia';
-
-			if(!property_exists($resource, '@reverse')) {
-				$resource->{'@reverse'} = new stdClass();
-			}
-			$resource->{'@reverse'}->about = $articleResource;
-
-			$resource->potentialAction[] = $this->newViewAction(
-				array(new Term('en', 'View on Wikipedia'), new Term('fr', 'Voir sur Wikipédia')),
-				'//upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/64px-Wikipedia-logo-v2.svg.png',
-				$header->getUrl()
-			);
+			$article = $this->articleProvider->getArticleForSiteLink($siteLinkList->getBySiteId($wikiId));
+			$this->addArticleToResource($article, $resource);
 		} catch(OutOfBoundsException $e) {
 		}
 	}
 
-	private function addImageToResource(SiteLinkList $siteLinkList, stdClass $resource) {
-		$wikiId = $this->getOption(ValueFormatter::OPT_LANG) . 'wiki';
+	private function addArticleToResource(MediawikiArticle $article, stdClass $resource) {
+		$articleResource = new stdClass();
+		$articleResource->{'@type'} = 'Article';
+		$articleResource->{'@id'} = $article->getUrl();
+		$articleResource->inLanguage = $article->getLanguageCode();
+		$articleResource->headline = $article->getHeaderText();
+		$articleResource->license = 'http://creativecommons.org/licenses/by-sa/3.0/';
+		$articleResource->author = new stdClass();
+		$articleResource->author->{'@type'} = 'Organization';
+		$articleResource->author->{'@id'} = 'http://www.wikidata.org/entity/Q52';
+		$articleResource->author->name = 'Wikipedia';
 
-		if(!$this->articleImageProvider->isWikiIdSupported($wikiId)) {
-			return;
+		if(!property_exists($resource, '@reverse')) {
+			$resource->{'@reverse'} = new stdClass();
 		}
+		$resource->{'@reverse'}->about = $articleResource;
 
-		try {
-			$image = $this->articleImageProvider->getImageForSiteLink($siteLinkList->getBySiteId($wikiId));
+		$resource->potentialAction[] = $this->newViewAction(
+			array(new Term('en', 'View on Wikipedia'), new Term('fr', 'Voir sur Wikipédia')),
+			'//upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/64px-Wikipedia-logo-v2.svg.png',
+			$article->getUrl()
+		);
 
-			$resource->image = new stdClass();
-			$resource->image->{'@type'} = 'ImageObject';
-			$resource->image->{'@id'} = 'http://commons.wikimedia.org/wiki/Image:' . str_replace(' ', '_', $image->getTitle()); //TODO configure
-			$resource->image->contentUrl = $image->getUrl();
-			$resource->image->width = $image->getWidth();
-			$resource->image->height = $image->getHeight();
-			$resource->image->name = $image->getTitle();
-		} catch(OutOfBoundsException $e) {
+		$image = $article->getImage();
+		if($image !== null) {
+			$this->addImageToResource($image, $resource);
 		}
+	}
+
+	private function addImageToResource(MediawikiArticleImage $image, stdClass $resource) {
+		$resource->image = new stdClass();
+		$resource->image->{'@type'} = 'ImageObject';
+		$resource->image->{'@id'} = 'http://commons.wikimedia.org/wiki/Image:' . str_replace(' ', '_', $image->getTitle()); //TODO configure
+		$resource->image->contentUrl = $image->getUrl();
+		$resource->image->width = $image->getWidth();
+		$resource->image->height = $image->getHeight();
+		$resource->image->name = $image->getTitle();
 	}
 
 	private function newViewAction(array $nameTerms, $image, $target) {

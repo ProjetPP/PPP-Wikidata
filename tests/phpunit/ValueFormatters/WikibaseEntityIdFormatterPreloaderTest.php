@@ -26,7 +26,7 @@ class WikibaseEntityIdFormatterPreloaderTest extends \PHPUnit_Framework_TestCase
 		$item = new Item(new ItemId('Q1'));
 		$item->getSiteLinkList()->addNewSiteLink('enwiki', 'Foo');
 
-		$perSiteLinkProviderMock = $this->getMockBuilder('PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider')
+		$perSiteLinkProviderMock = $this->getMockBuilder('PPP\Wikidata\Wikipedia\MediawikiArticleProvider')
 			->disableOriginalConstructor()
 			->getMock();
 		$perSiteLinkProviderMock->expects($this->once())

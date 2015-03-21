@@ -4,7 +4,7 @@ namespace PPP\Wikidata\Wikipedia;
 
 use Wikibase\DataModel\SiteLink;
 
-class MediawikiArticleHeader implements SiteLinkProvider {
+class MediawikiArticle implements SiteLinkProvider {
 
 	/**
 	 * @var SiteLink
@@ -14,7 +14,7 @@ class MediawikiArticleHeader implements SiteLinkProvider {
 	/**
 	 * @var string
 	 */
-	private $text;
+	private $headerText;
 
 	/**
 	 * @var string
@@ -27,16 +27,23 @@ class MediawikiArticleHeader implements SiteLinkProvider {
 	private $url;
 
 	/**
+	 * @var MediawikiArticleImage|null
+	 */
+	private $image;
+
+	/**
 	 * @param SiteLink $siteLink
-	 * @param string $text
+	 * @param string $headerText
 	 * @param string $languageCode
 	 * @param string $url
+	 * @param MediawikiArticleImage $image
 	 */
-	public function __construct(SiteLink $siteLink, $text, $languageCode, $url) {
+	public function __construct(SiteLink $siteLink, $headerText, $languageCode, $url, MediawikiArticleImage $image = null) {
 		$this->siteLink = $siteLink;
-		$this->text = $text;
+		$this->headerText = $headerText;
 		$this->languageCode = $languageCode;
 		$this->url = $url;
+		$this->image = $image;
 	}
 
 	/**
@@ -49,8 +56,8 @@ class MediawikiArticleHeader implements SiteLinkProvider {
 	/**
 	 * @return string
 	 */
-	public function getText() {
-		return $this->text;
+	public function getHeaderText() {
+		return $this->headerText;
 	}
 
 	/**
@@ -65,5 +72,12 @@ class MediawikiArticleHeader implements SiteLinkProvider {
 	 */
 	public function getUrl() {
 		return $this->url;
+	}
+
+	/**
+	 * @return MediawikiArticleImage|null
+	 */
+	public function getImage() {
+		return $this->image;
 	}
 }

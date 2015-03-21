@@ -8,13 +8,13 @@ use Wikibase\DataModel\SiteLink;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class MediawikiArticleHeaderProvider extends PerSiteLinkProvider {
+class MediawikiArticleProvider extends PerSiteLinkProvider {
 
 	/**
 	 * @param SiteLink $siteLink
-	 * @return MediawikiArticleHeader
+	 * @return MediawikiArticle
 	 */
-	public function getHeaderForSiteLink(SiteLink $siteLink) {
+	public function getArticleForSiteLink(SiteLink $siteLink) {
 		return $this->getForSiteLink($siteLink);
 	}
 
@@ -22,14 +22,17 @@ class MediawikiArticleHeaderProvider extends PerSiteLinkProvider {
 		return array(
 			'action' => 'query',
 			'titles' => implode('|', $titles),
-			'prop' => 'extracts|info',
+			'prop' => 'extracts|info|pageimages',
 			'inprop' => 'url',
 			'redirects' => true,
 			'exintro' => true,
 			'exsectionformat' => 'plain',
 			'explaintext' => true,
 			'exsentences' => 3,
-			'exlimit' => 20
+			'exlimit' => 20,
+			'piprop' => 'thumbnail|name',
+			'pithumbsize' => 300,
+			'pilimit' => 20
 		);
 	}
 
@@ -38,12 +41,25 @@ class MediawikiArticleHeaderProvider extends PerSiteLinkProvider {
 
 		foreach($result['query']['pages'] as $pageResult) {
 			if(array_key_exists('extract', $pageResult)) {
-				$articleHeaders[] = new MediawikiArticleHeader(
+				$image = null;
+
+				if(array_key_exists('thumbnail', $pageResult)) {
+					$image = new MediawikiArticleImage(
+						$pageResult['thumbnail']['source'],
+						$pageResult['thumbnail']['width'],
+						$pageResult['thumbnail']['height'],
+						str_replace('_', ' ', $pageResult['pageimage'])
+					);
+				}
+
+				$articleHeaders[] = new MediawikiArticle(
 					new SiteLink($wikiId, $pageResult['title']),
 					$pageResult['extract'],
 					$pageResult['pagelanguage'],
-					$pageResult['canonicalurl']
+					$pageResult['canonicalurl'],
+					$image
 				);
+
 			}
 		}
 

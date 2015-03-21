@@ -7,10 +7,10 @@ use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdItemFormatter;
-use PPP\Wikidata\Wikipedia\MediawikiArticleHeader;
-use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticle;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
@@ -132,36 +132,27 @@ class ExtendedJsonLdItemFormatterTest extends ValueFormatterTestBase {
 	protected function getInstance(FormatterOptions $options) {
 		$class = $this->getFormatterClass();
 
-		$articleHeaderCache = new PerSiteLinkCache(new ArrayCache(), 'wparticlehead');
-		$articleHeaderCache->save(new MediawikiArticleHeader(
+		$articleHeaderCache = new PerSiteLinkCache(new ArrayCache(), 'wphead');
+		$articleHeaderCache->save(new MediawikiArticle(
 			new SiteLink('enwiki', 'Douglas Adams'),
 			'Fooo barr baz gaaaaaaa...',
 			'en',
-			'http://en.wikipedia.org/wiki/Douglas_Adams'
-		));
-
-		$imageCache = new PerSiteLinkCache(new ArrayCache(), 'wpimg');
-		$imageCache->save(new MediawikiArticleImage(
-			new SiteLink('enwiki', 'Douglas Adams'),
-			'//upload.wikimedia.org/wikipedia/commons/c/c0/Douglas_adams_portrait_cropped.jpg',
-			100,
-			200,
-			'Douglas adams portrait cropped.jpg'
+			'http://en.wikipedia.org/wiki/Douglas_Adams',
+			new MediawikiArticleImage(
+				'//upload.wikimedia.org/wikipedia/commons/c/c0/Douglas_adams_portrait_cropped.jpg',
+				100,
+				200,
+				'Douglas adams portrait cropped.jpg'
+			)
 		));
 
 		return new $class(
 			new JsonLdItemFormatter(new JsonLdEntityFormatter($options), $options),
-			new MediawikiArticleHeaderProvider(
+			new MediawikiArticleProvider(
 				array(
 					'enwiki' => new MediawikiApi('http://example.org')
 				),
 				$articleHeaderCache
-			),
-			new MediawikiArticleImageProvider(
-				array(
-					'enwiki' => new MediawikiApi('http://example.org')
-				),
-				$imageCache
 			),
 			$options
 		);
