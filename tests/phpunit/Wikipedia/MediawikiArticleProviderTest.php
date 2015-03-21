@@ -7,15 +7,15 @@ use PPP\Wikidata\Cache\PerSiteLinkCache;
 use Wikibase\DataModel\SiteLink;
 
 /**
- * @covers PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider
+ * @covers PPP\Wikidata\Wikipedia\MediawikiArticleProvider
  *
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  * TODO: test continue
  */
-class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
+class MediawikiArticleProviderTest extends \PHPUnit_Framework_TestCase {
 
-	public function testGetHeaderForSiteLink() {
+	public function testGetHeaderForSiteLinkWithImage() {
 		$mediawikiApiMock = $this->getMockBuilder('Mediawiki\Api\MediawikiApi')
 			->disableOriginalConstructor()
 			->getMock();
@@ -26,7 +26,7 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 				$this->equalTo(array(
 					'action' => 'query',
 					'titles' => 'Bar',
-					'prop' => 'extracts|info',
+					'prop' => 'extracts|info|pageimages',
 					'inprop' => 'url',
 					'redirects' => true,
 					'exintro' => true,
@@ -34,6 +34,66 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 					'explaintext' => true,
 					'exsentences' => 3,
 					'exlimit' => 20,
+					'piprop' => 'thumbnail|name',
+					'pithumbsize' => 300,
+					'pilimit' => 20,
+					'continue' => ''
+				)))
+			->will($this->returnValue(array(
+				'query' => array(
+					'pages' => array(
+						array(
+							'title' => 'Bar',
+							'extract' => 'foo',
+							'pagelanguage' => 'en',
+							'canonicalurl' => 'http://en.wikipedia.org/wiki/Bar',
+							'thumbnail' => array(
+								'source' => 'http://test.org',
+								'width' => 1,
+								'height' => 1
+							),
+							'pageimage' => 'foo'
+						)
+					)
+				)
+			)));
+
+		$provider = new MediawikiArticleProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
+
+		$this->assertEquals(
+			new MediawikiArticle(
+				new SiteLink('enwiki', 'Bar'),
+				'foo',
+				'en',
+				'http://en.wikipedia.org/wiki/Bar',
+				new MediawikiArticleImage(new SiteLink('enwiki', 'Bar'), 'http://test.org', 1, 1, 'foo')
+			),
+			$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'Bar'))
+		);
+	}
+
+	public function testGetHeaderForSiteLinkWithoutImage() {
+		$mediawikiApiMock = $this->getMockBuilder('Mediawiki\Api\MediawikiApi')
+			->disableOriginalConstructor()
+			->getMock();
+		$mediawikiApiMock->expects($this->once())
+			->method('getAction')
+			->with(
+				$this->equalTo('query'),
+				$this->equalTo(array(
+					'action' => 'query',
+					'titles' => 'Bar',
+					'prop' => 'extracts|info|pageimages',
+					'inprop' => 'url',
+					'redirects' => true,
+					'exintro' => true,
+					'exsectionformat' => 'plain',
+					'explaintext' => true,
+					'exsentences' => 3,
+					'exlimit' => 20,
+					'piprop' => 'thumbnail|name',
+					'pithumbsize' => 300,
+					'pilimit' => 20,
 					'continue' => ''
 				)))
 			->will($this->returnValue(array(
@@ -49,10 +109,10 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 				)
 			)));
 
-		$provider = new MediawikiArticleHeaderProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
+		$provider = new MediawikiArticleProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
 
 		$this->assertEquals(
-			new MediawikiArticleHeader(new SiteLink('enwiki', 'Bar'), 'foo', 'en', 'http://en.wikipedia.org/wiki/Bar'),
+			new MediawikiArticle(new SiteLink('enwiki', 'Bar'), 'foo', 'en', 'http://en.wikipedia.org/wiki/Bar'),
 			$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'Bar'))
 		);
 	}
@@ -67,7 +127,7 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 			->method('getAction')
 			->will($this->returnValue(array('query' => array('pages' => array()))));
 
-		$provider = new MediawikiArticleHeaderProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
+		$provider = new MediawikiArticleProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
 		$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'bar'));
 	}
 
@@ -77,12 +137,12 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 			->getMock();
 
 		$cache = new PerSiteLinkCache(new ArrayCache(), 'mahp');
-		$cache->save(new MediawikiArticleHeader(new SiteLink('enwiki', 'bar'), 'foo', 'en', 'http://test.org'));
+		$cache->save(new MediawikiArticle(new SiteLink('enwiki', 'bar'), 'foo', 'en', 'http://test.org'));
 
-		$provider = new MediawikiArticleHeaderProvider(array('enwiki' => $mediawikiApiMock), $cache);
+		$provider = new MediawikiArticleProvider(array('enwiki' => $mediawikiApiMock), $cache);
 
 		$this->assertEquals(
-			new MediawikiArticleHeader(new SiteLink('enwiki', 'bar'), 'foo', 'en', 'http://test.org'),
+			new MediawikiArticle(new SiteLink('enwiki', 'bar'), 'foo', 'en', 'http://test.org'),
 			$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'bar'))
 		);
 	}
@@ -121,11 +181,11 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 				)
 			)));
 
-		$provider = new MediawikiArticleHeaderProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
+		$provider = new MediawikiArticleProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
 
 		$provider->loadFromSiteLinks(array(new SiteLink('enwiki', 'Bar'), new SiteLink('dewiki', 'Bar')));
 		$this->assertEquals(
-			new MediawikiArticleHeader(new SiteLink('enwiki', 'Bar'), 'foo', 'en', 'http://en.wikipedia.org/wiki/Bar'),
+			new MediawikiArticle(new SiteLink('enwiki', 'Bar'), 'foo', 'en', 'http://en.wikipedia.org/wiki/Bar'),
 			$provider->getHeaderForSiteLink(new SiteLink('enwiki', 'Bar'))
 		);
 	}
@@ -135,7 +195,7 @@ class MediawikiArticleHeaderProviderTest extends \PHPUnit_Framework_TestCase {
 			->disableOriginalConstructor()
 			->getMock();
 
-		$provider = new MediawikiArticleHeaderProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
+		$provider = new MediawikiArticleProvider(array('enwiki' => $mediawikiApiMock), new PerSiteLinkCache(new ArrayCache(), 'mahp'));
 
 		$this->assertTrue($provider->isWikiIdSupported('enwiki'));
 		$this->assertFalse($provider->isWikiIdSupported('dewiki'));

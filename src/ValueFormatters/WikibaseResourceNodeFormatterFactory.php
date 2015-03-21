@@ -21,8 +21,8 @@ use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdQuantityFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdStringFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdTimeFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdUnknownFormatter;
-use PPP\Wikidata\Wikipedia\MediawikiArticleHeaderProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
+use PPP\Wikidata\Wikipedia\MediawikiArticleProvider;
 use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\QuantityFormatter;
@@ -128,8 +128,7 @@ class WikibaseResourceNodeFormatterFactory {
 			$this->entityStore->getItemLookup(),
 			new ExtendedJsonLdItemFormatter(
 				new JsonLdItemFormatter($entityFormatter, $options),
-				$this->newMediawikiArticleHeaderProvider(),
-				$this->newMediawikiArticleImageProvider(),
+				$this->newMediawikiArticleProvider(),
 				$options
 			),
 			$this->entityStore->getPropertyLookup(),
@@ -177,24 +176,16 @@ class WikibaseResourceNodeFormatterFactory {
 		return new WikibaseEntityIdFormatterPreloader(
 			$this->entityStore,
 			array(
-				$this->newMediawikiArticleHeaderProvider(),
-				$this->newMediawikiArticleImageProvider()
+				$this->newMediawikiArticleProvider()
 			),
 			$this->languageCode
 		);
 	}
 
-	private function newMediawikiArticleHeaderProvider() {
-		return new MediawikiArticleHeaderProvider(
+	private function newMediawikiArticleProvider() {
+		return new MediawikiArticleProvider(
 			$this->sitesApi,
-			new PerSiteLinkCache($this->cache, 'wparticlehead')
-		);
-	}
-
-	private function newMediawikiArticleImageProvider() {
-		return new MediawikiArticleImageProvider(
-			$this->sitesApi,
-			new PerSiteLinkCache($this->cache, 'wpimg')
+			new PerSiteLinkCache($this->cache, 'wparticle')
 		);
 	}
 }

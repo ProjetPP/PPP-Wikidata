@@ -2,14 +2,7 @@
 
 namespace PPP\Wikidata\Wikipedia;
 
-use Wikibase\DataModel\SiteLink;
-
-class MediawikiArticleImage implements SiteLinkProvider {
-
-	/**
-	 * @var SiteLink
-	 */
-	private $siteLink;
+class MediawikiArticleImage {
 
 	/**
 	 * @var string
@@ -32,25 +25,16 @@ class MediawikiArticleImage implements SiteLinkProvider {
 	private $title;
 
 	/**
-	 * @param SiteLink $siteLink
 	 * @param string $url
 	 * @param int $width
 	 * @param int $height
 	 * @param string $title
 	 */
-	public function __construct(SiteLink $siteLink, $url, $width, $height, $title) {
-		$this->siteLink = $siteLink;
+	public function __construct($url, $width, $height, $title) {
 		$this->url = $url;
 		$this->width = $width;
 		$this->height = $height;
 		$this->title = $title;
-	}
-
-	/**
-	 * @see SiteLinkProvider::getSiteLink
-	 */
-	public function getSiteLink() {
-		return $this->siteLink;
 	}
 
 	/**
