@@ -153,7 +153,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						'Douglas Adams',
 						(object) array(
 							'@context' => 'http://schema.org',
-							'@id' => 'http://www.wikidata.org/entity/Q42'
+							'@id' => 'http://www.wikidata.org/entity/Q42',
+							'name' => 'Douglas Adams'
 						)
 					))),
 					array(
@@ -177,7 +178,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						'Дуглас Адамс',
 						(object) array(
 							'@context' => 'http://schema.org',
-							'@id' => 'http://www.wikidata.org/entity/Q42'
+							'@id' => 'http://www.wikidata.org/entity/Q42',
+							'name' => 'Douglas Adams'
 						)
 					))),
 					array(
@@ -205,7 +207,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						'Cambridge',
 						(object) array(
 							'@context' => 'http://schema.org',
-							'@id' => 'http://www.wikidata.org/entity/Q350'
+							'@id' => 'http://www.wikidata.org/entity/Q350',
+							'name' => 'Cambridge'
 						)
 					))),
 					array(
@@ -235,14 +238,16 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 								'Setnakhte',
 								(object) array(
 									'@context' => 'http://schema.org',
-									'@id' => 'http://www.wikidata.org/entity/Q312402'
+									'@id' => 'http://www.wikidata.org/entity/Q312402',
+									'name' => 'Setnakhte'
 								)
 							),
 							new JsonLdResourceNode(
 								'Tiy-Merenese',
 								(object) array(
 									'@context' => 'http://schema.org',
-									'@id' => 'http://www.wikidata.org/entity/Q1321008'
+									'@id' => 'http://www.wikidata.org/entity/Q1321008',
+									'name' => 'Tiy-Merenese'
 								)
 							)
 						)),
@@ -403,7 +408,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 							'Ada Lovelace',
 							(object) array(
 								'@context' => 'http://schema.org',
-								'@id' => 'http://www.wikidata.org/entity/Q7259'
+								'@id' => 'http://www.wikidata.org/entity/Q7259',
+								'name' => 'Ada Lovelace'
 							)
 						)
 					)),
@@ -428,7 +434,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						'Giulia Sarkozy',
 						(object) array(
 							'@context' => 'http://schema.org',
-							'@id' => 'http://www.wikidata.org/entity/Q16338096'
+							'@id' => 'http://www.wikidata.org/entity/Q16338096',
+							'name' => 'Giulia Sarkozy'
 						)
 					))),
 					array(
@@ -455,7 +462,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						'Douglas Adams',
 						(object) array(
 							'@context' => 'http://schema.org',
-							'@id' => 'http://www.wikidata.org/entity/Q42'
+							'@id' => 'http://www.wikidata.org/entity/Q42',
+							'name' => 'Douglas Adams'
 						)
 					))),
 					array(
@@ -588,7 +596,8 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 						'Douglas Adams',
 						(object) array(
 							'@context' => 'http://schema.org',
-							'@id' => 'http://www.wikidata.org/entity/Q42'
+							'@id' => 'http://www.wikidata.org/entity/Q42',
+							'name' => 'Douglas Adams'
 						)
 					))),
 					array(
