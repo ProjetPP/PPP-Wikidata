@@ -19,7 +19,7 @@
 		"wikibase/data-model": "~2.5",
 		"addwiki/mediawiki-api-base": "~0.2",
 		"doctrine/cache": "~1.4",
-		"ppp/wikibase-entity-store": "*",
+		"ppp/wikibase-entity-store": "~0.1",
 		"ppp/data-model": "*",
 		"ppp/libmodule": "*"
 	},
