@@ -251,11 +251,4 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 			))
 		);
 	}
-
-	public function testWikibaseEntityIdFormatterPreloader() {
-		$this->assertInstanceOf(
-			'PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader',
-			$this->newFactory()->newWikibaseEntityIdFormatterPreloader()
-		);
-	}
 }

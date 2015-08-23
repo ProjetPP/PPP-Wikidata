@@ -184,16 +184,6 @@ class WikibaseResourceNodeFormatterFactory {
 		), $options);
 	}
 
-	public function newWikibaseEntityIdFormatterPreloader() {
-		return new WikibaseEntityIdFormatterPreloader(
-			$this->entityStore,
-			array(
-				$this->newMediawikiArticleProvider()
-			),
-			$this->languageCode
-		);
-	}
-
 	private function newMediawikiArticleProvider() {
 		return new MediawikiArticleProvider(
 			$this->sitesApi,
