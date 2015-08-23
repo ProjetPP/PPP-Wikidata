@@ -4,6 +4,7 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use Doctrine\Common\Cache\Cache;
 use Mediawiki\Api\MediawikiApi;
+use PPP\Wikidata\Cache\JsonLdDataValueFormatterCache;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
 use PPP\Wikidata\ValueFormatters\JsonLd\DispatchingJsonLdDataValueFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityOntology;
@@ -21,7 +22,6 @@ use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdQuantityFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdStringFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdTimeFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdUnknownFormatter;
-use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleProvider;
 use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
@@ -108,12 +108,18 @@ class WikibaseResourceNodeFormatterFactory {
 	private function newSimpleJsonLdEntityIdFormatter(FormatterOptions $options) {
 		$entityFormatter = new JsonLdEntityFormatter($options);
 
-		return new JsonLdEntityIdFormatter(
-			$this->entityStore->getItemLookup(),
-			new JsonLdItemFormatter($entityFormatter, $options),
-			$this->entityStore->getPropertyLookup(),
-			new JsonLdPropertyFormatter($entityFormatter, $options),
-			$options
+		return new CachedJsonLdDataValueFormatter(
+			new JsonLdEntityIdFormatter(
+				$this->entityStore->getItemLookup(),
+				new JsonLdItemFormatter($entityFormatter, $options),
+				$this->entityStore->getPropertyLookup(),
+				new JsonLdPropertyFormatter($entityFormatter, $options),
+				$options
+			),
+			new JsonLdDataValueFormatterCache(
+				$this->cache,
+				'simpleentityid'
+			)
 		);
 	}
 
@@ -124,16 +130,22 @@ class WikibaseResourceNodeFormatterFactory {
 			$options
 		);
 
-		return new JsonLdEntityIdFormatter(
-			$this->entityStore->getItemLookup(),
-			new ExtendedJsonLdItemFormatter(
-				new JsonLdItemFormatter($entityFormatter, $options),
-				$this->newMediawikiArticleProvider(),
+		return new CachedJsonLdDataValueFormatter(
+			new JsonLdEntityIdFormatter(
+				$this->entityStore->getItemLookup(),
+				new ExtendedJsonLdItemFormatter(
+					new JsonLdItemFormatter($entityFormatter, $options),
+					$this->newMediawikiArticleProvider(),
+					$options
+				),
+				$this->entityStore->getPropertyLookup(),
+				new JsonLdPropertyFormatter($entityFormatter, $options),
 				$options
 			),
-			$this->entityStore->getPropertyLookup(),
-			new JsonLdPropertyFormatter($entityFormatter, $options),
-			$options
+			new JsonLdDataValueFormatterCache(
+				$this->cache,
+				'extendedentityid'
+			)
 		);
 	}
 
