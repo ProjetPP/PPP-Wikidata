@@ -156,7 +156,7 @@ class SpecificTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function buildAgeNode(TripleNode $node) {
-		$subjectNodes =  $this->resourceListNodeParser->parse($node->getSubject(), 'wikibase-item');
+		$subjectNodes = $this->resourceListNodeParser->parse($node->getSubject(), 'wikibase-item');
 		$ageValues = array();
 
 		/** @var WikibaseResourceNode $subjectNode */

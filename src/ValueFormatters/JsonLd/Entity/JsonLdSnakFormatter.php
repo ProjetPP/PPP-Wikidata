@@ -110,7 +110,7 @@ class JsonLdSnakFormatter extends ValueFormatterBase {
 			$this->getOption(self::OPT_ALLOWED_VOCABULARIES)
 		);
 
-		return '/^' . implode( '|', $escaped ) . '/';
+		return '/^' . implode('|', $escaped) . '/';
 	}
 
 	private function normalizePropertyIris($iris) {

@@ -6,7 +6,6 @@ use InvalidArgumentException;
 use OutOfBoundsException;
 use PPP\Wikidata\Wikipedia\MediawikiArticle;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
-use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleProvider;
 use stdClass;
 use ValueFormatters\FormatterOptions;

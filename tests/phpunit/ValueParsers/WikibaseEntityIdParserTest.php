@@ -3,7 +3,6 @@
 namespace PPP\Wikidata\ValueParsers;
 
 use Mediawiki\Api\MediawikiApi;
-use PPP\Wikidata\Cache\WikibaseEntityIdParserCache;
 use ValueParsers\Test\ValueParserTestBase;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Entity\EntityIdValue;

@@ -69,13 +69,13 @@ class JsonLdResourceFormatterTest extends ValueFormatterTestBase {
 		$withTypeLiteralFormatter->expects($this->once())
 			->method('format')
 			->with($this->equalTo(new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, '')))
-			->will($this->returnValue((object) array( '@type' => 'Date', '@value' => '1952-03-11')));
+			->will($this->returnValue((object) array('@type' => 'Date', '@value' => '1952-03-11')));
 
 		$withoutTypeLiteralFormatter = $this->getMock('PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter');
 		$withoutTypeLiteralFormatter->expects($this->once())
 			->method('format')
 			->with($this->equalTo(new MonolingualTextValue('en', 'foo')))
-			->will($this->returnValue((object) array( '@language' => 'en', '@value' => 'foo')));
+			->will($this->returnValue((object) array('@language' => 'en', '@value' => 'foo')));
 
 		return array(
 			array(

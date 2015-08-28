@@ -71,7 +71,7 @@ class MissingSubjectTripleNodeSimplifier implements NodeSimplifier {
 	}
 
 	private function isTripleWithMissingSubjectOperator(AbstractNode $node) {
-		if(!($node instanceof IntersectionNode || $node instanceof UnionNode) ) {
+		if(!($node instanceof IntersectionNode || $node instanceof UnionNode)) {
 			return false;
 		}
 
