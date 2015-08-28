@@ -9,7 +9,6 @@ use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdItemFormatter;
 use PPP\Wikidata\Wikipedia\MediawikiArticle;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
-use PPP\Wikidata\Wikipedia\MediawikiArticleImageProvider;
 use PPP\Wikidata\Wikipedia\MediawikiArticleProvider;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;

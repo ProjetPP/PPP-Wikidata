@@ -84,7 +84,7 @@ class WikibaseEntityIdParser extends StringValueParser {
 			//The term is not a valid QID
 		}
 
-		return $this->sortItemIds($itemIds);
+		return $this->sortItemIds(array_unique($itemIds));
 	}
 
 	private function getPropertyIdsForTerm(Term $term) {
@@ -96,7 +96,7 @@ class WikibaseEntityIdParser extends StringValueParser {
 			//The term is not a valid PID
 		}
 
-		return $propertyIds;
+		return array_unique($propertyIds);
 	}
 
 	private function filterItemIds(array $itemIds) {

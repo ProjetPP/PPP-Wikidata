@@ -83,7 +83,7 @@ class IsoTimeFormatter extends ValueFormatterBase {
 	}
 
 	private function explodeISOTime($time) {
-			if(!preg_match('/([+-]\d+)-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z/', $time, $m)) {
+		if(!preg_match('/([+-]\d+)-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z/', $time, $m)) {
 			throw new InvalidArgumentException('$time is not a valid time');
 		}
 

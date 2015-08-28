@@ -19,12 +19,6 @@ use PPP\Wikidata\ValueFormatters\StringFormatter;
 class ResourceListNodeFormatterTest extends NodeSimplifierBaseTest {
 
 	protected function buildSimplifier() {
-		$entityIdFormatterPreloaderMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\WikibaseEntityIdFormatterPreloader')
-			->disableOriginalConstructor()
-			->getMock();
-		$entityIdFormatterPreloaderMock->expects($this->any())
-			->method('preload');
-
 		$formatterMock = $this->getMock('ValueFormatters\ValueFormatter');
 		$formatterMock->expects($this->any())
 			->method('format')
@@ -32,8 +26,7 @@ class ResourceListNodeFormatterTest extends NodeSimplifierBaseTest {
 			->will($this->returnValue(new StringResourceNode('foo')));
 
 		return new ResourceListNodeFormatter(
-			$formatterMock,
-			$entityIdFormatterPreloaderMock
+			$formatterMock
 		);
 	}
 

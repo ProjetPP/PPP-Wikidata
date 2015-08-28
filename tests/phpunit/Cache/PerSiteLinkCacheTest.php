@@ -39,9 +39,10 @@ class PerSiteLinkCacheTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testContainsFalse() {
-		$cache = new PerSiteLinkCache(new ArrayCache(), 'test');
+		$cacheBackend = new ArrayCache();
+		$cache = new PerSiteLinkCache($cacheBackend, 'test');
 
-		$cache2 = new PerSiteLinkCache(new ArrayCache(), 'test2');
+		$cache2 = new PerSiteLinkCache($cacheBackend, 'test2');
 		$cache2->save(new MediawikiArticle(new SiteLink('enwiki', 'bar'), 'foo', 'en', 'http://test.org'));
 
 		$this->assertFalse($cache->contains(new SiteLink('enwiki', 'bar')));
