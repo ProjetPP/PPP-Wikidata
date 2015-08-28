@@ -83,7 +83,7 @@ abstract class PerSiteLinkProvider {
 		$result = array('continue' => '');
 		do {
 			$request['continue'] = $result['continue'];
-			$result =  $api->getRequest(new SimpleRequest($request['action'], $request));
+			$result = $api->getRequest(new SimpleRequest($request['action'], $request));
 			$finalResults = array_merge($finalResults, $this->parseResult($wikiId, $titles, $result));
 
 		} while(array_key_exists('continue', $result));

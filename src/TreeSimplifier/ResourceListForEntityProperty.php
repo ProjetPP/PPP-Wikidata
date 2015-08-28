@@ -39,7 +39,7 @@ class ResourceListForEntityProperty {
 	 */
 	public function getForEntityProperty(EntityId $entityId, PropertyId $propertyId) {
 		try {
-			$entity = $this->entityStore->getEntityDocumentLookup()->getEntityDocumentForId( $entityId );
+			$entity = $this->entityStore->getEntityDocumentLookup()->getEntityDocumentForId($entityId);
 		} catch(EntityNotFoundException $e) {
 			return array();
 		}

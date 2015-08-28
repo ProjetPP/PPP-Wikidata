@@ -6,7 +6,7 @@ use PPP\Module\ModuleEntryPoint;
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 
-$configFile = getenv( 'PPP_WIKIDATA_CONFIG' );
+$configFile = getenv('PPP_WIKIDATA_CONFIG');
 $configFile = $configFile ?: __DIR__ . '/../default-config.json';
 
 $entryPoint = new ModuleEntryPoint(new WikidataRequestHandler(
