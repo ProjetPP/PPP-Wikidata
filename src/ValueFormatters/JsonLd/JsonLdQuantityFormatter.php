@@ -60,6 +60,11 @@ class JsonLdQuantityFormatter extends ValueFormatterBase implements JsonLdDataVa
 		$resource->value = $this->decimalFormatter->format($value->getAmount());
 		$resource->minValue = $this->decimalFormatter->format($value->getLowerBound());
 		$resource->maxValue = $this->decimalFormatter->format($value->getUpperBound());
+
+		if($value->getUnit() !== '1') {
+			$resource->unitCode = $value->getUnit();
+		}
+
 		return $resource;
 	}
 }
