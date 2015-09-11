@@ -99,7 +99,7 @@ class WikibaseResourceNodeFormatterFactory {
 
 	private function newJsonLdQuantityFormatter(FormatterOptions $options) {
 		return new JsonLdQuantityFormatter(
-			new QuantityFormatter(new DecimalFormatter($options), $options),
+			new QuantityFormatter($options, new DecimalFormatter($options)),
 			new JsonLdDecimalFormatter($options),
 			$options
 		);

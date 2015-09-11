@@ -36,22 +36,11 @@ class JsonLdQuantityFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
-	 *
-	 * @return string
-	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\JsonLd\JsonLdQuantityFormatter';
-	}
-
-	/**
 	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getInstance(FormatterOptions $options) {
-		$class = $this->getFormatterClass();
-
-		return new $class(
-			new QuantityFormatter(new DecimalFormatter($options), $options),
+	protected function getInstance(FormatterOptions $options = null) {
+		return new JsonLdQuantityFormatter(
+			new QuantityFormatter($options, new DecimalFormatter($options)),
 			new JsonLdDecimalFormatter($options),
 			$options
 		);

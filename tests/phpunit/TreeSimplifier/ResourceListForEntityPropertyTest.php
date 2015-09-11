@@ -5,7 +5,6 @@ namespace PPP\Wikidata\TreeSimplifier;
 use DataValues\StringValue;
 use PPP\DataModel\ResourceListNode;
 use PPP\Wikidata\WikibaseResourceNode;
-use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Entity\EntityDocument;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -45,7 +44,7 @@ class ResourceListForEntityPropertyTest extends \PHPUnit_Framework_TestCase {
 					new ItemId('Q42'),
 					null,
 					null,
-					new StatementList(new Statement(new Claim(new PropertyValueSnak(new PropertyId('P10'), new StringValue('foo')))))
+					new StatementList(new Statement(new PropertyValueSnak(new PropertyId('P10'), new StringValue('foo'))))
 				),
 				new PropertyId('P10'),
 				new ResourceListNode(array(
@@ -57,7 +56,7 @@ class ResourceListForEntityPropertyTest extends \PHPUnit_Framework_TestCase {
 					new PropertyId('P1'),
 					null,
 					'string',
-					new StatementList(new Statement(new Claim(new PropertyValueSnak(new PropertyId('P10'), new StringValue('foo')))))
+					new StatementList(new Statement(new PropertyValueSnak(new PropertyId('P10'), new StringValue('foo'))))
 				),
 				new PropertyId('P10'),
 				new ResourceListNode(array(
@@ -69,7 +68,7 @@ class ResourceListForEntityPropertyTest extends \PHPUnit_Framework_TestCase {
 					new ItemId('Q42'),
 					null,
 					null,
-					new StatementList(new Statement(new Claim(new PropertyNoValueSnak(new PropertyId('P10')))))
+					new StatementList(new Statement(new PropertyNoValueSnak(new PropertyId('P10'))))
 				),
 				new PropertyId('P10'),
 				new ResourceListNode(array())

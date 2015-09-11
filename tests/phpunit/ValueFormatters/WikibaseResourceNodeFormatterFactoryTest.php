@@ -13,7 +13,6 @@ use DataValues\UnknownValue;
 use Doctrine\Common\Cache\ArrayCache;
 use PPP\DataModel\JsonLdResourceNode;
 use PPP\Wikidata\WikibaseResourceNode;
-use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -158,7 +157,7 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 				)
 			),
 			$this->newFactory()->newWikibaseResourceNodeFormatter()->format(
-				new WikibaseResourceNode('', new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, ''))
+				new WikibaseResourceNode('', new TimeValue('+1952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, 'http://www.wikidata.org/entity/Q1985786'))
 			)
 		);
 	}
@@ -247,7 +246,7 @@ class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCa
 			new Fingerprint(new TermList(array(new Term('en', 'geo coordinates')))),
 			'globe-coordinate',
 			new StatementList(array(
-				new Statement(new Claim(new PropertyValueSnak(new PropertyId('P1628'), new StringValue('http://schema.org/geo'))))
+				new Statement(new PropertyValueSnak(new PropertyId('P1628'), new StringValue('http://schema.org/geo')))
 			))
 		);
 	}

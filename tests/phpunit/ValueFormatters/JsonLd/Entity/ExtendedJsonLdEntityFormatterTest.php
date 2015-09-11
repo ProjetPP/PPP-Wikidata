@@ -1,11 +1,9 @@
 <?php
 
-namespace PPP\Wikidata\ValueFormatters;
+namespace PPP\Wikidata\ValueFormatters\JsonLd\Entity;
 
-use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
-use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -54,18 +52,9 @@ class ExtendedJsonLdEntityFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
-	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\JsonLd\Entity\ExtendedJsonLdEntityFormatter';
-	}
-
-	/**
 	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getInstance(FormatterOptions $options) {
-		$class = $this->getFormatterClass();
-
+	protected function getInstance(FormatterOptions $options = null) {
 		$snakFormatterMock = $this->getMock('ValueFormatters\ValueFormatter');
 		$snakFormatterMock->expects($this->any())
 			->method('format')
@@ -74,7 +63,7 @@ class ExtendedJsonLdEntityFormatterTest extends ValueFormatterTestBase {
 				'gender' => (object) array('name' => 'foo')
 			));
 
-		return new $class(
+		return new ExtendedJsonLdEntityFormatter(
 			new JsonLdEntityFormatter($options),
 			$snakFormatterMock,
 			$options
@@ -91,7 +80,7 @@ class ExtendedJsonLdEntityFormatterTest extends ValueFormatterTestBase {
 			),
 			null,
 			new StatementList(array(
-				new Statement(new Claim(new PropertyValueSnak(new PropertyId('P21'), new EntityIdValue(new ItemId('Q1')))))
+				new Statement(new PropertyValueSnak(new PropertyId('P21'), new EntityIdValue(new ItemId('Q1'))))
 			))
 		);
 	}

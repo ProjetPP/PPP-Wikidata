@@ -1,8 +1,7 @@
 <?php
 
-namespace PPP\Wikidata\ValueFormatters;
+namespace PPP\Wikidata\ValueFormatters\JsonLd\Entity;
 
-use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
@@ -38,19 +37,10 @@ class JsonLdPropertyFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
-	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdPropertyFormatter';
-	}
-
-	/**
 	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getInstance(FormatterOptions $options) {
-		$class = $this->getFormatterClass();
-
-		return new $class(
+	protected function getInstance(FormatterOptions $options = null) {
+		return new JsonLdPropertyFormatter(
 			new JsonLdEntityFormatter($options),
 			$options
 		);

@@ -114,7 +114,7 @@ class WikibaseEntityIdParser extends StringValueParser {
 
 	private function shouldItemBeIgnored(Item $item) {
 		/** @var Statement $statement */
-		foreach($item->getStatements()->getWithPropertyId(new PropertyId(self::INSTANCEOF_PID)) as $statement) {
+		foreach($item->getStatements()->getByPropertyId(new PropertyId(self::INSTANCEOF_PID)) as $statement) {
 			$mainSnak = $statement->getMainSnak();
 			if(
 				$mainSnak instanceof PropertyValueSnak &&

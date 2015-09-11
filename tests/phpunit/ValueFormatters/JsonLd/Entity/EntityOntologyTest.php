@@ -4,7 +4,6 @@ namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\StringValue;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityOntology;
-use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
@@ -39,7 +38,7 @@ class EntityOntologyTest extends \PHPUnit_Framework_TestCase {
 			null,
 			'string',
 			new StatementList(array(
-				new Statement(new Claim(new PropertyValueSnak(new PropertyId('P1628'), new StringValue('http://schema.org/gender'))))
+				new Statement(new PropertyValueSnak(new PropertyId('P1628'), new StringValue('http://schema.org/gender')))
 			))
 		);
 	}

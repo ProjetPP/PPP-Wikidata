@@ -23,9 +23,9 @@ class JsonLdGlobeCoordinateFormatter extends ValueFormatterBase implements JsonL
 
 	/**
 	 * @param GlobeCoordinateFormatter $globeCoordinateFormatter
-	 * @param FormatterOptions $options
+	 * @param FormatterOptions|null $options
 	 */
-	public function __construct(GlobeCoordinateFormatter $globeCoordinateFormatter, FormatterOptions $options) {
+	public function __construct(GlobeCoordinateFormatter $globeCoordinateFormatter, FormatterOptions $options = null) {
 		$this->globeCoordinateFormatter = $globeCoordinateFormatter;
 
 		parent::__construct($options);

@@ -6,7 +6,7 @@ use DataValues\StringValue;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
-use Wikibase\DataModel\StatementListProvider;
+use Wikibase\DataModel\Statement\StatementListProvider;
 
 /**
  * @licence GPLv2+
@@ -45,7 +45,7 @@ class EntityOntology {
 	}
 
 	private function getTextualContentForProperty(StatementListProvider $statementListProvider, PropertyId $propertyId) {
-		$snaks = $statementListProvider->getStatements()->getWithPropertyId($propertyId)->getMainSnaks();
+		$snaks = $statementListProvider->getStatements()->getByPropertyId($propertyId)->getMainSnaks();
 
 		$iris = array();
 		foreach($snaks as $snak) {

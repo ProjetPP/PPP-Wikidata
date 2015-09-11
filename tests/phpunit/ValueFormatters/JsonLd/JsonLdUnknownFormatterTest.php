@@ -1,8 +1,9 @@
 <?php
 
-namespace PPP\Wikidata\ValueFormatters;
+namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\UnknownValue;
+use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
@@ -26,11 +27,9 @@ class JsonLdUnknownFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
-	 *
-	 * @return string
+	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\JsonLd\JsonLdUnknownFormatter';
+	protected function getInstance(FormatterOptions $options = null) {
+		return new JsonLdUnknownFormatter($options);
 	}
 }

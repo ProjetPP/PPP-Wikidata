@@ -1,8 +1,9 @@
 <?php
 
-namespace PPP\Wikidata\ValueFormatters;
+namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\StringValue;
+use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
@@ -34,9 +35,9 @@ class DispatchingJsonLdDataValueFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
+	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\JsonLd\DispatchingJsonLdDataValueFormatter';
+	protected function getInstance(FormatterOptions $options = null) {
+		return null;
 	}
 }
