@@ -118,19 +118,9 @@ class ExtendedJsonLdItemFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
-	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\ExtendedJsonLdItemFormatter';
-	}
-
-
-	/**
 	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getInstance(FormatterOptions $options) {
-		$class = $this->getFormatterClass();
-
+	protected function getInstance(FormatterOptions $options = null) {
 		$articleHeaderCache = new PerSiteLinkCache(new ArrayCache(), 'wphead');
 		$articleHeaderCache->save(new MediawikiArticle(
 			new SiteLink('enwiki', 'Douglas Adams'),
@@ -145,7 +135,7 @@ class ExtendedJsonLdItemFormatterTest extends ValueFormatterTestBase {
 			)
 		));
 
-		return new $class(
+		return new ExtendedJsonLdItemFormatter(
 			new JsonLdItemFormatter(new JsonLdEntityFormatter($options), $options),
 			new MediawikiArticleProvider(
 				array(

@@ -3,6 +3,7 @@
 namespace PPP\Wikidata\ValueParsers;
 
 use Mediawiki\Api\MediawikiApi;
+use ValueParsers\ParserOptions;
 use ValueParsers\Test\ValueParserTestBase;
 use ValueParsers\ValueParser;
 use Wikibase\DataModel\Entity\EntityIdValue;
@@ -77,7 +78,7 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	 * @see ValueParserTestBase::invalidInputProvider
 	 */
 	public function invalidInputProvider() {
-		return parent::invalidInputProvider() + array(
+		return array(
 			array(
 				new ItemId('Q23')
 			)
@@ -85,18 +86,10 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	}
 
 	/**
-	 * @see ValueParserTestBase::getParserClass
-	 */
-	protected function getParserClass() {
-		return 'PPP\Wikidata\ValueParsers\WikibaseEntityIdParser';
-	}
-
-	/**
 	 * @see ValueParserTestBase::getInstance
 	 */
 	protected function getInstance($entityType = 'item') {
-		$class = $this->getParserClass();
-		return new $class(
+		return new WikibaseEntityIdParser(
 			new ApiEntityStore(new MediawikiApi('http://www.wikidata.org/w/api.php')),
 			$this->newParserOptions($entityType)
 		);
@@ -106,7 +99,7 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 	 * @see ValueParserTestBase::newParserOptions
 	 */
 	protected function newParserOptions($entityType = 'item') {
-		$parserOptions = parent::newParserOptions();
+		$parserOptions = new ParserOptions();
 
 		$parserOptions->setOption(ValueParser::OPT_LANG, 'fr');
 		$parserOptions->setOption(WikibaseEntityIdParser::OPT_ENTITY_TYPE, $entityType);

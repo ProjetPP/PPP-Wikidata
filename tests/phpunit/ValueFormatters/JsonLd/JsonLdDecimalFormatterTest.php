@@ -3,6 +3,7 @@
 namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\DecimalValue;
+use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
@@ -36,11 +37,9 @@ class JsonLdDecimalFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
-	 *
-	 * @return string
+	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDecimalFormatter';
+	protected function getInstance(FormatterOptions $options = null) {
+		return new JsonLdDecimalFormatter($options);
 	}
 }

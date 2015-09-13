@@ -9,7 +9,6 @@ use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\StringResourceNode;
 use PPP\DataModel\TripleNode;
 use PPP\Wikidata\WikibaseResourceNode;
-use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -114,9 +113,9 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		//Value
 		$douglasAdamItem = new Item();
 		$douglasAdamItem->setId(new ItemId('Q42'));
-		$birthPlaceStatement = new Statement(new Claim(
+		$birthPlaceStatement = new Statement(
 			new PropertyValueSnak(new PropertyId('P214'), new StringValue('113230702'))
-		));
+		);
 		$birthPlaceStatement->setGuid('42');
 		$douglasAdamItem->getStatements()->addStatement($birthPlaceStatement);
 		$list[] = array(
@@ -142,7 +141,7 @@ class MissingObjectTripleNodeSimplifierTest extends NodeSimplifierBaseTest {
 		//SomeValue
 		$douglasAdamItem = new Item();
 		$douglasAdamItem->setId(new ItemId('Q42'));
-		$birthPlaceStatement = new Statement(new Claim(new PropertySomeValueSnak(new PropertyId('P19'))));
+		$birthPlaceStatement = new Statement(new PropertySomeValueSnak(new PropertyId('P19')));
 		$birthPlaceStatement->setGuid('42');
 		$douglasAdamItem->getStatements()->addStatement($birthPlaceStatement);
 		$list[] = array(

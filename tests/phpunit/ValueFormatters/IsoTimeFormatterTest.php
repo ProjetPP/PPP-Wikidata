@@ -3,6 +3,7 @@
 namespace PPP\Wikidata\ValueFormatters;
 
 use DataValues\TimeValue;
+use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
@@ -19,50 +20,48 @@ class IsoTimeFormatterTest extends ValueFormatterTestBase {
 	public function validProvider() {
 		return array(
 			array(
-				new TimeValue('+00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, 'http://www.wikidata.org/entity/Q1985786'),
+				new TimeValue('+1952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, 'http://www.wikidata.org/entity/Q1985786'),
 				'1952-03-11'
 			),
 			array(
-				new TimeValue('-00000001952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, ''),
+				new TimeValue('-1952-03-11T00:00:00Z', 0, 0, 0, TimeValue::PRECISION_DAY, 'http://www.wikidata.org/entity/Q1985786'),
 				'-1952-03-11'
 			),
 			array(
-				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_YEAR, ''),
+				new TimeValue('+1952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_YEAR, 'http://www.wikidata.org/entity/Q1985786'),
 				'1952'
 			),
 			array(
-				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_MONTH, ''),
+				new TimeValue('+1952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_MONTH, 'http://www.wikidata.org/entity/Q1985786'),
 				'1952-03'
 			),
 			array(
-				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_DAY, ''),
+				new TimeValue('+1952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_DAY, 'http://www.wikidata.org/entity/Q1985786'),
 				'1952-03-11'
 			),
 			array(
-				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_HOUR, ''),
+				new TimeValue('+1952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_HOUR, 'http://www.wikidata.org/entity/Q1985786'),
 				'1952-03-11T01+01:30'
 			),
 			array(
-				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_MINUTE, ''),
+				new TimeValue('+1952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_MINUTE, 'http://www.wikidata.org/entity/Q1985786'),
 				'1952-03-11T01:01+01:30'
 			),
 			array(
-				new TimeValue('+00000001952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_SECOND, ''),
+				new TimeValue('+1952-03-11T01:01:01Z', 90, 0, 0, TimeValue::PRECISION_SECOND, 'http://www.wikidata.org/entity/Q1985786'),
 				'1952-03-11T01:01:01+01:30'
 			),
 			array(
-				new TimeValue('+00000001952-03-11T01:01:01Z', -90, 0, 0, TimeValue::PRECISION_SECOND, ''),
+				new TimeValue('+1952-03-11T01:01:01Z', -90, 0, 0, TimeValue::PRECISION_SECOND, 'http://www.wikidata.org/entity/Q1985786'),
 				'1952-03-11T01:01:01-01:30'
 			),
 		);
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
-	 *
-	 * @return string
+	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\IsoTimeFormatter';
+	protected function getInstance(FormatterOptions $options = null) {
+		return new IsoTimeFormatter($options);
 	}
 }

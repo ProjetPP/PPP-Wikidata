@@ -5,7 +5,6 @@ namespace PPP\Wikidata\ValueFormatters\JsonLd\Entity;
 use DataValues\StringValue;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
-use Wikibase\DataModel\Claim\Claim;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
@@ -66,10 +65,10 @@ class JsonLdSnakFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
+	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdSnakFormatter';
+	protected function getInstance(FormatterOptions $options = null) {
+		return null;
 	}
 
 	private function getFormatter(PropertyLookup $propertyLookup) {
@@ -99,8 +98,8 @@ class JsonLdSnakFormatterTest extends ValueFormatterTestBase {
 			null,
 			'string',
 			new StatementList(array(
-				new Statement(new Claim(new PropertyValueSnak(new PropertyId('P1628'), new StringValue('http://schema.org/gender')))),
-				new Statement(new Claim(new PropertyValueSnak(new PropertyId('P1628'), new StringValue('http://xmlns.com/foaf/0.1/gender'))))
+				new Statement(new PropertyValueSnak(new PropertyId('P1628'), new StringValue('http://schema.org/gender'))),
+				new Statement(new PropertyValueSnak(new PropertyId('P1628'), new StringValue('http://xmlns.com/foaf/0.1/gender')))
 			))
 		);
 	}

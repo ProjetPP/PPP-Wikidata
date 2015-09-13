@@ -1,11 +1,7 @@
 <?php
 
-namespace PPP\Wikidata\ValueFormatters;
+namespace PPP\Wikidata\ValueFormatters\JsonLd\Entity;
 
-use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
-use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityIdFormatter;
-use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdItemFormatter;
-use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdPropertyFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
@@ -120,10 +116,10 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
+	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityIdFormatter';
+	protected function getInstance(FormatterOptions $options = null) {
+		return null;
 	}
 
 	private function getFormatter(ItemLookup $itemLookup, PropertyLookup $propertyLookup) {

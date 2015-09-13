@@ -34,20 +34,9 @@ class JsonLdGlobeCoordinateFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
-	 *
-	 * @return string
-	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\JsonLd\JsonLdGlobeCoordinateFormatter';
-	}
-
-	/**
 	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getInstance(FormatterOptions $options) {
-		$class = $this->getFormatterClass();
-
-		return new $class(new GlobeCoordinateFormatter($options), $options);
+	protected function getInstance(FormatterOptions $options = null) {
+		return new JsonLdGlobeCoordinateFormatter(new GlobeCoordinateFormatter($options), $options);
 	}
 }

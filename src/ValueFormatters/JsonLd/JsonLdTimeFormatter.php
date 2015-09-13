@@ -23,11 +23,11 @@ class JsonLdTimeFormatter extends ValueFormatterBase implements JsonLdDataValueF
 
 	/**
 	 * @param IsoTimeFormatter $timeToIsoFormatter
-	 * @param FormatterOptions $options
+	 * @param FormatterOptions|null $options
 	 */
 	public function __construct(
 		IsoTimeFormatter $timeToIsoFormatter,
-		FormatterOptions $options
+		FormatterOptions $options = null
 	) {
 		$this->timeToIsoFormatter = $timeToIsoFormatter;
 

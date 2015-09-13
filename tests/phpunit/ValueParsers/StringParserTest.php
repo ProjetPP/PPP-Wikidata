@@ -3,6 +3,7 @@
 namespace PPP\Wikidata\ValueParsers;
 
 use DataValues\StringValue;
+use ValueParsers\ParserOptions;
 use ValueParsers\Test\ValueParserTestBase;
 
 /**
@@ -29,7 +30,7 @@ class StringParserTest extends ValueParserTestBase {
 	 * @see ValueParserTestBase::invalidInputProvider
 	 */
 	public function invalidInputProvider() {
-		return parent::invalidInputProvider() + array(
+		return array(
 			array(
 				false
 			)
@@ -37,9 +38,9 @@ class StringParserTest extends ValueParserTestBase {
 	}
 
 	/**
-	 * @see ValueParserTestBase::getParserClass
+	 * @see ValueParserTestBase::getInstance
 	 */
-	protected function getParserClass() {
-		return 'PPP\Wikidata\ValueParsers\StringParser';
+	protected function getInstance(ParserOptions $options = null) {
+		return new StringParser($options);
 	}
 }

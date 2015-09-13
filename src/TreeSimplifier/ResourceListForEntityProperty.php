@@ -53,7 +53,7 @@ class ResourceListForEntityProperty {
 			return array();
 		}
 
-		return $entity->getStatements()->getWithPropertyId($propertyId)->getBestStatements()->getMainSnaks();
+		return $entity->getStatements()->getByPropertyId($propertyId)->getBestStatements()->getMainSnaks();
 	}
 
 	private function snaksToNodes(array $snaks, EntityId $fromSubject, PropertyId $fromProperty) {

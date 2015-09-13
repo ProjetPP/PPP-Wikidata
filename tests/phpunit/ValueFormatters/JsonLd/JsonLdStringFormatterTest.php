@@ -3,6 +3,7 @@
 namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\StringValue;
+use ValueFormatters\FormatterOptions;
 use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
@@ -26,11 +27,9 @@ class JsonLdStringFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getFormatterClass
-	 *
-	 * @return string
+	 * @see ValueFormatterTestBase::getInstance
 	 */
-	protected function getFormatterClass() {
-		return 'PPP\Wikidata\ValueFormatters\JsonLd\JsonLdStringFormatter';
+	protected function getInstance(FormatterOptions $options = null) {
+		return new JsonLdStringFormatter($options);
 	}
 }

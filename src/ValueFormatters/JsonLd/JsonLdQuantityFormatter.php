@@ -29,12 +29,12 @@ class JsonLdQuantityFormatter extends ValueFormatterBase implements JsonLdDataVa
 	/**
 	 * @param QuantityFormatter $quantityFormatter
 	 * @param JsonLdDecimalFormatter $decimalFormatter
-	 * @param FormatterOptions $options
+	 * @param FormatterOptions|null $options
 	 */
 	public function __construct(
 		QuantityFormatter $quantityFormatter,
 		JsonLdDecimalFormatter $decimalFormatter,
-		FormatterOptions $options
+		FormatterOptions $options = null
 	) {
 		$this->quantityFormatter = $quantityFormatter;
 		$this->decimalFormatter = $decimalFormatter;
