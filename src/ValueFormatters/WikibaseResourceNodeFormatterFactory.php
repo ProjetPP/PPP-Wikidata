@@ -7,6 +7,7 @@ use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\JsonLdDataValueFormatterCache;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
 use PPP\Wikidata\ValueFormatters\JsonLd\DispatchingJsonLdDataValueFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityIriParser;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityOntology;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\ExtendedJsonLdEntityFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
@@ -25,8 +26,10 @@ use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdUnknownFormatter;
 use PPP\Wikidata\Wikipedia\MediawikiArticleProvider;
 use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
+use PPP\Wikidata\ValueFormatters\JsonLd\Entity\UnitSymbolFormatter;
 use ValueFormatters\QuantityFormatter;
 use ValueFormatters\ValueFormatter;
+use Wikibase\DataModel\Entity\BasicEntityIdParser;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\EntityStore\EntityStore;
 
@@ -99,7 +102,12 @@ class WikibaseResourceNodeFormatterFactory {
 
 	private function newJsonLdQuantityFormatter(FormatterOptions $options) {
 		return new JsonLdQuantityFormatter(
-			new QuantityFormatter($options, new DecimalFormatter($options)),
+			new QuantityFormatter(
+				$options,
+				new DecimalFormatter($options),
+				$this->newUnitSymbolFormatter($options),
+				'$1 $2'
+			),
 			new JsonLdDecimalFormatter($options),
 			$options
 		);
@@ -152,9 +160,7 @@ class WikibaseResourceNodeFormatterFactory {
 	private function newSnakFormatter(JsonLdDataValueFormatter $dataValueFormatter, FormatterOptions $options) {
 		return new JsonLdSnakFormatter(
 			$this->entityStore->getPropertyLookup(),
-			new EntityOntology(array(
-				EntityOntology::OWL_EQUIVALENT_PROPERTY => new PropertyId('P1628')
-			)),
+			$this->newEntityOntology(),
 			$dataValueFormatter,
 			$options
 		);
@@ -182,6 +188,22 @@ class WikibaseResourceNodeFormatterFactory {
 			'unknown' => new JsonLdUnknownFormatter($options),
 			'wikibase-entityid' => $this->newExtendedJsonLdEntityIdFormatter($options)
 		), $options);
+	}
+
+	private function newUnitSymbolFormatter(FormatterOptions $options) {
+		return new UnitSymbolFormatter(
+			new EntityIriParser(new BasicEntityIdParser()),
+			$this->newEntityOntology(),
+			$this->entityStore->getItemLookup(),
+			$options
+		);
+	}
+
+	private function newEntityOntology() {
+		return new EntityOntology(array(
+			EntityOntology::OWL_EQUIVALENT_PROPERTY => new PropertyId('P1628'),
+			EntityOntology::QUDT_SYMBOL => new PropertyId('P558')
+		));
 	}
 
 	private function newMediawikiArticleProvider() {

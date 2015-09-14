@@ -12,7 +12,6 @@ use ValueFormatters\ValueFormatterBase;
 /**
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
- * @todo support units
  */
 class JsonLdQuantityFormatter extends ValueFormatterBase implements JsonLdDataValueFormatter {
 
