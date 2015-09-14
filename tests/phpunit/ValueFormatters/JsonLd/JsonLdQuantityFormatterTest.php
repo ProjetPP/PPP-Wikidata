@@ -32,6 +32,17 @@ class JsonLdQuantityFormatterTest extends ValueFormatterTestBase {
 					'maxValue' => (object) array('@type' => 'Integer', '@value' => 1235),
 				)
 			),
+			array(
+				new QuantityValue(new DecimalValue(1234), 'http://www.wikidata.org/entity/Q11573', new DecimalValue(1234), new DecimalValue(1234)),
+				(object) array(
+					'@type' => 'QuantitativeValue',
+					'name' => '1234 m',
+					'value' => (object) array('@type' => 'Integer', '@value' => 1234),
+					'minValue' => (object) array('@type' => 'Integer', '@value' => 1234),
+					'maxValue' => (object) array('@type' => 'Integer', '@value' => 1234),
+					'unitCode' => 'http://www.wikidata.org/entity/Q11573'
+				)
+			),
 		);
 	}
 
@@ -39,8 +50,14 @@ class JsonLdQuantityFormatterTest extends ValueFormatterTestBase {
 	 * @see ValueFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
+		$vocabularyUriFormatter = $this->getMock('\ValueFormatters\ValueFormatter');
+		$vocabularyUriFormatter->expects($this->any())
+			->method('format')
+			->with($this->equalTo('http://www.wikidata.org/entity/Q11573'))
+			->will($this->returnValue('m'));
+
 		return new JsonLdQuantityFormatter(
-			new QuantityFormatter($options, new DecimalFormatter($options)),
+			new QuantityFormatter($options, new DecimalFormatter($options), $vocabularyUriFormatter, '$1 $2'),
 			new JsonLdDecimalFormatter($options),
 			$options
 		);

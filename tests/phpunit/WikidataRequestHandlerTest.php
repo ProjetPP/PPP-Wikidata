@@ -164,6 +164,37 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			),
 			array(
 				new ModuleRequest(
+					'en',
+					new TripleNode(
+						new ResourceListNode(array(new StringResourceNode('Q243'))),
+						new ResourceListNode(array(new StringResourceNode('P2048'))),
+						new MissingNode()
+					),
+					'a'
+				),
+				array(new ModuleResponse(
+					'en',
+					new ResourceListNode(array(
+						new JsonLdResourceNode(
+							'324 m',
+							(object) array(
+								'@context' => 'http://schema.org',
+								'@type' => 'QuantitativeValue',
+								'value' => (object) array('@type' => 'Integer', '@value' => 324),
+								'maxValue' => (object) array('@type' => 'Integer', '@value' => 324),
+								'minValue' => (object) array('@type' => 'Integer', '@value' => 324),
+								'name' => '324 m',
+								'unitCode' => 'http://www.wikidata.org/entity/Q11573'
+							)
+						)
+					)),
+					array(
+						'relevance' => 1
+					)
+				))
+			),
+			array(
+				new ModuleRequest(
 					'ru',
 					new TripleNode(
 						new MissingNode(),
