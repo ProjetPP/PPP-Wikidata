@@ -184,7 +184,10 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 								'maxValue' => (object) array('@type' => 'Integer', '@value' => 324),
 								'minValue' => (object) array('@type' => 'Integer', '@value' => 324),
 								'name' => '324 m',
-								'unitCode' => 'http://www.wikidata.org/entity/Q11573'
+								'unitCode' => 'http://www.wikidata.org/entity/Q11573',
+								'@reverse' => (object) array(
+									'height' => (object) array('@id' => 'http://www.wikidata.org/entity/Q243')
+								)
 							)
 						)
 					)),
@@ -549,14 +552,14 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 					'en',
 					new UnionNode(array(
 						new TripleNode(
-							new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
-							new ResourceListNode(array(new StringResourceNode('VIAF'))),
-							new MissingNode()
-						),
-						new TripleNode(
 							new MissingNode(),
 							new ResourceListNode(array(new StringResourceNode('VIAF of'))),
 							new ResourceListNode(array(new StringResourceNode('Douglas Adams')))
+						),
+						new TripleNode(
+							new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+							new ResourceListNode(array(new StringResourceNode('VIAF'))),
+							new MissingNode()
 						)
 					)),
 					'a'
