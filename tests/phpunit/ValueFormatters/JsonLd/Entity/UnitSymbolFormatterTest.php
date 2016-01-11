@@ -8,7 +8,6 @@ use ValueFormatters\Test\ValueFormatterTestBase;
 use Wikibase\DataModel\Entity\EntityIdParsingException;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Entity\ItemNotFoundException;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\Entity\UnitSymbolFormatter
@@ -28,7 +27,7 @@ class UnitSymbolFormatterTest extends ValueFormatterTestBase {
 			->with($this->equalTo('http://www.wikidata.org/entity/Q11573'))
 			->willReturn(new ItemId('Q11573'));
 
-		$itemLookupMock = $this->getMock('Wikibase\DataModel\Entity\ItemLookup');
+		$itemLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\ItemLookup');
 		$itemLookupMock->expects($this->once())
 			->method('getItemForId')
 			->with($this->equalTo(new ItemId('Q11573')))
@@ -61,7 +60,7 @@ class UnitSymbolFormatterTest extends ValueFormatterTestBase {
 			->with($this->equalTo('http://www.wikidata.org/entity/Q11573'))
 			->willThrowException(new EntityIdParsingException());
 
-		$itemLookupMock = $this->getMock('Wikibase\DataModel\Entity\ItemLookup');
+		$itemLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\ItemLookup');
 		$entityOntologyMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityOntology')
 			->disableOriginalConstructor()
 			->getMock();
@@ -78,11 +77,11 @@ class UnitSymbolFormatterTest extends ValueFormatterTestBase {
 			->with($this->equalTo('http://www.wikidata.org/entity/Q11573'))
 			->willReturn(new ItemId('Q11573'));
 
-		$itemLookupMock = $this->getMock('Wikibase\DataModel\Entity\ItemLookup');
+		$itemLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\ItemLookup');
 		$itemLookupMock->expects($this->once())
 			->method('getItemForId')
 			->with($this->equalTo(new ItemId('Q11573')))
-			->willThrowException(new ItemNotFoundException(new ItemId('Q11573')));
+			->willReturn(null);
 
 		$entityOntologyMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityOntology')
 			->disableOriginalConstructor()
@@ -100,7 +99,7 @@ class UnitSymbolFormatterTest extends ValueFormatterTestBase {
 			->with($this->equalTo('http://www.wikidata.org/entity/Q11573'))
 			->willReturn(new ItemId('Q11573'));
 
-		$itemLookupMock = $this->getMock('Wikibase\DataModel\Entity\ItemLookup');
+		$itemLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\ItemLookup');
 		$itemLookupMock->expects($this->once())
 			->method('getItemForId')
 			->with($this->equalTo(new ItemId('Q11573')))

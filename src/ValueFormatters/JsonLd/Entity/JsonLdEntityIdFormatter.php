@@ -10,12 +10,10 @@ use ValueFormatters\ValueFormatterBase;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Entity\ItemLookup;
-use Wikibase\DataModel\Entity\ItemNotFoundException;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\DataModel\Entity\PropertyLookup;
-use Wikibase\DataModel\Entity\PropertyNotFoundException;
+use Wikibase\DataModel\Services\Lookup\ItemLookup;
+use Wikibase\DataModel\Services\Lookup\PropertyLookup;
 
 /**
  * @licence GPLv2+
@@ -89,9 +87,8 @@ class JsonLdEntityIdFormatter extends ValueFormatterBase implements JsonLdDataVa
 	}
 
 	private function itemIdToJsonLd(ItemId $itemId) {
-		try {
-			$item = $this->itemLookup->getItemForId($itemId);
-		} catch(ItemNotFoundException $e) {
+		$item = $this->itemLookup->getItemForId($itemId);
+		if($item === null) {
 			$item = new Item($itemId);
 		}
 
@@ -99,9 +96,8 @@ class JsonLdEntityIdFormatter extends ValueFormatterBase implements JsonLdDataVa
 	}
 
 	private function propertyIdToJsonLd(PropertyId $propertyId) {
-		try {
-			$property = $this->propertyLookup->getPropertyForId($propertyId);
-		} catch(PropertyNotFoundException $e) {
+		$property = $this->propertyLookup->getPropertyForId($propertyId);
+		if($property === null) {
 			$property = new Property($propertyId, null, '');
 		}
 

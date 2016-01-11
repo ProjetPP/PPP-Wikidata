@@ -9,8 +9,7 @@ use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\DataModel\Entity\PropertyLookup;
-use Wikibase\DataModel\Entity\PropertyNotFoundException;
+use Wikibase\DataModel\Services\Lookup\PropertyLookup;
 use Wikibase\DataModel\Snak\PropertyNoValueSnak;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Statement\Statement;
@@ -28,17 +27,17 @@ class JsonLdSnakFormatterTest extends ValueFormatterTestBase {
 	 * @see ValueFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
-		$withPropertyLookupMock = $this->getMock('Wikibase\DataModel\Entity\PropertyLookup');
+		$withPropertyLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\PropertyLookup');
 		$withPropertyLookupMock->expects($this->once())
 			->method('getPropertyForId')
 			->with($this->equalTo(new PropertyId('P21')))
 			->willReturn($this->getP21());
 
-		$withoutPropertyLookupMock = $this->getMock('Wikibase\DataModel\Entity\PropertyLookup');
+		$withoutPropertyLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\PropertyLookup');
 		$withoutPropertyLookupMock->expects($this->once())
 			->method('getPropertyForId')
 			->with($this->equalTo(new PropertyId('P21')))
-			->willThrowException(new PropertyNotFoundException(new PropertyId('P21')));
+			->willReturn(null);
 
 		return array(
 			array(

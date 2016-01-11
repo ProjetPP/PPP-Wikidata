@@ -7,8 +7,7 @@ use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatterBase;
 use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\DataModel\Entity\PropertyLookup;
-use Wikibase\DataModel\Entity\PropertyNotFoundException;
+use Wikibase\DataModel\Services\Lookup\PropertyLookup;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Snak\Snak;
 
@@ -83,9 +82,8 @@ class JsonLdSnakFormatter extends ValueFormatterBase {
 	}
 
 	private function getPropertyIris(PropertyId $propertyId) {
-		try {
-			$property = $this->propertyLookup->getPropertyForId($propertyId);
-		} catch(PropertyNotFoundException $e) {
+		$property = $this->propertyLookup->getPropertyForId($propertyId);
+		if($property === null) {
 			return array();
 		}
 

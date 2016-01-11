@@ -3,7 +3,6 @@
 namespace PPP\Wikidata\TreeSimplifier;
 
 use DateTime;
-use PPP\Module\TreeSimplifier\IntersectionNodeSimplifier;
 use PPP\Module\TreeSimplifier\NodeSimplifierFactory;
 use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 use PPP\Wikidata\ValueParsers\WikibaseValueParserFactory;

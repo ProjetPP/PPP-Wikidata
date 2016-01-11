@@ -8,12 +8,10 @@ use ValueFormatters\ValueFormatter;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
-use Wikibase\DataModel\Entity\ItemLookup;
-use Wikibase\DataModel\Entity\ItemNotFoundException;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
-use Wikibase\DataModel\Entity\PropertyLookup;
-use Wikibase\DataModel\Entity\PropertyNotFoundException;
+use Wikibase\DataModel\Services\Lookup\ItemLookup;
+use Wikibase\DataModel\Services\Lookup\PropertyLookup;
 use Wikibase\DataModel\Term\Fingerprint;
 use Wikibase\DataModel\Term\Term;
 use Wikibase\DataModel\Term\TermList;
@@ -30,7 +28,7 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 	 * @see ValueFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
-		$withItemLookupMock = $this->getMock('Wikibase\DataModel\Entity\ItemLookup');
+		$withItemLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\ItemLookup');
 		$withItemLookupMock->expects($this->once())
 			->method('getItemForId')
 			->with($this->equalTo(new ItemId('Q42')))
@@ -38,13 +36,13 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 				new ItemId('Q42'),
 				new Fingerprint(new TermList(array(new Term('en', 'Douglas Adams'))))
 			));
-		$withoutItemLookupMock = $this->getMock('Wikibase\DataModel\Entity\ItemLookup');
+		$withoutItemLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\ItemLookup');
 		$withoutItemLookupMock->expects($this->once())
 			->method('getItemForId')
 			->with($this->equalTo(new ItemId('Q42')))
-			->willThrowException(new ItemNotFoundException(new ItemId('Q42')));
+			->willReturn(null);
 
-		$withPropertyLookupMock = $this->getMock('Wikibase\DataModel\Entity\PropertyLookup');
+		$withPropertyLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\PropertyLookup');
 		$withPropertyLookupMock->expects($this->once())
 			->method('getPropertyForId')
 			->with($this->equalTo(new PropertyId('P214')))
@@ -53,11 +51,11 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 				new Fingerprint(new TermList(array(new Term('en', 'VIAF')))),
 				'string'
 			));
-		$withoutPropertyLookupMock = $this->getMock('Wikibase\DataModel\Entity\PropertyLookup');
+		$withoutPropertyLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\PropertyLookup');
 		$withoutPropertyLookupMock->expects($this->once())
 			->method('getPropertyForId')
 			->with($this->equalTo(new PropertyId('P214')))
-			->willThrowException(new PropertyNotFoundException(new PropertyId('P214')));
+			->willReturn(null);
 
 		return array(
 			array(
@@ -70,7 +68,7 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 				null,
 				$this->getFormatter(
 					$withItemLookupMock,
-					$this->getMock('Wikibase\DataModel\Entity\PropertyLookup')
+					$this->getMock('Wikibase\DataModel\Services\Lookup\PropertyLookup')
 				)
 			),
 			array(
@@ -83,7 +81,7 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 				null,
 				$this->getFormatter(
 					$withoutItemLookupMock,
-					$this->getMock('Wikibase\DataModel\Entity\PropertyLookup')
+					$this->getMock('Wikibase\DataModel\Services\Lookup\PropertyLookup')
 				)
 			),
 			array(
@@ -95,7 +93,7 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 				),
 				null,
 				$this->getFormatter(
-					$this->getMock('Wikibase\DataModel\Entity\ItemLookup'),
+					$this->getMock('Wikibase\DataModel\Services\Lookup\ItemLookup'),
 					$withPropertyLookupMock
 				)
 			),
@@ -108,7 +106,7 @@ class JsonLdEntityIdFormatterTest extends ValueFormatterTestBase {
 				),
 				null,
 				$this->getFormatter(
-					$this->getMock('Wikibase\DataModel\Entity\ItemLookup'),
+					$this->getMock('Wikibase\DataModel\Services\Lookup\ItemLookup'),
 					$withoutPropertyLookupMock
 				)
 			)

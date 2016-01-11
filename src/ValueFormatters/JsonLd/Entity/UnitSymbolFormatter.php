@@ -8,8 +8,7 @@ use ValueFormatters\FormattingException;
 use ValueFormatters\ValueFormatterBase;
 use Wikibase\DataModel\Entity\EntityIdParser;
 use Wikibase\DataModel\Entity\EntityIdParsingException;
-use Wikibase\DataModel\Entity\ItemLookup;
-use Wikibase\DataModel\Entity\ItemNotFoundException;
+use Wikibase\DataModel\Services\Lookup\ItemLookup;
 
 /**
  * @licence GPLv2+
@@ -55,9 +54,8 @@ class UnitSymbolFormatter extends ValueFormatterBase {
 			throw new FormattingException('Invalid unit IRI: ' . $value);
 		}
 
-		try {
-			$item = $this->itemLookup->getItemForId($itemId);
-		} catch(ItemNotFoundException $e) {
+		$item = $this->itemLookup->getItemForId($itemId);
+		if($item === null) {
 			throw new FormattingException('Item not found: ' . $value);
 		}
 

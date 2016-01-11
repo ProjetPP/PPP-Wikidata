@@ -8,8 +8,7 @@ use Wikibase\DataModel\Entity\EntityDocument;
 use Wikibase\DataModel\Entity\EntityId;
 use Wikibase\DataModel\Entity\PropertyId;
 use Wikibase\DataModel\Snak\PropertyValueSnak;
-use Wikibase\DataModel\StatementListProvider;
-use Wikibase\EntityStore\EntityNotFoundException;
+use Wikibase\DataModel\Statement\StatementListProvider;
 use Wikibase\EntityStore\EntityStore;
 
 /**
@@ -38,9 +37,9 @@ class ResourceListForEntityProperty {
 	 * @return ResourceListNode
 	 */
 	public function getForEntityProperty(EntityId $entityId, PropertyId $propertyId) {
-		try {
-			$entity = $this->entityStore->getEntityDocumentLookup()->getEntityDocumentForId($entityId);
-		} catch(EntityNotFoundException $e) {
+		$entity = $this->entityStore->getEntityDocumentLookup()->getEntityDocumentForId($entityId);
+
+		if($entity === null) {
 			return array();
 		}
 
