@@ -141,7 +141,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				new ModuleRequest(
 					'en',
 					new TripleNode(
-						new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+						new ResourceListNode(array(new StringResourceNode('Barack Obama'))),
 						new ResourceListNode(array(new StringResourceNode('name'))),
 						new MissingNode()
 					),
@@ -150,11 +150,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new ResourceListNode(array(new JsonLdResourceNode(
-						'Douglas Adams',
+						'Barack Obama',
 						(object) array(
 							'@context' => 'http://schema.org',
-							'@id' => 'http://www.wikidata.org/entity/Q42',
-							'name' => 'Douglas Adams'
+							'@id' => 'http://www.wikidata.org/entity/Q76',
+							'name' => 'Barack Obama'
 						)
 					))),
 					array(
@@ -481,7 +481,7 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				new ModuleRequest(
 					'en',
 					new IntersectionNode(array(
-						new ResourceListNode(array(new StringResourceNode('Douglas Adams'))),
+						new ResourceListNode(array(new StringResourceNode('Barack Obama'))),
 						new TripleNode(
 							new MissingNode(),
 							new ResourceListNode(array(new StringResourceNode('instance of'))),
@@ -493,11 +493,11 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 				array(new ModuleResponse(
 					'en',
 					new ResourceListNode(array(new JsonLdResourceNode(
-						'Douglas Adams',
+						'Barack Obama',
 						(object) array(
 							'@context' => 'http://schema.org',
-							'@id' => 'http://www.wikidata.org/entity/Q42',
-							'name' => 'Douglas Adams'
+							'@id' => 'http://www.wikidata.org/entity/Q76',
+							'name' => 'Barack Obama'
 						)
 					))),
 					array(
@@ -621,17 +621,17 @@ class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {
 			array(
 				new ModuleRequest(
 					'en',
-					new SentenceNode('Douglas Adams'),
+					new SentenceNode('Barack Obama'),
 					'a'
 				),
 				array(new ModuleResponse(
 					'en',
 					new ResourceListNode(array(new JsonLdResourceNode(
-						'Douglas Adams',
+						'Barack Obama',
 						(object) array(
 							'@context' => 'http://schema.org',
-							'@id' => 'http://www.wikidata.org/entity/Q42',
-							'name' => 'Douglas Adams'
+							'@id' => 'http://www.wikidata.org/entity/Q76',
+							'name' => 'Barack Obama'
 						)
 					))),
 					array(

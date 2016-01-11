@@ -66,8 +66,8 @@ class WikibaseValueParserFactoryTest extends \PHPUnit_Framework_TestCase {
 
 	public function testParserParseWikibaseItem() {
 		$this->assertEquals(
-			array(new EntityIdValue(new ItemId('Q42'))),
-			$this->newFactory()->newWikibaseValueParser()->parse('Douglas Adams', 'wikibase-item')
+			array(new EntityIdValue(new ItemId('Q76'))),
+			$this->newFactory()->newWikibaseValueParser()->parse('Barack Obama', 'wikibase-item')
 		);
 	}
 

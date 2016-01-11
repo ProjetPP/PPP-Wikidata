@@ -25,7 +25,7 @@ class WikibaseEntityIdParser extends StringValueParser {
 
 	const FORMAT_NAME = 'wikibase-entity';
 
-	private static $INSTANCES_TO_FILTER = array('Q4167410', 'Q17362920', 'Q4167836', 'Q13406463', 'Q11266439', 'Q14204246');
+	private static $INSTANCES_TO_FILTER = array('Q4167410', 'Q17362920', 'Q4167836', 'Q13406463', 'Q11266439', 'Q14204246', 'Q21286738');
 
 	const INSTANCEOF_PID = 'P31';
 

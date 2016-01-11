@@ -28,7 +28,7 @@ class WikibaseEntityIdParserTest extends ValueParserTestBase {
 		return array(
 			array(
 				'Douglas Adams',
-				array(new EntityIdValue(new ItemId('Q42')))
+				array(new EntityIdValue(new ItemId('Q42')), new EntityIdValue(new ItemId('Q21454969')))
 			),
 			array(
 				'Barack Obama',
