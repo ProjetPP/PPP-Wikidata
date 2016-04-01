@@ -39,6 +39,11 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 	public $cache;
 
 	/**
+	 * @var int
+	 */
+	private $requestStartTime;
+
+	/**
 	 * @param $configFileName
 	 * @param string[] $sitesUrls
 	 */
@@ -46,6 +51,7 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 		$configurationBuilder = new EntityStoreFromConfigurationBuilder();
 		$this->entityStore = $configurationBuilder->buildEntityStore($configFileName);
 		$this->cache = $configurationBuilder->buildCache($configFileName);
+		$this->requestStartTime = time();
 
 		$this->sitesApi = array();
 		foreach($sitesUrls as $siteId => $url) {
@@ -65,10 +71,24 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 			return array();
 		}
 
+		$measures = $this->buildMeasures($formattedTree, $request->getMeasures());
+
+		$trace = $request->getTrace();
+		array_unshift($trace, array(
+			"module" => "Wikidata",
+			"tree" => $formattedTree,
+			"measures" => $measures,
+			"times" => array(
+				"start" => $this->requestStartTime,
+				"end" => time()
+			)
+		));
+
 		return array(new ModuleResponse(
 			$request->getLanguageCode(),
 			$formattedTree,
-			$this->buildMeasures($formattedTree, $request->getMeasures())
+			$measures,
+			$trace
 		));
 	}
 
