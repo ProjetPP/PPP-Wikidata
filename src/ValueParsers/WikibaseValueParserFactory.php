@@ -40,6 +40,7 @@ class WikibaseValueParserFactory {
 	public function newWikibaseValueParser() {
 		return new WikibaseValueParser(array(
 			'commonsMedia' => new StringParser(),
+			'external-id' => new StringParser(),
 			'globe-coordinate' => new GlobeCoordinateParser(),
 			//TODO 'quantity' => ,
 			'monolingualtext' => new MonolingualTextParser(),

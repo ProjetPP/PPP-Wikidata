@@ -36,6 +36,13 @@ class WikibaseValueParserFactoryTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
+	public function testParserParseExternalId() {
+		$this->assertEquals(
+			array(new StringValue('foo')),
+			$this->newFactory()->newWikibaseValueParser()->parse('foo', 'external-id')
+		);
+	}
+
 	public function testParserParseGlobeCoordinate() {
 		$this->assertEquals(
 			array(new GlobeCoordinateValue(new LatLongValue(42, 42), 1)),
