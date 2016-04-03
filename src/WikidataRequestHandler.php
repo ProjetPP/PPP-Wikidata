@@ -75,12 +75,12 @@ class WikidataRequestHandler extends AbstractRequestHandler {
 
 		$trace = $request->getTrace();
 		array_unshift($trace, array(
-			"module" => "Wikidata",
-			"tree" => $formattedTree,
-			"measures" => $measures,
-			"times" => array(
-				"start" => $this->requestStartTime,
-				"end" => time()
+			'module' => 'Wikidata',
+			'tree' => $formattedTree,
+			'measures' => $measures,
+			'times' => array(
+				'start' => $this->requestStartTime,
+				'end' => time()
 			)
 		));
 
