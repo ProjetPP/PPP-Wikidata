@@ -61,12 +61,15 @@ class EntityOntologyTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	private function getItem() {
+		$deprecatedStatement = new Statement(new PropertyValueSnak(new PropertyId('P558'), new StringValue('p')));
+		$deprecatedStatement->setRank(Statement::RANK_DEPRECATED);
 		return new Item(
 			new ItemId('Q1'),
 			null,
 			null,
 			new StatementList(array(
-				new Statement(new PropertyValueSnak(new PropertyId('P558'), new StringValue('m')))
+				new Statement(new PropertyValueSnak(new PropertyId('P558'), new StringValue('m'))),
+				$deprecatedStatement
 			))
 		);
 	}

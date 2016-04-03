@@ -64,7 +64,7 @@ class EntityOntology {
 	}
 
 	private function getTextualContentForProperty(StatementListProvider $statementListProvider, PropertyId $propertyId) {
-		$snaks = $statementListProvider->getStatements()->getByPropertyId($propertyId)->getMainSnaks();
+		$snaks = $statementListProvider->getStatements()->getByPropertyId($propertyId)->getBestStatements()->getMainSnaks();
 
 		$iris = array();
 		foreach($snaks as $snak) {
