@@ -43,7 +43,7 @@ class DispatchingJsonLdDataValueFormatter extends ValueFormatterBase implements 
 
 		if(!array_key_exists($type, $this->formatters)) {
 			throw new FormattingException(
-				$type . 'is not one of the type supported by the value formatter (' . implode(', ', array_keys($this->formatters)) . ')'
+				$type . ' is not one of the type supported by the value formatter (' . implode(', ', array_keys($this->formatters)) . ')'
 			);
 		}
 

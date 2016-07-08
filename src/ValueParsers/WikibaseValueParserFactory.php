@@ -3,8 +3,18 @@
 namespace PPP\Wikidata\ValueParsers;
 
 use DataValues\Geo\Parsers\GlobeCoordinateParser;
+use ValueParsers\DispatchingValueParser;
+use ValueParsers\EraParser;
+use ValueParsers\IsoTimestampParser;
+use ValueParsers\MonolingualMonthNameProvider;
+use ValueParsers\MonthNameUnlocalizer;
 use ValueParsers\ParserOptions;
+use ValueParsers\PhpDateTimeParser;
+use ValueParsers\QuantityParser;
 use ValueParsers\ValueParser;
+use ValueParsers\YearMonthDayTimeParser;
+use ValueParsers\YearMonthTimeParser;
+use ValueParsers\YearTimeParser;
 use Wikibase\EntityStore\EntityStore;
 
 /**
@@ -14,6 +24,21 @@ use Wikibase\EntityStore\EntityStore;
  * @author Thomas Pellissier Tanon
  */
 class WikibaseValueParserFactory {
+
+	private static $MONTH_NAMES = array(
+		1 => 'January',
+		2 => 'February',
+		3 => 'March',
+		4 => 'April',
+		5 => 'May',
+		6 => 'June',
+		7 => 'July',
+		8 => 'August',
+		9 => 'September',
+		10 => 'October',
+		11 => 'November',
+		12 => 'December'
+	);
 
 	/**
 	 * @var string language code
@@ -42,10 +67,16 @@ class WikibaseValueParserFactory {
 			'commonsMedia' => new StringParser(),
 			'external-id' => new StringParser(),
 			'globe-coordinate' => new GlobeCoordinateParser(),
-			//TODO 'quantity' => ,
+			'quantity' => new QuantityParser(),
 			'monolingualtext' => new MonolingualTextParser(),
 			'string' => new StringParser(),
-			//TODO 'time' => ,
+			'time' => new DispatchingValueParser(array(
+				new IsoTimestampParser(),
+				new YearMonthDayTimeParser(),
+				new YearMonthTimeParser(new MonolingualMonthNameProvider(self::$MONTH_NAMES)), //TODO: localisation
+				new YearTimeParser(),
+				new PhpDateTimeParser(new MonthNameUnlocalizer(array()), new EraParser(), new IsoTimestampParser())
+			), 'time'),
 			'url' => new StringParser(),
 			'wikibase-item' => $this->newWikibaseEntityParser('item'),
 			'wikibase-property' => $this->newWikibaseEntityParser('property')
