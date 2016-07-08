@@ -33,7 +33,11 @@ class WikibaseValueParser {
 	 */
 	public function parse($value, $type) {
 		if(!array_key_exists($type, $this->parsers)) {
-			throw new ParseException('Unknown value type', $value, $type);
+			throw new ParseException(
+				$type . 'is not one of the type supported by the value parser (' . implode(', ', array_keys($this->parsers)) . ')',
+				$value,
+				$type
+			);
 		}
 
 		$result = $this->parsers[$type]->parse($value);

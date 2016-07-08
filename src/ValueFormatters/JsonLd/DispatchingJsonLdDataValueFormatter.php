@@ -42,7 +42,9 @@ class DispatchingJsonLdDataValueFormatter extends ValueFormatterBase implements 
 		$type = $value->getType();
 
 		if(!array_key_exists($type, $this->formatters)) {
-			throw new FormattingException('Unknown value type: ' . $type);
+			throw new FormattingException(
+				$type . 'is not one of the type supported by the value formatter (' . implode(', ', array_keys($this->formatters)) . ')'
+			);
 		}
 
 		return $this->formatters[$type]->format($value);
