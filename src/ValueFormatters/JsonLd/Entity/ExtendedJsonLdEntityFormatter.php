@@ -88,6 +88,9 @@ class ExtendedJsonLdEntityFormatter extends ValueFormatterBase {
 			$formatted = $this->snakFormatter->format($snak);
 
 			foreach($formatted as $property => $value) {
+				if(isset($resource->{$property}) && !is_array($resource->{$property})) {
+					continue; //We do not allow to edit special properties
+				}
 				$resource->{$property}[] = $value;
 			}
 		}
