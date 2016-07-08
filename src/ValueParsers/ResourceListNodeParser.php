@@ -5,6 +5,7 @@ namespace PPP\Wikidata\ValueParsers;
 use PPP\DataModel\ResourceListNode;
 use PPP\DataModel\ResourceNode;
 use PPP\Wikidata\WikibaseResourceNode;
+use ValueParsers\ParseException;
 
 /**
  * Parse ResourceListNode to map it to Wikibase DataValues
@@ -33,7 +34,11 @@ class ResourceListNodeParser {
 			if($resource instanceof WikibaseResourceNode) {
 				$annotated[] = $resource; //TODO: check if it has the same type
 			} else {
-				$annotated[] = $this->annotateResourceNode($resource, $type);
+				try {
+					$annotated[] = $this->annotateResourceNode($resource, $type);
+				} catch (ParseException $e) {
+					//We ignore this value
+				}
 			}
 		}
 
