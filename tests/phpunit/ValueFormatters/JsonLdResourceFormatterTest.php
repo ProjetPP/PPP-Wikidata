@@ -5,9 +5,9 @@ namespace PPP\Wikidata\ValueFormatters;
 use DataValues\MonolingualTextValue;
 use DataValues\TimeValue;
 use PPP\DataModel\JsonLdResourceNode;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdFormatterTestBase;
 use PPP\Wikidata\WikibaseResourceNode;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\Test\ValueFormatterTestBase;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\PropertyId;
@@ -19,10 +19,10 @@ use Wikibase\DataModel\Snak\PropertyValueSnak;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class JsonLdResourceFormatterTest extends ValueFormatterTestBase {
+class JsonLdResourceFormatterTest extends JsonLdFormatterTestBase {
 
 	/**
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		$withNameArrayFormatter = $this->getMock('PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter');
@@ -180,7 +180,7 @@ class JsonLdResourceFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		return null;

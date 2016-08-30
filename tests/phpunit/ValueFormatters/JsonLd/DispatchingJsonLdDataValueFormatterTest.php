@@ -4,7 +4,6 @@ namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\StringValue;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\DispatchingJsonLdDataValueFormatter
@@ -12,10 +11,10 @@ use ValueFormatters\Test\ValueFormatterTestBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class DispatchingJsonLdDataValueFormatterTest extends ValueFormatterTestBase {
+class DispatchingJsonLdDataValueFormatterTest extends JsonLdFormatterTestBase {
 
 	/**
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		$formatterMock = $this->getMock('PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter');
@@ -35,7 +34,7 @@ class DispatchingJsonLdDataValueFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		return null;

@@ -5,7 +5,6 @@ namespace PPP\Wikidata\ValueFormatters\JsonLd;
 use DataValues\TimeValue;
 use PPP\Wikidata\ValueFormatters\IsoTimeFormatter;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdTimeFormatter
@@ -13,10 +12,10 @@ use ValueFormatters\Test\ValueFormatterTestBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class JsonLdTimeFormatterTest extends ValueFormatterTestBase {
+class JsonLdTimeFormatterTest extends JsonLdFormatterTestBase {
 
 	/**
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		return array(
@@ -32,7 +31,7 @@ class JsonLdTimeFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		return new JsonLdTimeFormatter(

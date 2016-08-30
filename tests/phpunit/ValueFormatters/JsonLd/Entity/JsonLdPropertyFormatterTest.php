@@ -2,8 +2,8 @@
 
 namespace PPP\Wikidata\ValueFormatters\JsonLd\Entity;
 
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdFormatterTestBase;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
 use Wikibase\DataModel\Entity\Property;
 use Wikibase\DataModel\Entity\PropertyId;
@@ -14,10 +14,10 @@ use Wikibase\DataModel\Entity\PropertyId;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class JsonLdPropertyFormatterTest extends ValueFormatterTestBase {
+class JsonLdPropertyFormatterTest extends JsonLdFormatterTestBase {
 
 	/**
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		return array(
@@ -37,7 +37,7 @@ class JsonLdPropertyFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		return new JsonLdPropertyFormatter(

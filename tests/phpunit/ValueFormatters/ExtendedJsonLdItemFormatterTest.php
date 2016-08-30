@@ -7,11 +7,11 @@ use Mediawiki\Api\MediawikiApi;
 use PPP\Wikidata\Cache\PerSiteLinkCache;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityFormatter;
 use PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdItemFormatter;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdFormatterTestBase;
 use PPP\Wikidata\Wikipedia\MediawikiArticle;
 use PPP\Wikidata\Wikipedia\MediawikiArticleImage;
 use PPP\Wikidata\Wikipedia\MediawikiArticleProvider;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\Test\ValueFormatterTestBase;
 use ValueFormatters\ValueFormatter;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -24,10 +24,10 @@ use Wikibase\DataModel\SiteLinkList;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class ExtendedJsonLdItemFormatterTest extends ValueFormatterTestBase {
+class ExtendedJsonLdItemFormatterTest extends JsonLdFormatterTestBase {
 
 	/**
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		$item = new Item(
@@ -118,7 +118,7 @@ class ExtendedJsonLdItemFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		$articleHeaderCache = new PerSiteLinkCache(new ArrayCache(), 'wphead');

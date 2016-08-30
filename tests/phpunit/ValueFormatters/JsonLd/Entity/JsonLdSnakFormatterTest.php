@@ -3,8 +3,8 @@
 namespace PPP\Wikidata\ValueFormatters\JsonLd\Entity;
 
 use DataValues\StringValue;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdFormatterTestBase;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\Test\ValueFormatterTestBase;
 use Wikibase\DataModel\Entity\EntityIdValue;
 use Wikibase\DataModel\Entity\ItemId;
 use Wikibase\DataModel\Entity\Property;
@@ -21,10 +21,10 @@ use Wikibase\DataModel\Statement\StatementList;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class JsonLdSnakFormatterTest extends ValueFormatterTestBase {
+class JsonLdSnakFormatterTest extends JsonLdFormatterTestBase {
 
 	/**
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		$withPropertyLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\PropertyLookup');
@@ -64,7 +64,7 @@ class JsonLdSnakFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		return null;

@@ -4,7 +4,6 @@ namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\MonolingualTextValue;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdMonolingualTextFormatter
@@ -12,10 +11,10 @@ use ValueFormatters\Test\ValueFormatterTestBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class JsonLdMonolingualTextFormatterTest extends ValueFormatterTestBase {
+class JsonLdMonolingualTextFormatterTest extends JsonLdFormatterTestBase {
 
 	/**
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		return array(
@@ -27,7 +26,7 @@ class JsonLdMonolingualTextFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		return new JsonLdMonolingualTextFormatter($options);

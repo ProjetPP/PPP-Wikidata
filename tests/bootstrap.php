@@ -10,5 +10,6 @@ if(!is_readable(__DIR__ . '/../vendor/autoload.php')) {
 
 $loader = require_once(__DIR__ . '/../vendor/autoload.php');
 $loader->addClassMap(array(
-	'PPP\Wikidata\TreeSimplifier\NodeSimplifierBaseTest' => __DIR__ . '/phpunit/TreeSimplifier/NodeSimplifierBaseTest.php'
+	'PPP\Wikidata\TreeSimplifier\NodeSimplifierBaseTest' => __DIR__ . '/phpunit/TreeSimplifier/NodeSimplifierBaseTest.php',
+	'PPP\Wikidata\ValueFormatters\JsonLd\JsonLdFormatterTestBase' => __DIR__ . '/phpunit/ValueFormatters/JsonLd/JsonLdFormatterTestBase.php'
 ));

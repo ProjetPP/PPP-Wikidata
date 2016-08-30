@@ -7,7 +7,6 @@ use DataValues\QuantityValue;
 use ValueFormatters\DecimalFormatter;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\QuantityFormatter;
-use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdQuantityFormatter
@@ -15,10 +14,10 @@ use ValueFormatters\Test\ValueFormatterTestBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class JsonLdQuantityFormatterTest extends ValueFormatterTestBase {
+class JsonLdQuantityFormatterTest extends JsonLdFormatterTestBase {
 
 	/**T
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		return array(
@@ -47,7 +46,7 @@ class JsonLdQuantityFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		$vocabularyUriFormatter = $this->getMock('\ValueFormatters\ValueFormatter');

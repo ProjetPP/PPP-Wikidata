@@ -4,7 +4,6 @@ namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\DecimalValue;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDecimalFormatter
@@ -12,10 +11,10 @@ use ValueFormatters\Test\ValueFormatterTestBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class JsonLdDecimalFormatterTest extends ValueFormatterTestBase {
+class JsonLdDecimalFormatterTest extends JsonLdFormatterTestBase {
 
 	/**T
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		return array(
@@ -37,7 +36,7 @@ class JsonLdDecimalFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		return new JsonLdDecimalFormatter($options);

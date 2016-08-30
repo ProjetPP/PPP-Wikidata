@@ -2,8 +2,8 @@
 
 namespace PPP\Wikidata\ValueParsers;
 
-use DataValues\GlobeCoordinateValue;
-use DataValues\LatLongValue;
+use DataValues\Geo\Values\GlobeCoordinateValue;
+use DataValues\Geo\Values\LatLongValue;
 use DataValues\MonolingualTextValue;
 use DataValues\StringValue;
 use Mediawiki\Api\MediawikiApi;

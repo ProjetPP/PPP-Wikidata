@@ -15,7 +15,7 @@ use ValueFormatters\Test\ValueFormatterTestBase;
 class IsoTimeFormatterTest extends ValueFormatterTestBase {
 
 	/**
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		return array(
@@ -59,7 +59,7 @@ class IsoTimeFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		return new IsoTimeFormatter($options);

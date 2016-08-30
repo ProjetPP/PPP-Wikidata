@@ -3,8 +3,8 @@
 namespace PPP\Wikidata\ValueFormatters\JsonLd\Entity;
 
 use OutOfBoundsException;
+use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdFormatterTestBase;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\Test\ValueFormatterTestBase;
 use Wikibase\DataModel\Entity\EntityIdParsingException;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
@@ -18,10 +18,10 @@ use Wikibase\DataModel\Term\TermList;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class UnitSymbolFormatterTest extends ValueFormatterTestBase {
+class UnitSymbolFormatterTest extends JsonLdFormatterTestBase {
 
 	/**
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		$item = new Item(new ItemId('Q11573'), new Fingerprint(new TermList(array(new Term('en', 'meter')))));
@@ -137,7 +137,7 @@ class UnitSymbolFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		return null;

@@ -3,10 +3,9 @@
 namespace PPP\Wikidata\ValueFormatters\JsonLd;
 
 use DataValues\Geo\Formatters\GlobeCoordinateFormatter;
+use DataValues\Geo\Values\GlobeCoordinateValue;
 use DataValues\Geo\Values\LatLongValue;
-use DataValues\GlobeCoordinateValue;
 use ValueFormatters\FormatterOptions;
-use ValueFormatters\Test\ValueFormatterTestBase;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdGlobeCoordinateFormatter
@@ -14,10 +13,10 @@ use ValueFormatters\Test\ValueFormatterTestBase;
  * @licence GPLv2+
  * @author Thomas Pellissier Tanon
  */
-class JsonLdGlobeCoordinateFormatterTest extends ValueFormatterTestBase {
+class JsonLdGlobeCoordinateFormatterTest extends JsonLdFormatterTestBase {
 
 	/**T
-	 * @see ValueFormatterTestBase::validProvider
+	 * @see JsonLdFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
 		return array(
@@ -34,7 +33,7 @@ class JsonLdGlobeCoordinateFormatterTest extends ValueFormatterTestBase {
 	}
 
 	/**
-	 * @see ValueFormatterTestBase::getInstance
+	 * @see JsonLdFormatterTestBase::getInstance
 	 */
 	protected function getInstance(FormatterOptions $options = null) {
 		return new JsonLdGlobeCoordinateFormatter(new GlobeCoordinateFormatter($options), $options);
