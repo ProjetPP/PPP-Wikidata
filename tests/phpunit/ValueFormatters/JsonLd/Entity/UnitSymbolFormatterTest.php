@@ -8,6 +8,9 @@ use ValueFormatters\Test\ValueFormatterTestBase;
 use Wikibase\DataModel\Entity\EntityIdParsingException;
 use Wikibase\DataModel\Entity\Item;
 use Wikibase\DataModel\Entity\ItemId;
+use Wikibase\DataModel\Term\Fingerprint;
+use Wikibase\DataModel\Term\Term;
+use Wikibase\DataModel\Term\TermList;
 
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\Entity\UnitSymbolFormatter
@@ -21,34 +24,48 @@ class UnitSymbolFormatterTest extends ValueFormatterTestBase {
 	 * @see ValueFormatterTestBase::validProvider
 	 */
 	public function validProvider() {
+		$item = new Item(new ItemId('Q11573'), new Fingerprint(new TermList(array(new Term('en', 'meter')))));
+
 		$entityIriParserMock = $this->getMock('Wikibase\DataModel\Entity\EntityIdParser');
-		$entityIriParserMock->expects($this->once())
+		$entityIriParserMock->expects($this->any())
 			->method('parse')
 			->with($this->equalTo('http://www.wikidata.org/entity/Q11573'))
 			->willReturn(new ItemId('Q11573'));
 
 		$itemLookupMock = $this->getMock('Wikibase\DataModel\Services\Lookup\ItemLookup');
-		$itemLookupMock->expects($this->once())
+		$itemLookupMock->expects($this->any())
 			->method('getItemForId')
 			->with($this->equalTo(new ItemId('Q11573')))
-			->willReturn(new Item(new ItemId('Q11573')));
+			->willReturn($item);
 
-		$entityOntologyMock = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityOntology')
+		$entityOntologyMockSuccess = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityOntology')
 			->disableOriginalConstructor()
 			->getMock();
-		$entityOntologyMock->expects($this->once())
+		$entityOntologyMockSuccess->expects($this->once())
 			->method('getUnitSymbol')
-			->with($this->equalTo(new Item(new ItemId('Q11573'))))
+			->with($this->equalTo($item))
 			->willReturn('m');
 
-		$formatter = new UnitSymbolFormatter($entityIriParserMock, $entityOntologyMock, $itemLookupMock);
+		$entityOntologyMockFailure = $this->getMockBuilder('PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityOntology')
+			->disableOriginalConstructor()
+			->getMock();
+		$entityOntologyMockFailure->expects($this->once())
+			->method('getUnitSymbol')
+			->with($this->equalTo($item))
+			->willThrowException(new OutOfBoundsException());
 
 		return array(
 			array(
 				'http://www.wikidata.org/entity/Q11573',
 				'm',
 				null,
-				$formatter
+				new UnitSymbolFormatter($entityIriParserMock, $entityOntologyMockSuccess, $itemLookupMock)
+			),
+			array(
+				'http://www.wikidata.org/entity/Q11573',
+				'meter',
+				null,
+				new UnitSymbolFormatter($entityIriParserMock, $entityOntologyMockFailure, $itemLookupMock)
 			)
 		);
 	}
@@ -92,7 +109,7 @@ class UnitSymbolFormatterTest extends ValueFormatterTestBase {
 		$formatter->format('http://www.wikidata.org/entity/Q11573');
 	}
 
-	public function testWithOutOfBoundsException() {
+	public function testWithoutSymbolAndLabel() {
 		$entityIriParserMock = $this->getMock('Wikibase\DataModel\Entity\EntityIdParser');
 		$entityIriParserMock->expects($this->once())
 			->method('parse')

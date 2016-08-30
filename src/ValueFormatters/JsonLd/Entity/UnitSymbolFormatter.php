@@ -5,6 +5,7 @@ namespace PPP\Wikidata\ValueFormatters\JsonLd\Entity;
 use OutOfBoundsException;
 use ValueFormatters\FormatterOptions;
 use ValueFormatters\FormattingException;
+use ValueFormatters\ValueFormatter;
 use ValueFormatters\ValueFormatterBase;
 use Wikibase\DataModel\Entity\EntityIdParser;
 use Wikibase\DataModel\Entity\EntityIdParsingException;
@@ -62,7 +63,11 @@ class UnitSymbolFormatter extends ValueFormatterBase {
 		try {
 			return $this->entityOntology->getUnitSymbol($item);
 		} catch(OutOfBoundsException $e) {
-			throw new FormattingException('Not symbol for unit ' . $value);
+			try {
+				return $item->getFingerprint()->getLabel($this->getOption(ValueFormatter::OPT_LANG))->getText();
+			} catch (OutOfBoundsException $e) {
+				throw new FormattingException('No unit symbol and no label for IRI ' . $value);
+			}
 		}
 	}
 }
