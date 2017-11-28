@@ -11,7 +11,7 @@ use Wikibase\DataModel\Snak\PropertyValueSnak;
 use Wikibase\DataModel\Statement\StatementListProvider;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class EntityOntology {

@@ -10,7 +10,7 @@ use ValueParsers\ParseException;
 /**
  * Parse ResourceListNode to map it to Wikibase DataValues
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class ResourceListNodeParser {

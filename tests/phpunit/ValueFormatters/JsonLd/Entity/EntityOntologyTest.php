@@ -15,7 +15,7 @@ use Wikibase\DataModel\Statement\StatementList;
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityOntology
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class EntityOntologyTest extends \PHPUnit_Framework_TestCase {

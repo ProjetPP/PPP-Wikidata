@@ -11,7 +11,7 @@ use Wikibase\DataModel\Entity\PropertyId;
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdPropertyFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdPropertyFormatterTest extends JsonLdFormatterTestBase {

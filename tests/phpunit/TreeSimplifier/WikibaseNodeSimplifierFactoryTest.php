@@ -5,7 +5,7 @@ namespace PPP\Wikidata\TreeSimplifier;
 /**
  * @covers PPP\Wikidata\TreeSimplifier\WikibaseNodeSimplifierFactory
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class WikibaseNodeSimplifierFactoryTest extends \PHPUnit_Framework_TestCase {

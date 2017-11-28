@@ -11,7 +11,7 @@ use Wikibase\DataModel\Entity\ItemId;
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdItemFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdItemFormatterTest extends JsonLdFormatterTestBase {

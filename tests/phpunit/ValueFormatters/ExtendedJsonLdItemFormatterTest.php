@@ -21,7 +21,7 @@ use Wikibase\DataModel\SiteLinkList;
 /**
  * @covers PPP\Wikidata\ValueFormatters\ExtendedJsonLdItemFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class ExtendedJsonLdItemFormatterTest extends JsonLdFormatterTestBase {

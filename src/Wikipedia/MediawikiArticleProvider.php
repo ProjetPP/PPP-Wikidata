@@ -5,7 +5,7 @@ namespace PPP\Wikidata\Wikipedia;
 use Wikibase\DataModel\SiteLink;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class MediawikiArticleProvider extends PerSiteLinkProvider {

@@ -8,7 +8,7 @@ use Doctrine\Common\Cache\ArrayCache;
 /**
  * @covers PPP\Wikidata\Cache\JsonLdDataValueFormatterCache
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdDataValueFormatterCacheTest extends \PHPUnit_Framework_TestCase {

@@ -21,7 +21,7 @@ use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
 /**
  * @covers PPP\Wikidata\TreeSimplifier\IntersectionWithFilterNodeSimplifierTest
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class IntersectionWithFilterNodeSimplifierTest extends NodeSimplifierBaseTest {

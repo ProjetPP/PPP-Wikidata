@@ -16,7 +16,7 @@ use Wikibase\DataModel\Services\Lookup\ItemLookup;
 use Wikibase\DataModel\Services\Lookup\PropertyLookup;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdEntityIdFormatter extends ValueFormatterBase implements JsonLdDataValueFormatter {

@@ -9,7 +9,7 @@ use ValueParsers\Test\ValueParserTestBase;
 /**
  * @covers PPP\Wikidata\ValueParsers\MonolingualTextParser
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class MonolingualTextParserTest extends ValueParserTestBase {

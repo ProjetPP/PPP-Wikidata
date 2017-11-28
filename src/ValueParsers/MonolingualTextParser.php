@@ -9,7 +9,7 @@ use ValueParsers\ValueParser;
 /**
  * Parse string value.
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class MonolingualTextParser extends StringValueParser {

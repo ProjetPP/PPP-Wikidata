@@ -9,7 +9,7 @@ use ValueParsers\ValueParser;
 /**
  * Choose the right parser for the given type and return the parsed value.
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class WikibaseValueParser {

@@ -14,7 +14,7 @@ use Wikibase\EntityStore\Api\ApiEntityStore;
 /**
  * @covers PPP\Wikidata\ValueParsers\WikibaseEntityIdParser
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  *
  * @todo mock instead of requests to the real API?

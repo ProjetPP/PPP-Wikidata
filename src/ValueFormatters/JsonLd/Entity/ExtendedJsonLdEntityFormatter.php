@@ -16,7 +16,7 @@ use Wikibase\DataModel\Term\FingerprintProvider;
 use Wikibase\DataModel\Term\Term;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class ExtendedJsonLdEntityFormatter extends ValueFormatterBase {

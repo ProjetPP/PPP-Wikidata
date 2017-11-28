@@ -18,7 +18,7 @@ use Wikibase\EntityStore\EntityStore;
 /**
  * Module entry point.
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class WikidataRequestHandler extends AbstractRequestHandler {

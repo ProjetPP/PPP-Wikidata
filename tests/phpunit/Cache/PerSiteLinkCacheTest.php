@@ -9,7 +9,7 @@ use Wikibase\DataModel\SiteLink;
 /**
  * @covers PPP\Wikidata\Cache\PerSiteLinkCache
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class PerSiteLinkCacheTest extends \PHPUnit_Framework_TestCase {

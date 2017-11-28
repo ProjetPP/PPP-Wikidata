@@ -9,7 +9,7 @@ use ValueFormatters\Test\ValueFormatterTestBase;
 /**
  * @covers PPP\Wikidata\ValueFormatters\IsoTimeFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class IsoTimeFormatterTest extends ValueFormatterTestBase {

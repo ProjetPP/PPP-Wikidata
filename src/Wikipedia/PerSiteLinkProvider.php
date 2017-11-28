@@ -10,7 +10,7 @@ use PPP\Wikidata\Cache\PerSiteLinkCache;
 use Wikibase\DataModel\SiteLink;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 abstract class PerSiteLinkProvider {

@@ -10,7 +10,7 @@ use Wikibase\DataModel\Entity\PropertyId;
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\Entity\EntityIriParser
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class EntityIriParserTest extends \PHPUnit_Framework_TestCase {

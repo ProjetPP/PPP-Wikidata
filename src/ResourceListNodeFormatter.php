@@ -11,7 +11,7 @@ use ValueFormatters\ValueFormatter;
 /**
  * Formats ResourceListNodes
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class ResourceListNodeFormatter implements NodeSimplifier {

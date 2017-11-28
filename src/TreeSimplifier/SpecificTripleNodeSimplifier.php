@@ -28,7 +28,7 @@ use Wikibase\DataModel\Entity\PropertyId;
  * - if a predicate is not useful like "name" or "identity" cast subjects to wikibase items
  * - if the predicte is son or daughter use "child" with an intersection with the relevant sex
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  *
  *

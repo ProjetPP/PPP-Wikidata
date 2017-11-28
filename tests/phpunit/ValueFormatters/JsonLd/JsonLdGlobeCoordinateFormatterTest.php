@@ -10,7 +10,7 @@ use ValueFormatters\FormatterOptions;
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdGlobeCoordinateFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdGlobeCoordinateFormatterTest extends JsonLdFormatterTestBase {

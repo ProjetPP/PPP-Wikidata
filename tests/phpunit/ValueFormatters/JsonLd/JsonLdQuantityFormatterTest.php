@@ -11,7 +11,7 @@ use ValueFormatters\QuantityFormatter;
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdQuantityFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdQuantityFormatterTest extends JsonLdFormatterTestBase {

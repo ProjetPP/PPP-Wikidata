@@ -8,7 +8,7 @@ use ValueParsers\BoolParser;
 /**
  * @covers PPP\Wikidata\ValueParsers\WikibaseValueParser
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class WikibaseValueParserTest extends \PHPUnit_Framework_TestCase {

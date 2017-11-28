@@ -8,7 +8,7 @@ use ValueFormatters\FormatterOptions;
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\JsonLdStringFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdStringFormatterTest extends JsonLdFormatterTestBase {

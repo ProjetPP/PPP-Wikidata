@@ -29,7 +29,7 @@ use Wikibase\EntityStore\InMemory\InMemoryEntityStore;
 /**
  * @covers PPP\Wikidata\ValueFormatters\WikibaseResourceNodeFormatterFactory
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class WikibaseResourceNodeFormatterFactoryTest extends \PHPUnit_Framework_TestCase {

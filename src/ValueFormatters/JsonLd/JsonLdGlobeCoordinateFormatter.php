@@ -10,7 +10,7 @@ use ValueFormatters\FormatterOptions;
 use ValueFormatters\ValueFormatterBase;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  * @todo support globes
  */

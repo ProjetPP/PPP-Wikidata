@@ -16,7 +16,7 @@ use Wikibase\DataModel\Snak\PropertyValueSnak;
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLdResourceFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdResourceFormatterTest extends JsonLdFormatterTestBase {

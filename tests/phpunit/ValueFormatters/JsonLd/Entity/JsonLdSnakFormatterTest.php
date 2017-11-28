@@ -18,7 +18,7 @@ use Wikibase\DataModel\Statement\StatementList;
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdSnakFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdSnakFormatterTest extends JsonLdFormatterTestBase {

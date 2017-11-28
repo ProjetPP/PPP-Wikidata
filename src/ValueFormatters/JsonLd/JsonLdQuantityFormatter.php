@@ -10,7 +10,7 @@ use ValueFormatters\QuantityFormatter;
 use ValueFormatters\ValueFormatterBase;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdQuantityFormatter extends ValueFormatterBase implements JsonLdDataValueFormatter {

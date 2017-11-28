@@ -10,7 +10,7 @@ use Wikibase\DataModel\SiteLink;
 /**
  * @covers PPP\Wikidata\Wikipedia\MediawikiArticleProvider
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  * TODO: test continue
  */

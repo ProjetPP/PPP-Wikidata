@@ -7,7 +7,7 @@ use ValueFormatters\ValueFormatter;
 /**
  * This formatter formats a DataValue into a JSON-LD resource
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 interface JsonLdDataValueFormatter extends ValueFormatter {

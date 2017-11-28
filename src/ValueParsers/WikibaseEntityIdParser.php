@@ -18,7 +18,7 @@ use Wikibase\EntityStore\EntityStore;
 /**
  * Try to find a Wikibase entities from a given string.
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class WikibaseEntityIdParser extends StringValueParser {

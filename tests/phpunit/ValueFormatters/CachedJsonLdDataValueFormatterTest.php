@@ -9,7 +9,7 @@ use PPP\Wikidata\Cache\JsonLdDataValueFormatterCache;
 /**
  * @covers PPP\Wikidata\ValueFormatters\CachedJsonLdDataValueFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class CachedJsonLdDataValueFormatterTest extends \PHPUnit_Framework_TestCase {

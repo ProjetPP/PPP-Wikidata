@@ -19,7 +19,7 @@ use Wikibase\DataModel\Term\TermList;
 /**
  * @covers PPP\Wikidata\ValueFormatters\JsonLd\Entity\JsonLdEntityIdFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdEntityIdFormatterTest extends JsonLdFormatterTestBase {

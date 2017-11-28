@@ -11,7 +11,7 @@ use PPP\Wikidata\ValueFormatters\JsonLd\JsonLdDataValueFormatter;
 /**
  * Adds a cache level on top of JsonLdDataValueFormatter
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class CachedJsonLdDataValueFormatter implements JsonLdDataValueFormatter {

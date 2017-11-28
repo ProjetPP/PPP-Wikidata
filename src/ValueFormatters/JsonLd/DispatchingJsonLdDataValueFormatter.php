@@ -11,7 +11,7 @@ use ValueFormatters\ValueFormatterBase;
 /**
  * Choose the right formatter for the given type and return the formatted value.
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class DispatchingJsonLdDataValueFormatter extends ValueFormatterBase implements JsonLdDataValueFormatter {

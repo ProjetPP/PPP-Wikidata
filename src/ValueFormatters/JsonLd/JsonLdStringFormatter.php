@@ -8,7 +8,7 @@ use stdClass;
 use ValueFormatters\ValueFormatterBase;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdStringFormatter extends ValueFormatterBase implements JsonLdDataValueFormatter {

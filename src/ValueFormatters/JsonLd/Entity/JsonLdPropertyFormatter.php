@@ -9,7 +9,7 @@ use ValueFormatters\ValueFormatterBase;
 use Wikibase\DataModel\Entity\Property;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class JsonLdPropertyFormatter extends ValueFormatterBase {

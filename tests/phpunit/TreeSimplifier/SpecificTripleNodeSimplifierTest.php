@@ -20,7 +20,7 @@ use Wikibase\DataModel\Entity\PropertyId;
 /**
  * @covers PPP\Wikidata\TreeSimplifier\SpecificTripleNodeSimplifier
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class SpecificTripleNodeSimplifierTest extends NodeSimplifierBaseTest {

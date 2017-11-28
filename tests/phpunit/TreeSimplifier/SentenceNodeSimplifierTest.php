@@ -16,7 +16,7 @@ use Wikibase\EntityStore\Api\ApiEntityStore;
 /**
  * @covers PPP\Wikidata\TreeSimplifier\SentenceNodeSimplifier
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class SentenceNodeSimplifierTest extends NodeSimplifierBaseTest {

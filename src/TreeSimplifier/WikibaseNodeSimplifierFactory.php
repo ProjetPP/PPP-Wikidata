@@ -11,7 +11,7 @@ use Wikibase\EntityStore\EntityStore;
 /**
  * Build a SentenceTreeSimplifier
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  *
  * @todo tests

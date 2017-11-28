@@ -7,7 +7,7 @@ use Wikibase\DataModel\SiteLink;
 /**
  * Interface for objects able to provide a SiteLink
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 interface SiteLinkProvider {

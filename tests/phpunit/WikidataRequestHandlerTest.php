@@ -19,7 +19,7 @@ use PPP\Module\DataModel\ModuleResponse;
 /**
  * @covers PPP\Wikidata\WikidataRequestHandler
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class WikidataRequestHandlerTest extends \PHPUnit_Framework_TestCase {

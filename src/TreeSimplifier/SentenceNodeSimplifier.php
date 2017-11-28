@@ -13,7 +13,7 @@ use PPP\Wikidata\ValueParsers\ResourceListNodeParser;
 /**
  * Tries to cast the input sentence to a Wikibase item
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class SentenceNodeSimplifier implements NodeSimplifier {

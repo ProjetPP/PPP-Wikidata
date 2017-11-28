@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use ValueFormatters\ValueFormatterBase;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  * @todo Move to data-value/Time
  */

@@ -18,7 +18,7 @@ use Wikibase\DataModel\Term\Term;
 /**
  * Returns the label of a given Wikibase entity id
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class ExtendedJsonLdItemFormatter extends ValueFormatterBase {

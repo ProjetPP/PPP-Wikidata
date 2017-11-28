@@ -9,7 +9,7 @@ use ValueFormatters\ValueFormatterBase;
 use Wikibase\DataModel\Entity\Item;
 
 /**
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  * @todo output sitelinks
  */

@@ -22,7 +22,7 @@ use Wikibase\EntityStore\EntityStore;
  * Simplifies cases like [Q42, Q43] ∩ (?, instanceof, human) without requests to WikidataQuery: just check that the items
  * have PropertyValueSnak(instanceof, human).
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class IntersectionWithFilterNodeSimplifier implements NodeSimplifier {

@@ -10,7 +10,7 @@ use Wikibase\DataModel\Entity\PropertyId;
 /**
  * Annotates intermediate representation with Wikibase
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class WikibaseResourceNode extends ResourceNode {

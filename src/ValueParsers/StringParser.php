@@ -8,7 +8,7 @@ use ValueParsers\StringValueParser;
 /**
  * Parse string value.
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class StringParser extends StringValueParser {

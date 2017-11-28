@@ -20,7 +20,7 @@ use Wikibase\EntityStore\EntityStore;
 /**
  * Build a parser for Wikibase value
  *
- * @licence GPLv2+
+ * @licence AGPLv3+
  * @author Thomas Pellissier Tanon
  */
 class WikibaseValueParserFactory {
